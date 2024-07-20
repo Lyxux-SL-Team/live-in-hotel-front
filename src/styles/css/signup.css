@@ -1,0 +1,38 @@
+
+.form-step h4{
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 30.53px;
+}
+
+.form-step p{
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.inp-Box{
+    position: relative;
+}
+
+.inp-Box input, .inp-Box select{
+    padding: 20px 0 5px 15px;
+    font-size: 14px;
+    line-height: 21px;
+    color: #1A1A1A !important;
+    font-weight: 400;
+}
+
+.inp-Box input::placeholder , .inp-Box select::placeholder{
+    color: #1A1A1A;
+    font-weight: 400;
+}
+
+.inp-Box label{
+    font-size: 12px;
+    line-height: 18px;
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    color: #878787;
+}

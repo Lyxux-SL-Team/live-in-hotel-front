@@ -1,0 +1,86 @@
+.fs-12 {
+    font-size: 12px;
+    font-weight: 400;
+    color: #878787;
+}
+
+.fs-14 {
+    font-size: 14px;
+    font-weight: 400;
+    color: #878787;
+}
+
+.fs-18 {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.fw-400 {
+    font-weight: 400;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+
+.fw-600 {
+    font-weight: 600;
+}
+
+.fw-700 {
+    font-weight: 700;
+}
+
+.fw-800 {
+    font-weight: 800;
+}
+
+.btn-active {
+    cursor: pointer;
+    background-color: #1a1a1a;
+    color: white;
+    font-size: 14px;
+    font-weight: 400px;
+    padding: 0.2rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+}
+
+.btn-nonActive {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400px;
+    padding: 0.2rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+}
+
+select,
+input,
+.dropdown {
+    background-color: white;
+    color: #1A1A1A;
+    border: 1px solid #EBEBEB;
+    border-radius: 10px;
+    width: 180px;
+}
+
+.dropdown::after {}
+
+select option {
+    background-color: white;
+}
+
+label {
+    cursor: pointer;
+}
+
+.rotateIco {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.rotateIco.rotated {
+    transform: rotate(180deg);
+}
