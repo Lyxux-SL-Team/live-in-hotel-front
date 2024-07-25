@@ -62,8 +62,6 @@ function InviteUser(props) {
 
     const history = useHistory();
 
-    console.log(invitedData)
-    console.log(roleSelection)
 
     const FormData = z.object({
         firstName: z.string().min(3, {message: "First Name is required"}),
@@ -317,6 +315,7 @@ function InviteUser(props) {
                         value="yes"
                         style={tdStyle}
                         name="roleForAll"
+                        onClick={()=>setRoleSelection([])}
                         onChange={handleChanges}
                     />
                     <Form.Check // prettier-ignore

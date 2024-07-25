@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import {
     Button,
-    Col,
-    Container, DropdownButton, Dropdown,
+    Container,
     Form,
-    Row, Stack, InputGroup, OverlayTrigger,
+    Stack, InputGroup,
 } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import CommanFooter1 from "../../CommanFooter1";
@@ -12,8 +11,6 @@ import CommanFooter1 from "../../CommanFooter1";
 //Images
 import SimpleHeader from "../../SimpleHeader";
 import {colors, colors as Colors} from "../../../../configs/colors.js";
-import Autocomplete from "../../../Profiles/Settings/test.jsx";
-import InfoIcon from "../../../../assets/img/info-icon.png";
 
 const locations = ['Abu Dhabi - United Arab Emirates', 'Abu Dhabi University - Abu Dhabi - United Arab Emirates',];
 const Signup = (props) => {
@@ -87,7 +84,6 @@ const Signup = (props) => {
                         Next
                       </Button>
                 </Form>
-                {/*<Autocomplete/>*/}
               {/* Page Footer */}
               <CommanFooter1 />
             </div>
