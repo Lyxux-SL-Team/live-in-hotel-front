@@ -358,63 +358,121 @@ function InviteUser(props) {
                 {
                     invitedData?.roleForAll==="no" &&
                     (
-                        <Table responsive className="mb-0 p-3 mt-3 nowrap table-advance">
-                            <thead>
-                            <tr>
-                                <th style={tHeadStyle}>Property</th>
-                                <th style={tHeadStyle}>Role</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                        <>
+                        <Stack>
+                            <Row className="p-3 mx-2">
+                                <Col xs={4}>
+                                    <h4 style={tHeadStyle}>Property</h4>
+                                </Col>
+                                <Col>
+                                    <h4 style={tHeadStyle}>Role</h4>
+                                </Col>
+                            </Row>
                             {invitedData?.property?.map((data, index) => (
-                                <>
-                                <tr key={data}>
-                                    <td style={tdStyle}>{data}</td>
-                                    <td>
-                                        <InputGroup
-                                            className="mb-0 border-1 w-90 w-md-40 position-relative"
-                                            style={{ border: `1px solid ${colors.Grey3}`, borderRadius: 20 }}
-                                            onClick={() => toggleRoleVisibility(index)}
-                                        >
-                                            <Form.Control
-                                                value={roleSelection[data] || ""}
-                                                readOnly
-                                                className="border-0"
-                                                type="text"
-                                                style={{ fontSize: 14, color: colors.Dark, backgroundColor: colors.white, borderRadius: 20, height: 40 }}
-                                            />
-                                            <Form.Label hidden style={{ color: colors.Grey, fontSize: 12 }}>Role</Form.Label>
-                                            <InputGroup.Text className="rounded-10 border-0">
-                                                <i className={visibleRoleIndex === index ? "fa fa-angle-up" : "fa fa-angle-down"} style={{ color: colors.Dark }} />
-                                            </InputGroup.Text>
+                            <Row key={data} className="p-3 mx-0 mx-md-2 mb-2 align-items-center" style={{border:`1px solid ${colors.Grey3}`}}>
+                                <Col xs={4}>
+                                    <h5 style={tdStyle}>{data}</h5>
+                                </Col>
+                                <Col>
+                                    <InputGroup
+                                        className="mb-0 border-1 w-90 w-md-40 position-relative"
+                                        style={{ border: `1px solid ${colors.Grey3}`, borderRadius: 20 }}
+                                        onClick={() => toggleRoleVisibility(index)}
+                                    >
+                                        <Form.Control
+                                            value={roleSelection[data] || ""}
+                                            readOnly
+                                            className="border-0"
+                                            type="text"
+                                            style={{ fontSize: 14, color: colors.Dark, backgroundColor: colors.white, borderRadius: 20, height: 40 }}
+                                        />
+                                        <Form.Label hidden style={{ color: colors.Grey, fontSize: 12 }}>Role</Form.Label>
+                                        <InputGroup.Text className="rounded-10 border-0">
+                                            <i className={visibleRoleIndex === index ? "fa fa-angle-up" : "fa fa-angle-down"} style={{ color: colors.Dark }} />
+                                        </InputGroup.Text>
 
-                                            <Stack
-                                                gap={2}
-                                                className={visibleRoleIndex === index ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}
-                                                style={{ left: 0, bottom: 50, zIndex: 999 }}
-                                                onPointerLeave={() => setVisibleRoleIndex(null)}
-                                            >
-                                                {roleData.map((role) => (
-                                                    <div
-                                                        as="Button"
-                                                        className="pb-2 px-2"
-                                                        key={role.role}
-                                                        style={{ borderBottom: `1px solid ${colors.Grey3}` }}
-                                                        onClick={() => handleRoleSelection(data, role.role)}
-                                                    >
-                                                        <h5 style={inputStyle}>{role.role}</h5>
-                                                        <span style={labelStyle}>{role.description}</span>
-                                                    </div>
-                                                ))}
-                                            </Stack>
-                                        </InputGroup>
-                                    </td>
-                                </tr>
-                                    <tr className="table-row-gap"><td /></tr>
-                                </>
-                            ))}
-                            </tbody>
-                        </Table>
+                                        <Stack
+                                            gap={2}
+                                            className={visibleRoleIndex === index ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}
+                                            style={{ bottom: 50, zIndex: 999 }}
+                                            onPointerLeave={() => setVisibleRoleIndex(null)}
+                                        >
+                                            {roleData.map((role) => (
+                                                <div
+                                                    as="Button"
+                                                    className="pb-2 px-2"
+                                                    key={role.role}
+                                                    style={{ borderBottom: `1px solid ${colors.Grey3}` }}
+                                                    onClick={() => handleRoleSelection(data, role.role)}
+                                                >
+                                                    <h5 style={inputStyle}>{role.role}</h5>
+                                                    <span style={labelStyle}>{role.description}</span>
+                                                </div>
+                                            ))}
+                                        </Stack>
+                                    </InputGroup>
+                                </Col>
+                            </Row>
+                                ))}
+                        </Stack>
+                        {/*<Table responsive className="mb-0 p-3 mt-3 nowrap table-advance">*/}
+                        {/*    <thead>*/}
+                        {/*    <tr>*/}
+                        {/*        <th style={tHeadStyle}>Property</th>*/}
+                        {/*        <th style={tHeadStyle}>Role</th>*/}
+                        {/*    </tr>*/}
+                        {/*    </thead>*/}
+                        {/*    <tbody>*/}
+                        {/*    {invitedData?.property?.map((data, index) => (*/}
+                        {/*        <>*/}
+                        {/*        <tr key={data}>*/}
+                        {/*            <td style={tdStyle}>{data}</td>*/}
+                        {/*            <td>*/}
+                        {/*                <InputGroup*/}
+                        {/*                    className="mb-0 border-1 w-90 w-md-40 position-relative"*/}
+                        {/*                    style={{ border: `1px solid ${colors.Grey3}`, borderRadius: 20 }}*/}
+                        {/*                    onClick={() => toggleRoleVisibility(index)}*/}
+                        {/*                >*/}
+                        {/*                    <Form.Control*/}
+                        {/*                        value={roleSelection[data] || ""}*/}
+                        {/*                        readOnly*/}
+                        {/*                        className="border-0"*/}
+                        {/*                        type="text"*/}
+                        {/*                        style={{ fontSize: 14, color: colors.Dark, backgroundColor: colors.white, borderRadius: 20, height: 40 }}*/}
+                        {/*                    />*/}
+                        {/*                    <Form.Label hidden style={{ color: colors.Grey, fontSize: 12 }}>Role</Form.Label>*/}
+                        {/*                    <InputGroup.Text className="rounded-10 border-0">*/}
+                        {/*                        <i className={visibleRoleIndex === index ? "fa fa-angle-up" : "fa fa-angle-down"} style={{ color: colors.Dark }} />*/}
+                        {/*                    </InputGroup.Text>*/}
+
+                        {/*                    <Stack*/}
+                        {/*                        gap={2}*/}
+                        {/*                        className={visibleRoleIndex === index ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}*/}
+                        {/*                        style={{top: -150, zIndex: 999 }}*/}
+                        {/*                        onPointerLeave={() => setVisibleRoleIndex(null)}*/}
+                        {/*                    >*/}
+                        {/*                        {roleData.map((role) => (*/}
+                        {/*                            <div*/}
+                        {/*                                as="Button"*/}
+                        {/*                                className="pb-2 px-2"*/}
+                        {/*                                key={role.role}*/}
+                        {/*                                style={{ borderBottom: `1px solid ${colors.Grey3}` }}*/}
+                        {/*                                onClick={() => handleRoleSelection(data, role.role)}*/}
+                        {/*                            >*/}
+                        {/*                                <h5 style={inputStyle}>{role.role}</h5>*/}
+                        {/*                                <span style={labelStyle}>{role.description}</span>*/}
+                        {/*                            </div>*/}
+                        {/*                        ))}*/}
+                        {/*                    </Stack>*/}
+                        {/*                </InputGroup>*/}
+                        {/*            </td>*/}
+                        {/*        </tr>*/}
+                        {/*            <tr className="table-row-gap"><td /></tr>*/}
+                        {/*        </>*/}
+                        {/*    ))}*/}
+                        {/*    </tbody>*/}
+                        {/*</Table>*/}
+                        </>
                     )
                 }
             </Container>
