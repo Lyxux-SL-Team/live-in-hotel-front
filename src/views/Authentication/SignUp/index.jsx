@@ -95,7 +95,6 @@ const Index = () => {
     window.location.href = "/auth/signup-step-4";
   }
 
-
   const updateStep = (e) => {
     switch (signUpStep) {
       case 1:
@@ -121,7 +120,6 @@ const Index = () => {
 
   return (
     <div className="hk-pg-wrapper py-0">
-
       <div className="hk-pg-body py-0">
         <Container fluid>
           <Row className="auth-split">
@@ -138,7 +136,7 @@ const Index = () => {
               lg={6}
               md={7}
               sm={10}
-              className="position-relative mx-auto"
+              className="position-relative "
             >
               <div className="auth-content flex-column pt-8 pb-md-8 pb-13">
                 <div className="text-center mb-7">

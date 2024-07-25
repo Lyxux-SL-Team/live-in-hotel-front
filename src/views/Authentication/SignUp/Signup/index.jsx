@@ -12,44 +12,67 @@ import {
 import { Link } from "react-router-dom";
 import { useValidateEmailMutation } from "../../../../redux/reducer/api/authSlice";
 import '../style.css'
+import {z} from "zod";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {toast} from "react-toastify";
+import {colors as Colors} from "../../../../configs/colors.js";
 
 
 const Signup = (props) => {
-  const [validateEmail, { isLoading, isError, error, data }] = useValidateEmailMutation();
+  const [validateEmail, { isLoading, data }] = useValidateEmailMutation();
 
   let email = props.step.email;
 
   const checkEmail = async () => {
-    const res = await validateEmail({ email })
+    const res = await validateEmail({email});
+    if (res.data.status){
+      props.setSignUpStep(2);
+    } else {
+      toast.error(res.data.message, {
+        toastId: "toast4",
+        position: "top-right",
+        className: 'jq-toast-danger',
+        theme: 'light',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+      })
+    }
   };
 
-  const chackFontEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  }
+  // const checkFontEmail = (email) => {
+  //   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   return regex.test(email);
+  // }
 
-  { data?.status && props.setSignUpStep(2) }
+  //
+  // { data?.status && props.setSignUpStep(2) }
 
-  const redirectDashBoard = () => {
-    window.location.href = '/policies-and-settings'
-  }
+  const FormData = z.object({
+    email: z.string().min(1, { message: "Email is required" }).email('Invalid email format')
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(FormData),
+  });
 
   return (
-    <Form className="w-100 smooth">
-      <Row>
-        <Col xxl={5} xl={7} lg={10} className="mx-auto">
-          <h4 className=" mb-4 fw-bold font-scale-vf">Create your Parnter account</h4>
-          <h6 className=" mb-4">
+    <Form className="w-sm-100 w-md-80 w-xl-55 smooth"  onSubmit={handleSubmit(checkEmail)}>
+          <h4 className="mb-4 font-scale-vf" style={{color:Colors.Dark}}>Create your Partner account</h4>
+          <h6 className="mb-4 justify-content-center">
             Create an account to list and manage your property.
           </h6>
           <Form.Label>Email</Form.Label>
-
           <InputGroup className="mt-3">
             <span className="input-affix-wrapper">
               <Form.Control
-                name="email"
+                  {...register('email')}
                 placeholder="Enter your email id"
-                type="text"
                 onChange={(e) => {
                   props.updateStep(e);
                 }}
@@ -59,11 +82,10 @@ const Signup = (props) => {
               )}
             </span>
           </InputGroup>
-
+            {errors.email?.message && <p className="text-danger">{errors.email?.message}</p>}
           {(data) && (
             <span className={` ${data?.status ? "text-success" : "text-danger"} ` + "m-1 fs-7"}>{`${data?.message}`}</span>
           )}
-
 
           <Form.Check id="logged_in" className="form-check-sm mt-3">
             <Form.Check.Input
@@ -78,7 +100,7 @@ const Signup = (props) => {
             />
             <Form.Check.Label className="text-muted fs-7 text-dark">
               By creating an account you specify that you have read and agree
-              with our <Link to="#">Tearms of use</Link> and{" "}
+              with our <Link to="#">Terms of use</Link> and{" "}
               <Link to="#">Privacy policy</Link>. We may keep you inform about
               latest updates through our default{" "}
               <Link to="#">notification settings</Link>
@@ -86,12 +108,10 @@ const Signup = (props) => {
           </Form.Check>
 
           <Button
-            onClick={checkEmail}
-            // onClick={() => { props.setSignUpStep(2) }}
+            type="submit"
             variant="dark"
             className="btn-rounded btn-uppercase btn-block mt-4"
-            disabled={chackFontEmail(props.step.email) && (props.step.agre == 'true') ? false : true}
-
+            disabled={(props.step.agre == 'true') ? false : true}
           >
             Continue
           </Button>
@@ -99,19 +119,16 @@ const Signup = (props) => {
           <div className="title-sm title-wth-divider divider-center my-4"></div>
           <p className="text-dark">
             Do you have questions about your property or the extranet? Visit
-            Partner Help or ask another question on the patner Community
+            Partner Help or ask another question on the partner Community
           </p>
           <Button
             variant="outline-dark"
-            className="btn-outline btn-rounded  btn-block my-5"
+            className="btn-outline btn-rounded  btn-block my-5 my-md-7 my-lg-5"
             as={Link}
-            onClick={redirectDashBoard}
-          // to="login"
+            to='/login'
           >
             Sign in
           </Button>
-        </Col>
-      </Row>
     </Form>
   );
 };
