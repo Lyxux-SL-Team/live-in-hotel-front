@@ -10,7 +10,7 @@ const AppRoutes = (props) => {
     const token = useSelector(state => state.auth.token)
  
         if (!user && !token) {
-            return <Redirect to="/auth/signup" />
+            return <Redirect to="/auth/login" />
         }
     return (
         <Suspense

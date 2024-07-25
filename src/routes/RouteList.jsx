@@ -60,6 +60,13 @@ import Photos from "../views/Photos"
 import PhotosLabel from "../views/PhotosLabel";
 import Feedback from "../views/Feedback";
 import Review from "../views/Review"
+import UserSettings from "../views/Profiles/Settings/UserSettings.jsx";
+import MyProfile from "../views/Profiles/Profile/Profile.jsx";
+import ManageProperty from "../views/Property/ManageProperty.jsx";
+import ManageNotification from "../views/Property/ManageNotification.jsx";
+import RoleSpecialties from "../views/Property/RoleSpecialties .jsx";
+import People from "../views/Profiles/Settings/People.jsx";
+import InviteUser from "../views/Profiles/Settings/InviteUser.jsx";
 
 export const routes = [
 
@@ -74,6 +81,14 @@ export const routes = [
     { path: 'photo-label', exact: true, component: PhotosLabel },
     { path: 'feedback', exact: true, component: Feedback },
     { path: 'review', exact: true, component: Review },
+    { path: 'user-settings', exact: true, component: UserSettings },
+    { path: 'user-settings/people', exact: true, component: People },
+    { path: 'user-settings/people/invite-user', exact: true, component: InviteUser },
+
+    // property
+    { path: 'manage-property', exact: true, component: ManageProperty },
+    { path: 'manage-notification', exact: true, component: ManageNotification },
+    { path: 'role-specialties', exact: true, component: RoleSpecialties },
 
     
     //Apps
@@ -109,6 +124,7 @@ export const routes = [
     { path: 'pages/profile', exact: true, component: Profile },
     { path: 'pages/edit-profile', exact: true, component: EditProfile },
     { path: 'pages/account', exact: true, component: Account },
+    { path: 'pages/my-profile', exact: true, component: MyProfile },
     //Error
     { path: 'error-404', exact: true, component: Error404 },
 ]
