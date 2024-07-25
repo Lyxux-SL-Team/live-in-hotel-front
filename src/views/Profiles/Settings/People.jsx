@@ -47,7 +47,7 @@ function People() {
     const history = useHistory();
 
     useEffect(() => {
-        if (history.location.state.state==="success"){
+        if (history.location?.state?.state==="success"){
             setDisplaySuccessMessage(true);
         }
     }, [history]);
