@@ -9,52 +9,53 @@ import {useHistory} from "react-router-dom";
 import PropertyImage from "../../../assets/img/property-image.png";
 import './index.css'
 
-const propertyData =[
+const propertyData = [
     {
-        property:"Begin hotel",
-        propertyID:"106153498",
-        location:"Tel Aviv, ISR",
+        property: "Begin hotel",
+        propertyID: "106153498",
+        location: "Tel Aviv, ISR",
     },
     {
-        property:"Second hotel",
-        propertyID:"106153499",
-        location:"Tel Aviv, ISR",
+        property: "Second hotel",
+        propertyID: "106153499",
+        location: "Tel Aviv, ISR",
     },
 ]
 
 const roleData = [
     {
-        role:"Property user",
-        description:"Access to all functions on the site excluding those related to managing other users. This has the most access after the Administrator role."
+        role: "Property user",
+        description: "Access to all functions on the site excluding those related to managing other users. This has the most access after the Administrator role."
     },
     {
-        role:"Analytics user",
-        description:"Access to property content and guest communications."
+        role: "Analytics user",
+        description: "Access to property content and guest communications."
     },
     {
-        role:"Reservations user",
-        description:"Access to reservations, property content and guest communications."
+        role: "Reservations user",
+        description: "Access to reservations, property content and guest communications."
     },
     {
-        role:"Finance user",
-        description:"Access to all tasks within the Accounting section and guest communications."
+        role: "Finance user",
+        description: "Access to all tasks within the Accounting section and guest communications."
     },
     {
-        role:"Guest experience user",
-        description:"Access to communicate with guests including responding to reviews, feedback and messages. This role has the most restricted access."
+        role: "Guest experience user",
+        description: "Access to communicate with guests including responding to reviews, feedback and messages. This role has the most restricted access."
     },
     {
-        role:"Administrator",
-        description:"Access to all site functions and management of user accounts. This is the role with the highest access."
+        role: "Administrator",
+        description: "Access to all site functions and management of user accounts. This is the role with the highest access."
     },
     {
-        role:"Accounting user",
-        description:"Access to all tasks within the Accounting section."
+        role: "Accounting user",
+        description: "Access to all tasks within the Accounting section."
     },
 ]
+
 function InviteUser(props) {
-    const [invitedData, setInvitedData] = useState({ property: [] });
-    const [submitText, setSubmitText]=useState(false);
+    const [invitedData, setInvitedData] = useState({property: []});
+    const [submitText, setSubmitText] = useState(false);
     const [selectAll, setSelectAll] = useState(false);
     const [roleVisible, setRoleVisible] = useState(false);
     const [roleSelection, setRoleSelection] = useState('');
@@ -85,15 +86,15 @@ function InviteUser(props) {
     }
 
     const handleCheckedProperty = (e) => {
-        const { value, name, checked } = e.target;
+        const {value, name, checked} = e.target;
 
         if (value === "all") {
             if (checked) {
                 const allPropertyIDs = propertyData.map(data => data.property);
-                setInvitedData({ ...invitedData, [name]: allPropertyIDs });
+                setInvitedData({...invitedData, [name]: allPropertyIDs});
                 setSelectAll(true);
             } else {
-                setInvitedData({ ...invitedData, [name]: [] });
+                setInvitedData({...invitedData, [name]: []});
                 setSelectAll(false);
             }
         } else {
@@ -129,12 +130,15 @@ function InviteUser(props) {
         setVisibleRoleIndex(null);
     };
 
-    function handleInviteUser(){
-        const userData = {...invitedData, role:roleSelection}
-        history.push('/user-settings/people', {state:"success", message:`${invitedData.firstName} ${invitedData.lastName}`})
+    function handleInviteUser() {
+        const userData = {...invitedData, role: roleSelection}
+        history.push('/user-settings/people', {
+            state: "success",
+            message: `${invitedData.firstName} ${invitedData.lastName}`
+        })
     }
 
-    function handleUserDetailsSubmission(){
+    function handleUserDetailsSubmission() {
         setSubmitText(true)
     }
 
@@ -145,14 +149,14 @@ function InviteUser(props) {
     const subTitleStyle = {fontSize: 12, color: colors.Grey};
     const descStyle = {fontSize: 14, color: colors.Dark};
     const tHeadStyle = {fontSize: 14, fontWeight: 600, color: colors.Grey};
-    const tdStyle = {fontSize: 14,color: colors.Dark};
+    const tdStyle = {fontSize: 14, color: colors.Dark};
     return (
         <Container className='ps-4 pe-8 py-3'>
             <TitleAndFeedback title="Invite user"/>
 
             <Container className="p-3 mb-3" style={{border: `1px solid ${colors.Grey3}`}}>
                 <i className="fa fa-user-o mb-3" style={{
-                    backgroundColor:colors.Dark1,
+                    backgroundColor: colors.Dark1,
                     borderRadius: "50%",
                     color: colors.white,
                     padding: "15px",
@@ -164,7 +168,7 @@ function InviteUser(props) {
                 }}></i>
                 <h3 className="mb-3" style={titleStyle}>User details</h3>
                 {
-                    submitText?
+                    submitText ?
                         <Stack className="w-100 w-md-50">
                             <span className="mb-3" style={subTitleStyle}>The following user will be invited to your property.</span>
                             <Row>
@@ -178,56 +182,64 @@ function InviteUser(props) {
                                 </Col>
                             </Row>
                             <Button
-                                onClick={()=>setSubmitText(false)}
+                                onClick={() => setSubmitText(false)}
                                 style={{
                                     backgroundColor: colors.Black,
                                     color: colors.white,
-                                    fontSize:14,
-                                    borderRadius:20,
-                                    width:"fit-content"
+                                    fontSize: 14,
+                                    borderRadius: 20,
+                                    width: "fit-content"
                                 }}
                                 className="btn-rounded mt-3"
                             >
                                 Edit details
                             </Button>
-                        </Stack>:
+                        </Stack> :
                         <Stack className="w-100 w-md-50">
                             <Form onSubmit={handleSubmit(handleUserDetailsSubmission)}>
-                            <Row>
-                                <Col xs={12} md={6}>
-                                    <FloatingLabel controlId="firstName" label="First name" className="mb-3" style={labelStyle}>
-                                        <Form.Control {...register('firstName')} style={selectStyle} onChange={handleChanges}/>
-                                        {errors.firstName?.message &&
-                                            <p className="text-danger">{errors.firstName?.message}</p>}
-                                    </FloatingLabel>
-                                </Col>
-                                <Col>
-                                    <FloatingLabel controlId="lastName" label="Last name" className="mb-3" style={labelStyle}>
-                                        <Form.Control {...register('lastName')} style={selectStyle} onChange={handleChanges}/>
-                                        {errors.lastName?.message && <p className="text-danger">{errors.lastName?.message}</p>}
-                                    </FloatingLabel>
-                                </Col>
-                            </Row>
-                            <FloatingLabel controlId="email" label="Email address" className="mb-3" style={labelStyle}>
-                                <Form.Control {...register('email')} style={selectStyle} onChange={handleChanges}/>
-                                {errors.email?.message && <p className="text-danger">{errors.email?.message}</p>}
-                            </FloatingLabel>
-                            <FloatingLabel controlId="Language" label="Language" className="mb-3" style={labelStyle}>
-                                <Form.Control {...register('language')} style={selectStyle} onChange={handleChanges}/>
-                            </FloatingLabel>
-                            <Button
-                                type="submit"
-                                style={{
-                                    backgroundColor: colors.Black,
-                                    color: colors.white,
-                                    fontSize:14,
-                                    borderRadius:20,
-                                    width:"fit-content"
-                                }}
-                                className="btn-rounded"
-                            >
-                                Next
-                            </Button>
+                                <Row>
+                                    <Col xs={12} md={6}>
+                                        <FloatingLabel controlId="firstName" label="First name" className="mb-3"
+                                                       style={labelStyle}>
+                                            <Form.Control {...register('firstName')} style={selectStyle}
+                                                          onChange={handleChanges}/>
+                                            {errors.firstName?.message &&
+                                                <p className="text-danger">{errors.firstName?.message}</p>}
+                                        </FloatingLabel>
+                                    </Col>
+                                    <Col>
+                                        <FloatingLabel controlId="lastName" label="Last name" className="mb-3"
+                                                       style={labelStyle}>
+                                            <Form.Control {...register('lastName')} style={selectStyle}
+                                                          onChange={handleChanges}/>
+                                            {errors.lastName?.message &&
+                                                <p className="text-danger">{errors.lastName?.message}</p>}
+                                        </FloatingLabel>
+                                    </Col>
+                                </Row>
+                                <FloatingLabel controlId="email" label="Email address" className="mb-3"
+                                               style={labelStyle}>
+                                    <Form.Control {...register('email')} style={selectStyle} onChange={handleChanges}/>
+                                    {errors.email?.message && <p className="text-danger">{errors.email?.message}</p>}
+                                </FloatingLabel>
+                                <FloatingLabel controlId="Language" label="Language" className="mb-3"
+                                               style={labelStyle}>
+                                    <Form.Control {...register('language')} style={selectStyle}
+                                                  onChange={handleChanges}/>
+                                </FloatingLabel>
+                                <Button
+                                    type="submit"
+                                    style={{
+                                        backgroundColor: colors.Black,
+                                        color: colors.white,
+                                        fontSize: 14,
+                                        borderRadius: 20,
+                                        width: "fit-content"
+                                    }}
+                                    className="btn-rounded"
+                                >
+                                    Next
+                                </Button>
                             </Form>
                         </Stack>
                 }
@@ -235,28 +247,31 @@ function InviteUser(props) {
             </Container>
 
             {/*    property selection*/}
-            <Container className="py-3 px-0 mb-3 opacity-1" style={{border: `1px solid ${colors.Grey3}`, opacity:submitText?"unset":"50%"}}>
+            <Container className="py-3 px-0 mb-3 opacity-1"
+                       style={{border: `1px solid ${colors.Grey3}`, opacity: submitText ? "unset" : "50%"}}>
                 <Stack gap={2} className="px-3">
-                <i className="fa fa-building-o" style={{
-                    backgroundColor:colors.Dark1,
-                    borderRadius: "50%",
-                    color: colors.white,
-                    padding: "15px",
-                    width: "20px",
-                    height: "20px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}></i>
-                <h3 style={titleStyle}>Property selection</h3>
-                <span style={subTitleStyle}>Select which properties you want to add the user to.</span>
+                    <i className="fa fa-building-o" style={{
+                        backgroundColor: colors.Dark1,
+                        borderRadius: "50%",
+                        color: colors.white,
+                        padding: "15px",
+                        width: "20px",
+                        height: "20px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}></i>
+                    <h3 style={titleStyle}>Property selection</h3>
+                    <span style={subTitleStyle}>Select which properties you want to add the user to.</span>
                 </Stack>
-                <Table responsive hover className={submitText? "mb-0 p-3 mt-3":"d-none"} style={{borderBottom: `1px solid ${colors.white3}`}}>
+                <Table responsive hover className={submitText ? "mb-0 p-3 mt-3" : "d-none"}
+                       style={{borderBottom: `1px solid ${colors.white3}`}}>
                     <thead>
                     <tr>
                         <th style={tHeadStyle}>
                             <Stack direction="horizontal" gap={3}>
-                                <Form.Check value="all" checked={selectAll} name="property" onChange={handleCheckedProperty}/>
+                                <Form.Check value="all" checked={selectAll} name="property"
+                                            onChange={handleCheckedProperty}/>
                                 Property
                             </Stack>
                         </th>
@@ -267,7 +282,7 @@ function InviteUser(props) {
                     <tbody>
                     {
                         propertyData.map((data) => (
-                            <tr style={{border:"transparent"}} key={data.propertyID}>
+                            <tr style={{border: "transparent"}} key={data.propertyID}>
                                 <td style={tdStyle}>
                                     <Stack gap={2} direction="horizontal" className="align-items-center">
                                         <Form.Check
@@ -292,10 +307,13 @@ function InviteUser(props) {
             </Container>
 
             {/* role selection */}
-            <Container className="p-3" style={{border: `1px solid ${colors.Grey3}`, opacity:invitedData.property.length>0 && submitText?"unset":"50%"}}>
+            <Container className="p-3" style={{
+                border: `1px solid ${colors.Grey3}`,
+                opacity: invitedData.property.length > 0 && submitText ? "unset" : "50%"
+            }}>
                 <Stack gap={2}>
                     <i className="fa fa-suitcase" style={{
-                        backgroundColor:colors.Dark1,
+                        backgroundColor: colors.Dark1,
                         borderRadius: "50%",
                         color: colors.white,
                         padding: "15px",
@@ -315,7 +333,7 @@ function InviteUser(props) {
                         value="yes"
                         style={tdStyle}
                         name="roleForAll"
-                        onClick={()=>setRoleSelection([])}
+                        onClick={() => setRoleSelection([])}
                         onChange={handleChanges}
                     />
                     <Form.Check // prettier-ignore
@@ -324,30 +342,40 @@ function InviteUser(props) {
                         value="no"
                         style={tdStyle}
                         name="roleForAll"
-                        onClick={()=>setRoleSelection([])}
+                        onClick={() => setRoleSelection([])}
                         onChange={handleChanges}
                     />
                 </Stack>
                 {
-                    invitedData?.roleForAll==="yes" && (
-                        <InputGroup className="mb-0 border-1 w-90, w-md-30 position-relative" style={{border:`1px solid ${colors.Grey3}`, borderRadius:20}} onClick={()=>setRoleVisible(!roleVisible)}>
-                                <Form.Control value={roleSelection} readOnly className="border-0" type="text" style={{fontSize:14,color:colors.Dark,backgroundColor:colors.white,borderRadius:20, height:40}}/>
-                                <Form.Label hidden style={{color:colors.Grey,fontSize:12}}>Role</Form.Label>
-                            <InputGroup.Text className="rounded-10 border-0"><i className={roleVisible? "fa fa-angle-up": "fa fa-angle-down"} style={{color:colors.Dark}}/></InputGroup.Text>
+                    invitedData?.roleForAll === "yes" && (
+                        <InputGroup className="mb-0 border-1 w-90, w-md-30 position-relative"
+                                    style={{border: `1px solid ${colors.Grey3}`, borderRadius: 20}}
+                                    onClick={() => setRoleVisible(!roleVisible)}>
+                            <Form.Control value={roleSelection} readOnly className="border-0" type="text" style={{
+                                fontSize: 14,
+                                color: colors.Dark,
+                                backgroundColor: colors.white,
+                                borderRadius: 20,
+                                height: 40
+                            }}/>
+                            <Form.Label hidden style={{color: colors.Grey, fontSize: 12}}>Role</Form.Label>
+                            <InputGroup.Text className="rounded-10 border-0"><i
+                                className={roleVisible ? "fa fa-angle-up" : "fa fa-angle-down"}
+                                style={{color: colors.Dark}}/></InputGroup.Text>
 
                             <Stack gap={2}
                                    className={roleVisible ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}
-                                   style={{left:0,bottom:50, zIndex:99}}
+                                   style={{left: 0, bottom: 50, zIndex: 99}}
                                    onPointerLeave={() => setRoleVisible(false)}>
 
                                 {
-                                    roleData.map((data)=>(
+                                    roleData.map((data) => (
                                         <div as="Button" className="pb-2 px-2" key={data.role}
-                                               style={{borderBottom:`1px solid ${colors.Grey3}`}}
-                                              onClick={()=>setRoleSelection(data.role)}
-                                               >
+                                             style={{borderBottom: `1px solid ${colors.Grey3}`}}
+                                             onClick={() => setRoleSelection(data.role)}
+                                        >
                                             <h5 style={inputStyle}>{data.role}</h5>
-                                            <span  style={labelStyle}>{data.description}</span>
+                                            <span style={labelStyle}>{data.description}</span>
                                         </div>
                                     ))
                                 }
@@ -356,9 +384,8 @@ function InviteUser(props) {
                     )
                 }
                 {
-                    invitedData?.roleForAll==="no" &&
+                    invitedData?.roleForAll === "no" &&
                     (
-                        <>
                         <Stack>
                             <Row className="p-3 mx-2">
                                 <Col xs={4}>
@@ -369,110 +396,61 @@ function InviteUser(props) {
                                 </Col>
                             </Row>
                             {invitedData?.property?.map((data, index) => (
-                            <Row key={data} className="p-3 mx-0 mx-md-2 mb-2 align-items-center" style={{border:`1px solid ${colors.Grey3}`}}>
-                                <Col xs={4}>
-                                    <h5 style={tdStyle}>{data}</h5>
-                                </Col>
-                                <Col>
-                                    <InputGroup
-                                        className="mb-0 border-1 w-90 w-md-40 position-relative"
-                                        style={{ border: `1px solid ${colors.Grey3}`, borderRadius: 20 }}
-                                        onClick={() => toggleRoleVisibility(index)}
-                                    >
-                                        <Form.Control
-                                            value={roleSelection[data] || ""}
-                                            readOnly
-                                            className="border-0"
-                                            type="text"
-                                            style={{ fontSize: 14, color: colors.Dark, backgroundColor: colors.white, borderRadius: 20, height: 40 }}
-                                        />
-                                        <Form.Label hidden style={{ color: colors.Grey, fontSize: 12 }}>Role</Form.Label>
-                                        <InputGroup.Text className="rounded-10 border-0">
-                                            <i className={visibleRoleIndex === index ? "fa fa-angle-up" : "fa fa-angle-down"} style={{ color: colors.Dark }} />
-                                        </InputGroup.Text>
-
-                                        <Stack
-                                            gap={2}
-                                            className={visibleRoleIndex === index ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}
-                                            style={{ bottom: 50, zIndex: 999 }}
-                                            onPointerLeave={() => setVisibleRoleIndex(null)}
+                                <Row key={data} className="p-3 mx-0 mx-md-2 mb-2 align-items-center"
+                                     style={{border: `1px solid ${colors.Grey3}`}}>
+                                    <Col xs={4}>
+                                        <h5 style={tdStyle}>{data}</h5>
+                                    </Col>
+                                    <Col>
+                                        <InputGroup
+                                            className="mb-0 border-1 w-90 w-md-40 position-relative"
+                                            style={{border: `1px solid ${colors.Grey3}`, borderRadius: 20}}
+                                            onClick={() => toggleRoleVisibility(index)}
                                         >
-                                            {roleData.map((role) => (
-                                                <div
-                                                    as="Button"
-                                                    className="pb-2 px-2"
-                                                    key={role.role}
-                                                    style={{ borderBottom: `1px solid ${colors.Grey3}` }}
-                                                    onClick={() => handleRoleSelection(data, role.role)}
-                                                >
-                                                    <h5 style={inputStyle}>{role.role}</h5>
-                                                    <span style={labelStyle}>{role.description}</span>
-                                                </div>
-                                            ))}
-                                        </Stack>
-                                    </InputGroup>
-                                </Col>
-                            </Row>
-                                ))}
-                        </Stack>
-                        {/*<Table responsive className="mb-0 p-3 mt-3 nowrap table-advance">*/}
-                        {/*    <thead>*/}
-                        {/*    <tr>*/}
-                        {/*        <th style={tHeadStyle}>Property</th>*/}
-                        {/*        <th style={tHeadStyle}>Role</th>*/}
-                        {/*    </tr>*/}
-                        {/*    </thead>*/}
-                        {/*    <tbody>*/}
-                        {/*    {invitedData?.property?.map((data, index) => (*/}
-                        {/*        <>*/}
-                        {/*        <tr key={data}>*/}
-                        {/*            <td style={tdStyle}>{data}</td>*/}
-                        {/*            <td>*/}
-                        {/*                <InputGroup*/}
-                        {/*                    className="mb-0 border-1 w-90 w-md-40 position-relative"*/}
-                        {/*                    style={{ border: `1px solid ${colors.Grey3}`, borderRadius: 20 }}*/}
-                        {/*                    onClick={() => toggleRoleVisibility(index)}*/}
-                        {/*                >*/}
-                        {/*                    <Form.Control*/}
-                        {/*                        value={roleSelection[data] || ""}*/}
-                        {/*                        readOnly*/}
-                        {/*                        className="border-0"*/}
-                        {/*                        type="text"*/}
-                        {/*                        style={{ fontSize: 14, color: colors.Dark, backgroundColor: colors.white, borderRadius: 20, height: 40 }}*/}
-                        {/*                    />*/}
-                        {/*                    <Form.Label hidden style={{ color: colors.Grey, fontSize: 12 }}>Role</Form.Label>*/}
-                        {/*                    <InputGroup.Text className="rounded-10 border-0">*/}
-                        {/*                        <i className={visibleRoleIndex === index ? "fa fa-angle-up" : "fa fa-angle-down"} style={{ color: colors.Dark }} />*/}
-                        {/*                    </InputGroup.Text>*/}
+                                            <Form.Control
+                                                value={roleSelection[data] || ""}
+                                                readOnly
+                                                className="border-0"
+                                                type="text"
+                                                style={{
+                                                    fontSize: 14,
+                                                    color: colors.Dark,
+                                                    backgroundColor: colors.white,
+                                                    borderRadius: 20,
+                                                    height: 40
+                                                }}
+                                            />
+                                            <Form.Label hidden
+                                                        style={{color: colors.Grey, fontSize: 12}}>Role</Form.Label>
+                                            <InputGroup.Text className="rounded-10 border-0">
+                                                <i className={visibleRoleIndex === index ? "fa fa-angle-up" : "fa fa-angle-down"}
+                                                   style={{color: colors.Dark}}/>
+                                            </InputGroup.Text>
 
-                        {/*                    <Stack*/}
-                        {/*                        gap={2}*/}
-                        {/*                        className={visibleRoleIndex === index ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}*/}
-                        {/*                        style={{top: -150, zIndex: 999 }}*/}
-                        {/*                        onPointerLeave={() => setVisibleRoleIndex(null)}*/}
-                        {/*                    >*/}
-                        {/*                        {roleData.map((role) => (*/}
-                        {/*                            <div*/}
-                        {/*                                as="Button"*/}
-                        {/*                                className="pb-2 px-2"*/}
-                        {/*                                key={role.role}*/}
-                        {/*                                style={{ borderBottom: `1px solid ${colors.Grey3}` }}*/}
-                        {/*                                onClick={() => handleRoleSelection(data, role.role)}*/}
-                        {/*                            >*/}
-                        {/*                                <h5 style={inputStyle}>{role.role}</h5>*/}
-                        {/*                                <span style={labelStyle}>{role.description}</span>*/}
-                        {/*                            </div>*/}
-                        {/*                        ))}*/}
-                        {/*                    </Stack>*/}
-                        {/*                </InputGroup>*/}
-                        {/*            </td>*/}
-                        {/*        </tr>*/}
-                        {/*            <tr className="table-row-gap"><td /></tr>*/}
-                        {/*        </>*/}
-                        {/*    ))}*/}
-                        {/*    </tbody>*/}
-                        {/*</Table>*/}
-                        </>
+                                            <Stack
+                                                gap={2}
+                                                className={visibleRoleIndex === index ? "position-absolute model-width pt-2 bg-white shadow" : "d-none"}
+                                                style={{bottom: 50, zIndex: 999}}
+                                                onPointerLeave={() => setVisibleRoleIndex(null)}
+                                            >
+                                                {roleData.map((role) => (
+                                                    <div
+                                                        as="Button"
+                                                        className="pb-2 px-2"
+                                                        key={role.role}
+                                                        style={{borderBottom: `1px solid ${colors.Grey3}`}}
+                                                        onClick={() => handleRoleSelection(data, role.role)}
+                                                    >
+                                                        <h5 style={inputStyle}>{role.role}</h5>
+                                                        <span style={labelStyle}>{role.description}</span>
+                                                    </div>
+                                                ))}
+                                            </Stack>
+                                        </InputGroup>
+                                    </Col>
+                                </Row>
+                            ))}
+                        </Stack>
                     )
                 }
             </Container>
@@ -481,8 +459,8 @@ function InviteUser(props) {
                 style={{
                     backgroundColor: colors.Black,
                     color: colors.white,
-                    fontSize:14,
-                    borderRadius:20,
+                    fontSize: 14,
+                    borderRadius: 20,
                 }}
                 className="btn-rounded mt-3"
             >
