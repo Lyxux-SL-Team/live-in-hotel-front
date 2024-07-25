@@ -9,6 +9,7 @@ import SidebarHeader from './SidebarHeader';
 import { SidebarMenu } from './SidebarMenu';
 import classNames from 'classnames';
 import { useWindowWidth } from '@react-hook/window-size';
+import {colors} from "../../configs/colors.js";
 
 const Sidebar = ({ navCollapsed, toggleCollapsedNav }) => {
 
@@ -140,7 +141,7 @@ const Sidebar = ({ navCollapsed, toggleCollapsedNav }) => {
                                                                                 {menus.icon}
                                                                             </span>
                                                                         </span>
-                                                                        <span className="nav-link-text">{menus.name}</span>
+                                                                        <span className="nav-link-text" style={{color:colors.Dark, fontWeight:500, fontSize:16}}>{menus.name}</span>
                                                                         {menus.badge && menus.badge}
                                                                     </Nav.Link>
                                                             }
