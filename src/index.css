@@ -12,7 +12,12 @@
 
 .font-scale-vf {
     font-family: "scale-vf", sans-serif;
-    font-variation-settings: 'wdth' 100, 'wght' 400;
+    font-variation-settings: 'wdth' 100, 'wght' 500;
     font-weight: 600;
 }
 
+
+/*popover color change*/
+.popover.bs-popover-top .popover-arrow:after {
+    border-top-color: #02BCBC;
+}
