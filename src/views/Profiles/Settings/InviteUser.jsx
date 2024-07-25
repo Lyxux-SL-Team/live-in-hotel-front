@@ -61,6 +61,8 @@ function InviteUser(props) {
     const [roleSelection, setRoleSelection] = useState('');
     const [visibleRoleIndex, setVisibleRoleIndex] = useState(null);
 
+    console.log(roleSelection)
+
     const history = useHistory();
 
 
@@ -243,12 +245,10 @@ function InviteUser(props) {
                             </Form>
                         </Stack>
                 }
-
             </Container>
 
             {/*    property selection*/}
-            <Container className="py-3 px-0 mb-3 opacity-1"
-                       style={{border: `1px solid ${colors.Grey3}`, opacity: submitText ? "unset" : "50%"}}>
+            <Container className="py-3 px-0 mb-3 opacity-1" style={{border: `1px solid ${colors.Grey3}`, opacity: submitText ? "unset" : "50%"}}>
                 <Stack gap={2} className="px-3">
                     <i className="fa fa-building-o" style={{
                         backgroundColor: colors.Dark1,
@@ -270,8 +270,7 @@ function InviteUser(props) {
                     <tr>
                         <th style={tHeadStyle}>
                             <Stack direction="horizontal" gap={3}>
-                                <Form.Check value="all" checked={selectAll} name="property"
-                                            onChange={handleCheckedProperty}/>
+                                <Form.Check value="all" checked={selectAll} name="property" onChange={handleCheckedProperty}/>
                                 Property
                             </Stack>
                         </th>
@@ -333,7 +332,7 @@ function InviteUser(props) {
                         value="yes"
                         style={tdStyle}
                         name="roleForAll"
-                        onClick={() => setRoleSelection([])}
+                        onClick={() => setRoleSelection("")}
                         onChange={handleChanges}
                     />
                     <Form.Check // prettier-ignore
@@ -456,6 +455,7 @@ function InviteUser(props) {
             </Container>
             <Button
                 onClick={handleInviteUser}
+                disabled={!submitText | roleSelection=="" | roleSelection==[] | !invitedData.property.length>0}
                 style={{
                     backgroundColor: colors.Black,
                     color: colors.white,
