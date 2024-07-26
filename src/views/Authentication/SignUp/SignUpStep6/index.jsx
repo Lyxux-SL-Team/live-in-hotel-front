@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Container, FloatingLabel, Form, Stack} from "react-bootstrap";
+import {Button, Container, FloatingLabel, Form, OverlayTrigger, Popover, Stack} from "react-bootstrap";
 import CommanFooter1 from "../../CommanFooter1";
 import * as Icons from "tabler-icons-react";
 
@@ -22,6 +22,7 @@ const Signup = (props) => {
         numberOfRooms: z.string().regex(/^\d+$/, {message: "must be a number"})
             .min(1, {message: "No of Rooms is required"}),
         legalNameOfProperty: z.string().min(1, {message: "Legal Name of Property is required"}),
+        tradeLicenceNumber: z.string().min(1, {message: "Trade Licence Number is required"}),
         currency: z.enum(selectCurrency, {message: "Please select a currency"}),
         channelManager:z.enum(['true','false'],{message:"Please select whether property uses a channel manager."}),
         isChain: z.enum(['true','false'],{message:"Please select whether property is part of a chain."})
@@ -50,6 +51,13 @@ const Signup = (props) => {
         props.history.push("/dashboard");
         // }
     };
+    const popover = (
+        <Popover id="popover-basic" className="custom-popover">
+            <Popover.Body style={{backgroundColor:Colors.FooterBlue, color:Colors.white, fontSize:9}}>
+                Click on the drop-down list and select the property type
+            </Popover.Body>
+        </Popover>
+    );
 
     const subTitleStyle = {fontSize: 18, color: Colors.Dark, fontWeight: 500};
     const paragraphStyle = {color: Colors.Grey, fontSize: 16};
@@ -81,7 +89,15 @@ const Signup = (props) => {
                         </FloatingLabel>
 
                         {/* Property Type */}
-                        <h6 style={subTitleStyle}>Property Type</h6>
+                        <h6 style={subTitleStyle}>
+                            Property Type
+
+                            <OverlayTrigger placement="top" overlay={popover}>
+                                <span className="d-inline-block">
+                                    <Icons.InfoSquare color={Colors.Grey2} className="ms-3"/>
+                                </span>
+                            </OverlayTrigger>
+                        </h6>
                         <FloatingLabel controlId="floatingSelectType" label="Select property type" className="mb-3">
                             <Form.Select
                                 {...register('propertyType')}
@@ -100,7 +116,7 @@ const Signup = (props) => {
 
                         {/* Number of Rooms */}
                         <Form.Group className="mb-3">
-                            <Form.Label style={subTitleStyle}>Number of rooms</Form.Label>
+                            <Form.Label style={subTitleStyle}>Number of units (number of inventories)</Form.Label>
                             <Form.Control
                                 {...register('numberOfRooms')}
                                 onChange={handleChanges}
@@ -113,7 +129,7 @@ const Signup = (props) => {
 
                         {/* Legal Name of Property */}
                         <Form.Group className="mb-3">
-                            <Form.Label style={subTitleStyle}>Legal name of your property</Form.Label>
+                            <Form.Label style={subTitleStyle}>Legal name of your property (trade licenses name)</Form.Label>
                             <Form.Control
                                 {...register('legalNameOfProperty')}
                                 onChange={handleChanges}
@@ -123,6 +139,31 @@ const Signup = (props) => {
                             {errors.legalNameOfProperty?.message &&
                                 <p className="text-danger">{errors.legalNameOfProperty?.message}</p>}
                         </Form.Group>
+
+                        {/* Trade license number */}
+                        <Form.Group className="mb-3">
+                            <Form.Label style={subTitleStyle}>Trade license number</Form.Label>
+                            <Form.Control
+                                {...register('tradeLicenceNumber')}
+                                onChange={handleChanges}
+                                style={paragraphStyle}
+                                placeholder="Enter trade license number"
+                            />
+                            {errors.tradeLicenceNumber?.message &&
+                                <p className="text-danger">{errors.tradeLicenceNumber?.message}</p>}
+                        </Form.Group>
+
+                        {/* file select*/}
+                        <Container className="p-4 mb-3 d-flex justify-content-center" style={{border:`1px dashed ${Colors.white1}`, borderRadius:10, backgroundColor:Colors.Grey7}}>
+                            <Form.Group controlId="formFile">
+                                <Stack direction="horizontal" gap={2} className="position-relative justify-content-center">
+                                    <i className="fa fa-upload p-1" style={{color:Colors.FooterBlue, border:`1px solid ${Colors.FooterBlue}`, borderRadius:5}}/>
+                                    <span style={{color:Colors.FooterBlue,fontSize:16}}>Upload file </span>
+                                    <Form.Control type="file" className="position-absolute" style={{opacity:0}} />
+                                </Stack>
+                                <Form.Label className="mt-2" style={{fontSize: 14, color: Colors.Dark}}>Upload trade license photo or pdf</Form.Label>
+                            </Form.Group>
+                        </Container>
 
                         {/* Currency */}
                         <h6 style={subTitleStyle}>Currency</h6>
