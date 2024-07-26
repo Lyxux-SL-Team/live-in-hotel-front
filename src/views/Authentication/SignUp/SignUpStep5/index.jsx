@@ -94,7 +94,6 @@ const SignUpStep5 = (props) => {
     }
 
     const handleSubmits = (e) => {
-        e.preventDefault();
         props.history.push('signup-step-6');
     };
 
@@ -104,7 +103,7 @@ const SignUpStep5 = (props) => {
     return (
         <Container fluid className="pb-10">
             <SimpleHeader/>
-            <div className=" mx-auto w-lg-50 w-md-60 w-xl-35 pt-3">
+            <div className=" mx-auto w-lg-50 w-md-60 w-xl-35 pt-3 pb-7">
                 <Form onSubmit={handleSubmit(handleSubmits)}>
                     <Stack className='form-step'>
                         <span style={{color: Colors.Grey, fontSize: 16}}>Step 1 of 2</span>

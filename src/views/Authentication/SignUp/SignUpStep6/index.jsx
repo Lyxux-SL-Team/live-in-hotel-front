@@ -44,7 +44,6 @@ const Signup = (props) => {
     }
 
     const handleSubmits = (e) => {
-        e.preventDefault();
         // const isValid = validateForm();
 
         // if (isValid) {
@@ -58,9 +57,8 @@ const Signup = (props) => {
     return (
         <Container fluid className="pb-10">
             <SimpleHeader/>
-            <div className=" mx-auto w-lg-50 w-md-60 w-xl-35 pt-3">
+            <div className=" mx-auto w-lg-50 w-md-60 w-xl-35 pt-3 pb-7">
                 <Form onSubmit={handleSubmit(handleSubmits)}>
-
                     <Stack className="form-step">
                         <span style={{color: Colors.Grey, fontSize: 16}}>Step 2 of 2</span>
                         <h4 className="my-3 font-scale-vf" style={{fontSize: 24, color: Colors.Dark}}>Tell us a little
