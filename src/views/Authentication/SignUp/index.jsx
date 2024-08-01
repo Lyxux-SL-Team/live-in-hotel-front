@@ -60,9 +60,6 @@ const Index = () => {
         phoneNumber: step2.phoneNumber,
         countryCode: step2.countryCode,
       });
-
-      console.log(res)
-
       if (res.data.success) {
         dispatch(setUser(res.data))
         navigate();

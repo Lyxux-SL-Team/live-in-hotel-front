@@ -12,18 +12,19 @@ import SignupFooter from "../../../../components/footer/SignupFooter.jsx";
 import {useRegisterPropertyMutation} from "../../../../redux/reducer/api/propertySlice.js";
 import {useRegisterHotelMutation} from "../../../../redux/reducer/api/hotelSlice.js";
 import {useSelector} from "react-redux";
+import {useHistory} from "react-router-dom";
+import {toast} from "react-toastify";
 
 const selectProperty = ["Hotel", "Property"];
 const selectCurrency = ["United Arab Emirates Dirhams", "LKR", "KUD"];
 const Signup = (props) => {
     const [propertyData, setPropertyData] = useState([]);
+    console.log(propertyData)
 
-    // const [registerHotel]=useRegisterHotelMutation;
     const [registerHotel] = useRegisterHotelMutation();
     const [registerProperty] = useRegisterPropertyMutation();
 
-    const message =props.location.state
-    // console.log(message)
+    const message =props.location.state;
     const user = useSelector(state => state.auth.user);
 
     const FormData = z.object({
@@ -55,15 +56,47 @@ const Signup = (props) => {
 
     const handleSubmits = async (e) => {
         const data = {...propertyData,...message.property,location:message.location, image:"dfff", admin:user}
-        console.log(data)
         if (data.propertyType==="Hotel"){
             const res = await registerHotel(data);
-            console.log(res)
+            if(res.success){
+                props.history.push("/welcome",{success:true, data:res.data});
+            } else {
+                toast.error(res.error.data.message, {
+                    toastId: "toast4",
+                    position: "top-right",
+                    className: 'jq-toast-danger',
+                    theme: 'light',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
+            }
+
         } else if(data.propertyType==="Property"){
             const res = await registerProperty(data);
-            console.log(res)
+            if(res.success){
+                props.history.push("/welcome",{success:true, data:res.data});
+            } else {
+                toast.error(res.error.data.message, {
+                    toastId: "toast4",
+                    position: "top-right",
+                    className: 'jq-toast-danger',
+                    theme: 'light',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
+            }
         } else{
-            console.log("something went wrong!")
+            toast.error("something went wrong!", {
+                toastId: "toast4",
+                position: "top-right",
+                className: 'jq-toast-danger',
+                theme: 'light',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+            });
         }
         // props.history.push("/dashboard");
     };
@@ -173,8 +206,8 @@ const Signup = (props) => {
                             <Form.Group controlId="formFile">
                                 <Stack direction="horizontal" gap={2} className="position-relative justify-content-center">
                                     <i className="fa fa-upload p-1" style={{color:Colors.FooterBlue, border:`1px solid ${Colors.FooterBlue}`, borderRadius:5}}/>
-                                    <span style={{color:Colors.FooterBlue,fontSize:16}}>Upload file </span>
-                                    <Form.Control type="file" className="position-absolute" style={{opacity:0}} />
+                                    <span style={{color:Colors.FooterBlue,fontSize:16}}>{propertyData?.file? propertyData.file?.name:"Upload file" }</span>
+                                    <Form.Control type="file" className="position-absolute" style={{opacity:0}} accept="image/png, image/jpeg, .pdf"  onChange={(e) => setPropertyData({ ...propertyData, file: e.target.files[0] })}/>
                                 </Stack>
                                 <Form.Label className="mt-2" style={{fontSize: 14, color: Colors.Dark}}>Upload trade license photo or pdf</Form.Label>
                             </Form.Group>

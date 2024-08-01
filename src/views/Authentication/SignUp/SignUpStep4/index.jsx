@@ -108,7 +108,7 @@ const Signup = (props) => {
                         {error && <p className="text-danger">Please select a your property location</p>}
                         {suggestions.length > 0 && (
                             <Stack
-                                className="position-absolute p-3 overflow-hidden"
+                                className="position-absolute p-3 overflow-hidden z-index-10"
                                 style={{ width: "100%", top: 45, backgroundColor: colors.white, boxShadow: 1, border: `1px solid ${colors.white1}`, borderRadius: 10 }}
                             >
                                 {suggestions.map((suggestion, index) => (
@@ -140,8 +140,8 @@ const Signup = (props) => {
             {/* Page Footer */}
             <SignupFooter/>
         </Container>
-    //   </div>
-    // </div>
+     //   </div>
+     // </div>
   );
 };
 
