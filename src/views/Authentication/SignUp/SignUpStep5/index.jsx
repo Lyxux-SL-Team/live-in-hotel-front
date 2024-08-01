@@ -16,7 +16,7 @@ const citySelect = ["Abu Dhabi","Sharjah","Dubai"]
 const SignUpStep5 = (props) => {
     const [propertyData, setPropertyData] = useState([]);
 
-    const message = props.history.message()
+    // const message = props.history.message()
 
     const FormData = z.object({
         propertyName: z.string().min(1, {message: "Property Name is required"}),
