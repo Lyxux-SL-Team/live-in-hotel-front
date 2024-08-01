@@ -2,11 +2,13 @@ import React, {useState} from 'react'
 import {Button, Col, Container, Row} from "react-bootstrap";
 import {colors as Colors} from "../../configs/colors.js";
 import {Briefcase} from "react-feather";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import Agreement from "./Agreement.jsx";
 
 const repeat = [1, 2, 3]
 const PropertyContract = () => {
+
+    const history = useHistory();
 
     const [nextPage, setNextPage] = useState(false)
 
@@ -89,7 +91,7 @@ const PropertyContract = () => {
                 <Button
                     style={{backgroundColor: Colors.Dark}}
                     className="btn-rounded mb-3"
-                    onClick={() => setNextPage(true)}
+                    onClick={() => history.push('property-contract/agreement')}
                 >
                     Next
                 </Button>

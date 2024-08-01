@@ -19,12 +19,12 @@ const Signup = (props) => {
     const FormData = z.object({
         propertyName: z.string().min(1, {message: "Property Name is required"}),
         propertyType: z.enum(selectProperty, {message: "Please select a property type."}),
-        numberOfRooms: z.string().regex(/^\d+$/, {message: "must be a number"})
+        numberOfUnites: z.string().regex(/^\d+$/, {message: "must be a number"})
             .min(1, {message: "No of Rooms is required"}),
-        legalNameOfProperty: z.string().min(1, {message: "Legal Name of Property is required"}),
-        tradeLicenceNumber: z.string().min(1, {message: "Trade Licence Number is required"}),
+        legalName: z.string().min(1, {message: "Legal Name of Property is required"}),
+        legalNumber: z.string().min(1, {message: "Trade Licence Number is required"}),
         currency: z.enum(selectCurrency, {message: "Please select a currency"}),
-        channelManager:z.enum(['true','false'],{message:"Please select whether property uses a channel manager."}),
+        // channelManager:z.enum(['true','false'],{message:"Please select whether property uses a channel manager."}),
         isChain: z.enum(['true','false'],{message:"Please select whether property is part of a chain."})
     });
 
@@ -118,39 +118,39 @@ const Signup = (props) => {
                         <Form.Group className="mb-3">
                             <Form.Label style={subTitleStyle}>Number of units (number of inventories)</Form.Label>
                             <Form.Control
-                                {...register('numberOfRooms')}
+                                {...register('numberOfUnites')}
                                 onChange={handleChanges}
                                 style={paragraphStyle}
                                 placeholder="Enter Number of rooms"
                             />
-                            {errors.numberOfRooms?.message &&
-                                <p className="text-danger">{errors.numberOfRooms?.message}</p>}
+                            {errors.numberOfUnites?.message &&
+                                <p className="text-danger">{errors.numberOfUnites?.message}</p>}
                         </Form.Group>
 
                         {/* Legal Name of Property */}
                         <Form.Group className="mb-3">
                             <Form.Label style={subTitleStyle}>Legal name of your property (trade licenses name)</Form.Label>
                             <Form.Control
-                                {...register('legalNameOfProperty')}
+                                {...register('legalName')}
                                 onChange={handleChanges}
                                 style={paragraphStyle}
                                 placeholder="Enter Legal name of your property"
                             />
-                            {errors.legalNameOfProperty?.message &&
-                                <p className="text-danger">{errors.legalNameOfProperty?.message}</p>}
+                            {errors.legalName?.message &&
+                                <p className="text-danger">{errors.legalName?.message}</p>}
                         </Form.Group>
 
                         {/* Trade license number */}
                         <Form.Group className="mb-3">
                             <Form.Label style={subTitleStyle}>Trade license number</Form.Label>
                             <Form.Control
-                                {...register('tradeLicenceNumber')}
+                                {...register('legalNumber')}
                                 onChange={handleChanges}
                                 style={paragraphStyle}
                                 placeholder="Enter trade license number"
                             />
-                            {errors.tradeLicenceNumber?.message &&
-                                <p className="text-danger">{errors.tradeLicenceNumber?.message}</p>}
+                            {errors.legalNumber?.message &&
+                                <p className="text-danger">{errors.legalNumber?.message}</p>}
                         </Form.Group>
 
                         {/* file select*/}
@@ -183,29 +183,29 @@ const Signup = (props) => {
                         </FloatingLabel>
 
                         {/* Channel Manager */}
-                        <h6 style={subTitleStyle}>
-                            Does this property work with a channel manager?
-                            <Icons.InfoSquare color={Colors.Grey2} className="ms-3"/>
-                        </h6>
-                        <Form.Group className="mb-3">
-                            <Form.Check
-                                type="radio"
-                                value={true}
-                                {...register('channelManager')}
-                                onChange={handleChanges}
-                                label="Yes"
-                                id="channel-manager-yes"
-                            />
-                            <Form.Check
-                                type="radio"
-                                value={false}
-                                {...register('channelManager')}
-                                onChange={handleChanges}
-                                label="No"
-                                id="channel-manager-no"
-                            />
-                            {errors.channelManager?.message && <p className="text-danger">{errors.channelManager?.message}</p>}
-                        </Form.Group>
+                        {/*<h6 style={subTitleStyle}>*/}
+                        {/*    Does this property work with a channel manager?*/}
+                        {/*    <Icons.InfoSquare color={Colors.Grey2} className="ms-3"/>*/}
+                        {/*</h6>*/}
+                        {/*<Form.Group className="mb-3">*/}
+                        {/*    <Form.Check*/}
+                        {/*        type="radio"*/}
+                        {/*        value={true}*/}
+                        {/*        {...register('channelManager')}*/}
+                        {/*        onChange={handleChanges}*/}
+                        {/*        label="Yes"*/}
+                        {/*        id="channel-manager-yes"*/}
+                        {/*    />*/}
+                        {/*    <Form.Check*/}
+                        {/*        type="radio"*/}
+                        {/*        value={false}*/}
+                        {/*        {...register('channelManager')}*/}
+                        {/*        onChange={handleChanges}*/}
+                        {/*        label="No"*/}
+                        {/*        id="channel-manager-no"*/}
+                        {/*    />*/}
+                        {/*    {errors.channelManager?.message && <p className="text-danger">{errors.channelManager?.message}</p>}*/}
+                        {/*</Form.Group>*/}
 
                         {/* Property Chain */}
                         <h6 style={subTitleStyle}>

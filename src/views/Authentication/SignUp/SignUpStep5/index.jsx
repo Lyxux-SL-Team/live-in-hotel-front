@@ -15,58 +15,8 @@ const areaSelect = ["Al Reem Island","Downtown Dubai","Jumeirah Beach Residence"
 const citySelect = ["Abu Dhabi","Sharjah","Dubai"]
 const SignUpStep5 = (props) => {
     const [propertyData, setPropertyData] = useState([]);
-    // const [propertyName, setPropertyName] = useState("");
-    // const [city, setCity] = useState("");
-    // const [streetAddress, setStreetAddress] = useState("");
-    // const [unitNumber, setUnitNumber] = useState("");
-    // const [area, setArea] = useState("");
-    // const [zipCode, setZipCode] = useState("");
 
-    // const [isPropertyNameValid, setIsPropertyNameValid] = useState(true);
-    // const [isStreetAddressValid, setIsStreetAddressValid] = useState(true);
-    // const [isUnitNumberValid, setIsUnitNumberValid] = useState(true);
-    // const [isZipCodeValid, setIsZipCodeValid] = useState(true);
-
-    // const validateForm = () => {
-    //     let isValid = true;
-    //
-    //     if (propertyName.trim() === "") {
-    //         setIsPropertyNameValid(false);
-    //         isValid = false;
-    //     } else {
-    //         setIsPropertyNameValid(true);
-    //     }
-    //
-    //     if (streetAddress.trim() === "") {
-    //         setIsStreetAddressValid(false);
-    //         isValid = false;
-    //     } else {
-    //         setIsStreetAddressValid(true);
-    //     }
-    //
-    //     if (zipCode.trim() === "") {
-    //         setIsZipCodeValid(false);
-    //         isValid = false;
-    //     } else {
-    //         setIsZipCodeValid(true);
-    //     }
-    //
-    //     if (unitNumber.trim() === "") {
-    //         setIsUnitNumberValid(false);
-    //         isValid = false;
-    //     } else {
-    //         setIsUnitNumberValid(true);
-    //     }
-    //
-    //     if (streetAddress.trim() === "") {
-    //         setIsZipCodeValid(false);
-    //         isValid = false;
-    //     } else {
-    //         setIsZipCodeValid(true);
-    //     }
-    //
-    //     return isValid;
-    // };
+    const message = props.history.message()
 
     const FormData = z.object({
         propertyName: z.string().min(1, {message: "Property Name is required"}),

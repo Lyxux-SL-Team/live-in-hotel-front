@@ -52,17 +52,18 @@ const Index = () => {
 
 
     const registerHandler = async() => {
-      const contact = String(step2.ccode) + String(step2.mobile);
       const res = await register({
         email: step1.email,
         password: step3.password,
-        firstName: step2.fname,
-        lastName: step2.lname,
-        contact: contact,
+        firstName: step2.firstName,
+        lastName: step2.lastName,
+        phoneNumber: step2.phoneNumber,
+        countryCode: step2.countryCode,
       });
-      
-    
-      if (res.data.status) {
+
+      console.log(res)
+
+      if (res.data.success) {
         dispatch(setUser(res.data))
         navigate();
       }else{
@@ -79,18 +80,19 @@ const Index = () => {
 
  
 
-  const userRegister = async () => {
-    const res = await register({
-      email: step1.email,
-      password: step3.password,
-      firstName: step2.fname,
-      lastName: step2.lname,
-      contact: step2.mobile,
-    })
-    if (res.data.status) {
-      navigate()
-    }
-  };
+  // const userRegister = async () => {
+  //   const res = await register({
+  //     email: step1.email,
+  //     password: step3.password,
+  //     firstName: step2.firstName,
+  //     lastName: step2.lastName,
+  //     phoneNumber: step2.phoneNumber,
+  //     countryCode: step2.countryCode,
+  //   })
+  //   if (res.data.status) {
+  //     navigate()
+  //   }
+  // };
   const navigate = () => {
     window.location.href = "/auth/signup-step-4";
   }
@@ -167,7 +169,7 @@ const Index = () => {
                     setSignUpStep={setSignUpStep}
                     step={step3}
                     updateStep={updateStep}
-                    userRegister={userRegister}
+                    // userRegister={userRegister}
                     isLoading={isLoading}
                     registerHandler={registerHandler}
                   />

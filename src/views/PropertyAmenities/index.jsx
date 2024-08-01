@@ -536,6 +536,7 @@ const PoliciesAndSettings = () => {
       ],
     }
   });
+  console.log(amenities)
 
   const updateAmenities = (name, value, type = 'single') => { // type = single ,  multi , layer3
     console.log(type);

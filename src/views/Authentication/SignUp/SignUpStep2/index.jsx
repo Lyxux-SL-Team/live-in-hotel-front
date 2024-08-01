@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Button,
   Col,
@@ -14,16 +14,15 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 const SignUpStep2 = (props) => {
-
+  const [errorMessage, setErrorMessage] = useState(false);
 
   //  get data in server pass => ( props.step.fname ) , ( props.step.lname ) , ( props.step.ccode ) , ( props.step.mobile )
 
   const FormData = z.object({
-    fname: z.string().min(3, { message: "First Name is required" }),
-    lname: z.string().min(3, { message: "Last Name is required" }),
-    mobile:z.string().regex(/^\d+$/, { message: "must be a number" })
-        .min(9, { message: "must contain at least 9 digits" })
-    // mobile: z.number({ message: "must be a number"}).min(9, { message: "must contain at least 9 digits" })
+    firstName: z.string().min(3, { message: "First Name is required" }),
+    lastName: z.string().min(3, { message: "Last Name is required" }),
+    phoneNumber:z.string().min(9, { message: "must contain at least 9 digits" })
+        .regex(/^\d+$/, { message: "must be a number" }),
   });
 
   const {
@@ -35,7 +34,11 @@ const SignUpStep2 = (props) => {
   });
 
   const nextPage=()=>{
-    props.setSignUpStep(3)
+    if (props.step.countryCode === undefined || props.step.countryCode === null){
+      setErrorMessage(true);
+    } else{
+      props.setSignUpStep(3)
+    }
   }
 
   return (
@@ -53,32 +56,32 @@ const SignUpStep2 = (props) => {
             <Col sm={6}>
               <Form.Label>First name</Form.Label>
               <Form.Control
-                {...register('fname')}
+                {...register('firstName')}
                 placeholder="Enter your first name"
                 onChange={(e) => props.updateStep(e)}
               />
-              {errors.fname?.message && <p className="text-danger">{errors.fname?.message}</p>}
+              {errors.firstName?.message && <p className="text-danger">{errors.firstName?.message}</p>}
             </Col>
             <Col sm={6}>
               <Form.Label>Last name</Form.Label>
               <Form.Control
-                {...register('lname')}
+                {...register('lastName')}
                 placeholder="Enter your last name"
                 onChange={(e) => props.updateStep(e)}
               />
-              {errors.lname?.message && <p className="text-danger">{errors.lname?.message}</p>}
+              {errors.lastName?.message && <p className="text-danger">{errors.lastName?.message}</p>}
             </Col>
             <Form.Label className="mt-3">Phone number</Form.Label>
-            <InputGroup className={errors.mobile?.message ? "": "mb-3"}>
+            <InputGroup className={(errors.phoneNumber?.message || errorMessage) ? "": "mb-3"}>
               <Dropdown >
-                <Dropdown.Toggle className="bg-white text-black" style={{ borderColor: '#DBDBDB' }}>+{props.step.ccode}</Dropdown.Toggle>
+                <Dropdown.Toggle className="bg-white text-black" style={{ borderColor: '#DBDBDB' }}>+{props.step.countryCode}</Dropdown.Toggle>
                 <Dropdown.Menu className="overflow-auto" style={{ maxHeight: "200px" }}>
                   {
                     getCountryDataList().map((data, index) => {
                       return (
                         <Dropdown.Item key={index} onClick={(e) => {
-                          e.target.name = 'ccode'
-                          e.target.value = data.phone
+                          e.target.name = 'countryCode'
+                          e.target.value = data.phone[0]
                           props.updateStep(e)
                         }} >+{data.phone} - {data.name}</Dropdown.Item>
                       )
@@ -88,13 +91,14 @@ const SignUpStep2 = (props) => {
                 </Dropdown.Menu>
               </Dropdown>
               <Form.Control
-                {...register('mobile')}
+                {...register('phoneNumber')}
                 aria-label="Text input with dropdown button"
                 placeholder="00 0000 000"
                 onChange={(e) => props.updateStep(e)}
               />
             </InputGroup>
-            {errors.mobile?.message && <p className="text-danger mb-3">{errors.mobile?.message}</p>}
+            {errors.phoneNumber?.message && <p className="text-danger mb-3">{errors.phoneNumber?.message}</p>}
+            {errorMessage && <p className="text-danger mb-3">Select a country code</p>}
           </Row>
           <p>{`We'll text a two-factor authentication code to this number when you sign in`}</p>
 

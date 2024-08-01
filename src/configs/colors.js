@@ -10,10 +10,12 @@ export const colors ={
     Grey5:"#C6C6C6",
     Grey6:"#BABABA",
     Grey7:"#FAFAFA",
+    Grey8:"#C1C1C1",
     white:"#fff",
     white1:"#DBDBDB",
     white2:"#E7E7E7",
     white3:"#EAEAEA",
+    white4:"#F6F6F6",
     Purple:"#93278F",
     Green:"#02BC091A",
 }

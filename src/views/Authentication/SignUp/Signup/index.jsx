@@ -26,7 +26,8 @@ const Signup = (props) => {
 
   const checkEmail = async () => {
     const res = await validateEmail({email});
-    if (res.data.status){
+      console.log(res)
+    if (res.data.success){
       props.setSignUpStep(2);
     } else {
       toast.error(res.data.message, {

@@ -79,8 +79,6 @@ const SignUpStep3 = (props) => {
             {errors.checkPassword?.message && <p className="text-danger">{errors.checkPassword?.message}</p>}
             {errors.confirm && <p className="text-danger">{errors.confirm?.message}</p>}
             <Button
-                // onClick={() => props.setSignUpStep(3)}
-                // onClick={() => props.registerHandler()}
                 type="submit"
                 style={{backgroundColor:Colors.Dark}}
                 className="btn-rounded btn-block mt-4"

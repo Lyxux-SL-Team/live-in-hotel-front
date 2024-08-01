@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import {
     Button,
     Container,
@@ -11,35 +11,61 @@ import CommanFooter1 from "../../CommanFooter1";
 //Images
 import SimpleHeader from "../../SimpleHeader";
 import {colors, colors as Colors} from "../../../../configs/colors.js";
+import {useLocationSuggestMutation} from "../../../../redux/reducer/api/hotelSlice.js";
 
 const locations = ['Abu Dhabi - United Arab Emirates', 'Abu Dhabi University - Abu Dhabi - United Arab Emirates',];
 const Signup = (props) => {
-  const [address, setAddress] = useState("");
   const history = useHistory();
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [selectedValue, setSelectedValue] = useState('');
+  const [error, setError] = useState(false)
 
-    console.log(inputValue)
+
+  const [locationSuggest] = useLocationSuggestMutation();
 
   function handleInputFunction(e) {
     e.preventDefault ();
-    history.push("signup-step-5");
+    if (selectedValue){
+        history.push("signup-step-5",{success:true,location:selectedValue});
+    } else {
+        setError(true);
+    }
   }
 
-  const handleChange = (event) => {
-      const value = event.target.value;
-      setInputValue(value);
-      if (value.length > 0) {
-          const filteredSuggestions = locations.filter(location => location.toLowerCase().includes(value.toLowerCase()));
-          setSuggestions(filteredSuggestions);
-      } else {
-          setSuggestions([]);
-      }
-  };
+  // const handleChange = (event) => {
+  //     const value = event.target.value;
+  //     setInputValue(value);
+  //     if (value.length > 0) {
+  //         const filteredSuggestions = locations.filter(location => location.toLowerCase().includes(value.toLowerCase()));
+  //         setSuggestions(filteredSuggestions);
+  //     } else {
+  //         setSuggestions([]);
+  //     }
+  // };
   const handleSelect = (suggestion) => {
       setInputValue(suggestion);
       setSuggestions([]);
+      setSelectedValue(suggestion);
   };
+
+    const handleChange = async (event) => {
+        const value = event.target.value;
+        setInputValue(value);
+
+        if (value.length > 2) { // Fetch suggestions if input length is greater than 2
+            try {
+                const response = await locationSuggest(value);
+                if (response.data) {
+                    setSuggestions(response.data.predictions.map((prediction) => prediction.description));
+                }
+            } catch (error) {
+                console.error('Error fetching place suggestions:', error);
+            }
+        } else {
+            setSuggestions([]);
+        }
+    };
 
   return (
     <div className="hk-pg-wrapper py-0">
@@ -58,18 +84,41 @@ const Signup = (props) => {
                         will make it easier to find your address.
                       </p>
                     <Container className="position-relative mb-6 px-0">
-                        <InputGroup className="mb-3" style={{border:`3px solid ${colors.Dark}`, borderRadius:10}}>
-                            <InputGroup.Text className="rounded-10 border-0"><i className="fa fa-map-marker" style={{color:colors.Dark1, fontSize:20}}/></InputGroup.Text>
+                        <InputGroup className={error?"":"mb-3"} style={{ border: `3px solid ${colors.Dark}`, borderRadius: 10 }}>
+                            <InputGroup.Text className="rounded-10 border-0">
+                                <i className="fa fa-map-marker" style={{ color: colors.Dark1, fontSize: 20 }} />
+                            </InputGroup.Text>
 
-                            <Form.Control type="text" value={inputValue} onChange={handleChange}
-                                          placeholder="Location"
-                                          style={{fontSize:16,color:colors.Dark,backgroundColor:colors.white,borderRadius:10, boxShadow:"none", border:'none'}}
+                            <Form.Control
+                                type="text"
+                                value={inputValue}
+                                onChange={handleChange}
+                                placeholder="Location"
+                                style={{
+                                    fontSize: 16,
+                                    color: colors.Dark,
+                                    backgroundColor: colors.white,
+                                    borderRadius: 10,
+                                    boxShadow: "none",
+                                    border: 'none',
+                                }}
                             />
                         </InputGroup>
+                        {error && <p className="text-danger">Please select a your property location</p>}
                         {suggestions.length > 0 && (
-                            <Stack className="position-absolute p-3" style={{width:"100%",top:45, backgroundColor:colors.white, boxShadow:1, border:`1px solid ${colors.white1}`,borderRadius:10}}>
+                            <Stack
+                                className="position-absolute p-3 overflow-hidden"
+                                style={{ width: "100%", top: 45, backgroundColor: colors.white, boxShadow: 1, border: `1px solid ${colors.white1}`, borderRadius: 10 }}
+                            >
                                 {suggestions.map((suggestion, index) => (
-                                    <option style={{fontSize:16, color:colors.Dark,}} className="mb-2" key={index} onClick={() => handleSelect(suggestion)}>{suggestion}</option>
+                                    <div
+                                        style={{ fontSize: 16, color: colors.Dark }}
+                                        className="mb-2"
+                                        key={index}
+                                        onClick={() => handleSelect(suggestion)}
+                                    >
+                                        {suggestion}
+                                    </div>
                                 ))}
                             </Stack>
                         )}
