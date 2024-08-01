@@ -12,6 +12,7 @@ import CommanFooter1 from "../../CommanFooter1";
 import SimpleHeader from "../../SimpleHeader";
 import {colors, colors as Colors} from "../../../../configs/colors.js";
 import {useLocationSuggestMutation} from "../../../../redux/reducer/api/hotelSlice.js";
+import SignupFooter from "../../../../components/footer/SignupFooter.jsx";
 
 const locations = ['Abu Dhabi - United Arab Emirates', 'Abu Dhabi University - Abu Dhabi - United Arab Emirates',];
 const Signup = (props) => {
@@ -68,12 +69,12 @@ const Signup = (props) => {
     };
 
   return (
-    <div className="hk-pg-wrapper py-0">
-      <div className="hk-pg-body py-0">
-        <Container fluid>
+    // <div className="hk-pg-wrapper py-0">
+    //   <div className="hk-pg-body py-0">
+        <Container fluid className="pb-10">
           {/*<Row className="auth-split">*/}
             <SimpleHeader />
-            <div className=" mx-auto w-lg-50 w-md-60 w-xl-35 pt-10">
+            <div className="mx-auto w-lg-50 w-md-60 w-xl-35 pt-10 pb-15">
                 <Form onSubmit={handleInputFunction}>
                       <span style={{color:Colors.Grey, fontSize:16}}>Step 1 of 2</span>
                       <h4 className="my-3 font-scale-vf" style={{fontSize:24,color:Colors.Dark}}>
@@ -134,11 +135,13 @@ const Signup = (props) => {
                       </Button>
                 </Form>
               {/* Page Footer */}
-              <CommanFooter1 />
+              {/*<CommanFooter1 />*/}
             </div>
+            {/* Page Footer */}
+            <SignupFooter/>
         </Container>
-      </div>
-    </div>
+    //   </div>
+    // </div>
   );
 };
 

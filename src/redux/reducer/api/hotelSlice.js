@@ -11,9 +11,16 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         params:{input:data}
       }),
     }),
+    registerHotel: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/hotel`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const {useLocationSuggestMutation} = hotelApiSlice;
+export const {useLocationSuggestMutation, useRegisterHotelMutation} = hotelApiSlice;
 
 

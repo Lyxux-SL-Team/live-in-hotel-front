@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import {Button, Container, FloatingLabel, Form, OverlayTrigger, Popover, Stack} from "react-bootstrap";
-import CommanFooter1 from "../../CommanFooter1";
 import * as Icons from "tabler-icons-react";
 
 import "../../../../styles/css/signup.css";
@@ -10,14 +9,24 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {colors as Colors} from "../../../../configs/colors.js";
 import SignupFooter from "../../../../components/footer/SignupFooter.jsx";
+import {useRegisterPropertyMutation} from "../../../../redux/reducer/api/propertySlice.js";
+import {useRegisterHotelMutation} from "../../../../redux/reducer/api/hotelSlice.js";
+import {useSelector} from "react-redux";
 
-const selectProperty = ["Abidabi", "Abidabi"];
+const selectProperty = ["Hotel", "Property"];
 const selectCurrency = ["United Arab Emirates Dirhams", "LKR", "KUD"];
 const Signup = (props) => {
     const [propertyData, setPropertyData] = useState([]);
 
+    // const [registerHotel]=useRegisterHotelMutation;
+    const [registerHotel] = useRegisterHotelMutation();
+    const [registerProperty] = useRegisterPropertyMutation();
+
+    const message =props.location.state
+    // console.log(message)
+    const user = useSelector(state => state.auth.user);
+
     const FormData = z.object({
-        propertyName: z.string().min(1, {message: "Property Name is required"}),
         propertyType: z.enum(selectProperty, {message: "Please select a property type."}),
         numberOfUnites: z.string().regex(/^\d+$/, {message: "must be a number"})
             .min(1, {message: "No of Rooms is required"}),
@@ -25,10 +34,10 @@ const Signup = (props) => {
         legalNumber: z.string().min(1, {message: "Trade Licence Number is required"}),
         currency: z.enum(selectCurrency, {message: "Please select a currency"}),
         // channelManager:z.enum(['true','false'],{message:"Please select whether property uses a channel manager."}),
-        isChain: z.enum(['true','false'],{message:"Please select whether property is part of a chain."})
+        partOfChina: z.enum(['true','false'],{message:"Please select whether property is part of a chain."})
     });
 
-    console.log(propertyData)
+    // console.log(propertyData)
     const {
         register,
         handleSubmit,
@@ -44,12 +53,19 @@ const Signup = (props) => {
         })
     }
 
-    const handleSubmits = (e) => {
-        // const isValid = validateForm();
-
-        // if (isValid) {
-        props.history.push("/dashboard");
-        // }
+    const handleSubmits = async (e) => {
+        const data = {...propertyData,...message.property,location:message.location, image:"dfff", admin:user}
+        console.log(data)
+        if (data.propertyType==="Hotel"){
+            const res = await registerHotel(data);
+            console.log(res)
+        } else if(data.propertyType==="Property"){
+            const res = await registerProperty(data);
+            console.log(res)
+        } else{
+            console.log("something went wrong!")
+        }
+        // props.history.push("/dashboard");
     };
     const popover = (
         <Popover id="popover-basic" className="custom-popover">
@@ -65,7 +81,7 @@ const Signup = (props) => {
     return (
         <Container fluid className="pb-10">
             <SimpleHeader/>
-            <div className=" mx-auto w-lg-50 w-md-60 w-xl-35 pt-3 pb-7">
+            <div className="mx-auto w-lg-50 w-md-60 w-xl-35 pt-3 pb-7">
                 <Form onSubmit={handleSubmit(handleSubmits)}>
                     <Stack className="form-step">
                         <span style={{color: Colors.Grey, fontSize: 16}}>Step 2 of 2</span>
@@ -80,12 +96,11 @@ const Signup = (props) => {
                             className="mb-3"
                         >
                             <Form.Control
-                                {...register('propertyName')}
                                 onChange={handleChanges}
-                                style={paragraphStyle}
-                                placeholder="Enter your property name"/>
-                            {errors.propertyName?.message &&
-                                <p className="text-danger">{errors.propertyName?.message}</p>}
+                                style={{...paragraphStyle, backgroundColor:Colors.white}}
+                                readOnly
+                                value={message?.property?.propertyName}
+                                />
                         </FloatingLabel>
 
                         {/* Property Type */}
@@ -216,7 +231,7 @@ const Signup = (props) => {
                             <Form.Check
                                 type="radio"
                                 value={true}
-                                {...register('isChain')}
+                                {...register('partOfChina')}
                                 onChange={handleChanges}
                                 label="Yes"
                                 id="is-chain-yes"
@@ -224,12 +239,12 @@ const Signup = (props) => {
                             <Form.Check
                                 type="radio"
                                 value={false}
-                                {...register('isChain')}
+                                {...register('partOfChina')}
                                 onChange={handleChanges}
                                 label="No"
                                 id="is-chain-no"
                             />
-                            {errors.isChain?.message && <p className="text-danger">{errors.isChain?.message}</p>}
+                            {errors.partOfChina?.message && <p className="text-danger">{errors.partOfChina?.message}</p>}
                         </Form.Group>
 
                         {/* Submit Button */}

@@ -16,8 +16,6 @@ const citySelect = ["Abu Dhabi","Sharjah","Dubai"]
 const SignUpStep5 = (props) => {
     const [propertyData, setPropertyData] = useState([]);
 
-    // const message = props.history.message()
-
     const FormData = z.object({
         propertyName: z.string().min(1, {message: "Property Name is required"}),
         city: z.enum(citySelect, {message: "Please select a city"}),
@@ -27,7 +25,6 @@ const SignUpStep5 = (props) => {
         zipCode: z.string().min(1, 'Zip Code is required')
     });
 
-    console.log(propertyData)
     const {
         register,
         handleSubmit,
@@ -44,7 +41,7 @@ const SignUpStep5 = (props) => {
     }
 
     const handleSubmits = (e) => {
-        props.history.push('signup-step-6');
+        props.history.push('signup-step-6',{success:true, location:props.location.state.location,property:propertyData});
     };
 
     const subTitleStyle={fontSize: 18, color: Colors.Dark, fontWeight: 500};

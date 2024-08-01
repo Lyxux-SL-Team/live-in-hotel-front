@@ -21,6 +21,7 @@ function Index2(props) {
     const [suggestions, setSuggestions] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [selectedLanguages, setSelectedLanguages] = useState([]);
+    console.log(policyData)
 
     const history = useHistory();
 
