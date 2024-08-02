@@ -9,7 +9,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {colors as Colors} from "../../../../configs/colors.js";
-import SignupFooter from "../../../../components/footer/SignupFooter.jsx";
+import SignupFooter from "../../../../layout/Footer/SignupFooter.jsx";
 
 const areaSelect = ["Al Reem Island","Downtown Dubai","Jumeirah Beach Residence"]
 const citySelect = ["Abu Dhabi","Sharjah","Dubai"]

@@ -20,14 +20,14 @@ function RoleSpecialties(props) {
                 <Stack gap={3} direction="horizontal">
                     <Form.Check // prettier-ignore
                         type="radio"
-                        id="propertyOwner"
+                        name="propertyOwner"
                         label="yes"
                         defaultChecked
                         style={radioStyle}
                     />
                     <Form.Check // prettier-ignore
                         type="radio"
-                        id="propertyOwner"
+                        name="propertyOwner"
                         label="No"
                         style={radioStyle}
                     />
@@ -124,10 +124,6 @@ function RoleSpecialties(props) {
                         style={radioStyle}
                     />
                     <span className="mb-3" style={{color:colors.Grey, fontSize:14, paddingLeft:"21px"}}>Room rates, descriptions, and rate plans</span>
-
-                    <FloatingLabel className="w-100 w-md-60 w-lg-50" controlId="otherTasks" label="Other tasks" style={{color:colors.Grey,fontSize:12, border:`1px solid ${colors.Dark}`, borderRadius:10}}>
-                        <Form.Control placeholder="What other tasks do you perform?" style={{fontSize:12, color:colors.Dark, borderRadius:10, boxShadow:"none"}}/>
-                    </FloatingLabel>
                 </Stack>
 
                 <Button

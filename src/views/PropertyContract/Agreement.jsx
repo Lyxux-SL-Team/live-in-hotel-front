@@ -1,13 +1,43 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {colors as Colors} from "../../configs/colors.js";
-import {Button, Col, Container, ListGroup, Row, Stack, Table} from "react-bootstrap";
-import {Briefcase} from "react-feather";
-import {Link} from "react-router-dom";
+import {Button, Container, Spinner, Stack, Table} from "react-bootstrap";
+import {useSelector} from "react-redux";
+import {useIsContactVerifiedMutation, useRegisterContactMutation} from "../../redux/reducer/api/contractSlice.js";
 
-function Agreement() {
+function Agreement(props) {
+    const [contractAgree, setContractAgree] = useState(false);
+
+    const message =props.location.state?.message;
+    const user = useSelector(state => state.auth.user);
+    const [isContactVerified]=useIsContactVerifiedMutation();
+    const [registerContact,{isLoading}]=useRegisterContactMutation()
+
+    useEffect(()=>{
+        isContractSigned();
+    },[message])
+    async function isContractSigned(){
+        const res = await isContactVerified(message?.data._id);
+        if(res.data?.success){
+            setContractAgree(true);
+        }
+    }
 
     const paragraphStyle = {color: Colors.Dark, fontSize: 14};
     const titleStyle = {color: Colors.Dark, fontSize: 14, fontWeight:600,backgroundColor:"transparent"}
+    const handleAgree = async ()=>{
+        isContractSigned();
+        const data = {adminId:message.data.admin,contractVersion:"v.1.0",signature:true};
+        if(!contractAgree){
+            if (message.type==="Hotel"){
+                const res = await registerContact({...data,hotelId:message.data._id});
+                console.log(res);
+            }
+            if (message.type==="Property"){
+                const res = await registerContact({...data, hotelId:message.data._id});
+                console.log(res);
+            }
+        }
+    }
     return (
         <Container className="px-3 px-md-6">
             <Container className="ps-2 pe-2 pe-md-6 ps-md-4 py-3" style={{backgroundColor:Colors.white}}>
@@ -87,49 +117,58 @@ function Agreement() {
                     <Button
                         style={{backgroundColor: Colors.Dark}}
                         className="btn-rounded mb-3"
+                        onClick={handleAgree}
+                        disabled={contractAgree}
                     >
-                        Agree
+                        <span>
+                            <span>Agree</span>
+                            {isLoading && (
+                                <span className="input-suffix ms-2"> <Spinner animation="border" size="sm" /></span>
+                            )}
+                         </span>
                     </Button>
                 </Stack>
             </Container>
+            {
+                contractAgree &&
+                <Container className="my-3 py-4 px-0" style={{borderTop:`1px solid ${Colors.Grey8}`}}>
+                    <h3 style={{...titleStyle,fontSize:18}}>CONTRACT ACCEPTANCE</h3>
 
-            <Container className="my-3 py-4 px-0" style={{borderTop:`1px solid ${Colors.Grey8}`}}>
-                <h3 style={{...titleStyle,fontSize:18}}>CONTRACT ACCEPTANCE</h3>
+                    <Table className="mt-3 " bordered responsive>
+                        <thead>
+                        <tr>
+                            <th style={titleStyle}>Property name</th>
+                            <th style={titleStyle}>Address</th>
+                            <th style={titleStyle}>Owner</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td style={{...titleStyle,fontWeight:400}}>{message?.data?.propertyName}</td>
+                            <td style={{...titleStyle,fontWeight:400}}>{message?.data?.location}</td>
+                            <td style={{...titleStyle,fontWeight:400}}>{user.firstName} {user.lastName}</td>
+                        </tr>
+                        </tbody>
+                    </Table>
 
-                <Table className="mt-3 " bordered responsive>
-                    <thead>
-                    <tr>
-                        <th style={titleStyle}>Property name</th>
-                        <th style={titleStyle}>Address</th>
-                        <th style={titleStyle}>Owner</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td style={{...titleStyle,fontWeight:400}}>Begin hotel</td>
-                        <td style={{...titleStyle,fontWeight:400}}>Street Khalifa bin Zayed Al Nahyan, Abu Dhabi, UAE</td>
-                        <td style={{...titleStyle,fontWeight:400}}>Star</td>
-                    </tr>
-                    </tbody>
-                </Table>
-
-                <Table bordered responsive>
-                    <thead>
-                    <tr>
-                        <th style={titleStyle}>Contract Stakeholder</th>
-                        <th style={titleStyle}>Title</th>
-                        <th style={titleStyle}>Signature Date and Time</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td style={{...titleStyle,fontWeight:400}}>Azo Dev</td>
-                        <td style={{...titleStyle,fontWeight:400}}>Signatory</td>
-                        <td style={{...titleStyle,fontWeight:400}}>07-10-2024 11:51:06</td>
-                    </tr>
-                    </tbody>
-                </Table>
-            </Container>
+                    <Table bordered responsive>
+                        <thead>
+                        <tr>
+                            <th style={titleStyle}>Contract Stakeholder</th>
+                            <th style={titleStyle}>Title</th>
+                            <th style={titleStyle}>Signature Date and Time</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td style={{...titleStyle,fontWeight:400}}>{user.firstName} {user.lastName}</td>
+                            <td style={{...titleStyle,fontWeight:400}}>Signatory</td>
+                            <td style={{...titleStyle,fontWeight:400}}>07-10-2024 11:51:06</td>
+                        </tr>
+                        </tbody>
+                    </Table>
+                </Container>
+            }
         </Container>
     );
 }

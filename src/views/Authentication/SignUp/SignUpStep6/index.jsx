@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Button, Container, FloatingLabel, Form, OverlayTrigger, Popover, Stack} from "react-bootstrap";
+import {Button, Container, FloatingLabel, Form, OverlayTrigger, Popover, Spinner, Stack} from "react-bootstrap";
 import * as Icons from "tabler-icons-react";
 
 import "../../../../styles/css/signup.css";
@@ -8,7 +8,7 @@ import {z} from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {colors as Colors} from "../../../../configs/colors.js";
-import SignupFooter from "../../../../components/footer/SignupFooter.jsx";
+import SignupFooter from "../../../../layout/Footer/SignupFooter.jsx";
 import {useRegisterPropertyMutation} from "../../../../redux/reducer/api/propertySlice.js";
 import {useRegisterHotelMutation} from "../../../../redux/reducer/api/hotelSlice.js";
 import {useSelector} from "react-redux";
@@ -19,10 +19,10 @@ const selectProperty = ["Hotel", "Property"];
 const selectCurrency = ["United Arab Emirates Dirhams", "LKR", "KUD"];
 const Signup = (props) => {
     const [propertyData, setPropertyData] = useState([]);
-    console.log(propertyData)
+    const [fileNameDisplay, setFileNameDisplay] = useState(false);
 
-    const [registerHotel] = useRegisterHotelMutation();
-    const [registerProperty] = useRegisterPropertyMutation();
+    const [registerHotel , { isLoading }] = useRegisterHotelMutation();
+    const [registerProperty , { isLoad }] = useRegisterPropertyMutation();
 
     const message =props.location.state;
     const user = useSelector(state => state.auth.user);
@@ -38,7 +38,6 @@ const Signup = (props) => {
         partOfChina: z.enum(['true','false'],{message:"Please select whether property is part of a chain."})
     });
 
-    // console.log(propertyData)
     const {
         register,
         handleSubmit,
@@ -55,11 +54,13 @@ const Signup = (props) => {
     }
 
     const handleSubmits = async (e) => {
-        const data = {...propertyData,...message.property,location:message.location, image:"dfff", admin:user}
+        const data = {...propertyData,...message.property,location:message.location, image:"dfff", admin:user._id,email:user.email}
+        console.log(data)
         if (data.propertyType==="Hotel"){
             const res = await registerHotel(data);
-            if(res.success){
-                props.history.push("/welcome",{success:true, data:res.data});
+            console.log(res)
+            if(res.data.success){
+                props.history.push("/auth/welcome",{success:true, data:res.data.data, type:data.propertyType});
             } else {
                 toast.error(res.error.data.message, {
                     toastId: "toast4",
@@ -74,8 +75,9 @@ const Signup = (props) => {
 
         } else if(data.propertyType==="Property"){
             const res = await registerProperty(data);
-            if(res.success){
-                props.history.push("/welcome",{success:true, data:res.data});
+            console.log(res)
+            if(res.data.success){
+                props.history.push("/auth/welcome",{success:true, data:res.data, type:data.propertyType});
             } else {
                 toast.error(res.error.data.message, {
                     toastId: "toast4",
@@ -204,9 +206,9 @@ const Signup = (props) => {
                         {/* file select*/}
                         <Container className="p-4 mb-3 d-flex justify-content-center" style={{border:`1px dashed ${Colors.white1}`, borderRadius:10, backgroundColor:Colors.Grey7}}>
                             <Form.Group controlId="formFile">
-                                <Stack direction="horizontal" gap={2} className="position-relative justify-content-center">
+                                <Stack direction="horizontal" gap={2} className="position-relative justify-content-center" onMouseOver={()=>setFileNameDisplay(true)} onMouseOut={()=>setFileNameDisplay(false)}>
                                     <i className="fa fa-upload p-1" style={{color:Colors.FooterBlue, border:`1px solid ${Colors.FooterBlue}`, borderRadius:5}}/>
-                                    <span style={{color:Colors.FooterBlue,fontSize:16}}>{propertyData?.file? propertyData.file?.name:"Upload file" }</span>
+                                    <span style={{color:Colors.FooterBlue,fontSize:16}}>{(fileNameDisplay && propertyData?.file)? propertyData.file?.name:"Upload file" }</span>
                                     <Form.Control type="file" className="position-absolute" style={{opacity:0}} accept="image/png, image/jpeg, .pdf"  onChange={(e) => setPropertyData({ ...propertyData, file: e.target.files[0] })}/>
                                 </Stack>
                                 <Form.Label className="mt-2" style={{fontSize: 14, color: Colors.Dark}}>Upload trade license photo or pdf</Form.Label>
@@ -283,10 +285,16 @@ const Signup = (props) => {
                         {/* Submit Button */}
                         <Button
                             style={{backgroundColor:Colors.Dark}}
-                            className="btn-rounded btn-block mb-3 opacity-60"
+                            className="btn-rounded btn-wth-icon btn-block mb-3 opacity-60"
                             type="submit"
+                            disabled={isLoading || isLoad}
                         >
-                            Next
+                            <span>
+                                <span>Next</span>
+                                {(isLoading || isLoad) && (
+                                    <span className="input-suffix ms-3"> <Spinner animation="border" size="sm" /></span>
+                                )}
+                            </span>
                         </Button>
                     </Stack>
                 </Form>

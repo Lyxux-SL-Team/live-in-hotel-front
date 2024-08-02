@@ -1,19 +1,30 @@
 import React, {useState} from 'react';
-import {Button, Container, Form, InputGroup, OverlayTrigger, Popover, Stack} from "react-bootstrap";
+import {Button, Container, Form, InputGroup, ListGroup, OverlayTrigger, Popover, Stack} from "react-bootstrap";
 import InputMask from 'react-input-mask';
 import {colors, colors as Colors} from '../../configs/colors.js'
 import InfoIcon from "../../assets/img/info-icon.png";
 import './index.css'
 import {X} from "tabler-icons-react";
 import {useHistory} from "react-router-dom";
-import log from "eslint-plugin-react/lib/util/log.js";
+import DropDownLabelCustomize from "../../components/CustomDropDown/DropDownLabelCustomize.jsx";
 
 const paymentMethodList = ["Credit / debit cards","Debit cards","JCB International","Visa","Discover","Mastercard","Carte Blanche","American Express","UnionPay","Diners Club","Bank transfer","Cheque (local only)","Crypto","Installments payments offered at front desk (for locals only)","Cash"];
 const paymentInstallList = ["Monthly","Quarterly","Half year","Yearly"];
 const cancellationList = ["24-hour cancellation window","48-hour cancellation window","72-hour cancellation window","Non-refundable"];
 const taxList = ["City tax","Federal tax","Occupancy tax","District tax","Hotel tax","Goods and services tax (GST)","Harmonized sales tax (HST)","Value added tax (VAT)","VAT","Property Charges","Municipality","Tourism"];
-const rentalList =["2","3","4","5","6","7","8","9","10","11","12"];
+const rentalList =["1","2","3","4","5","6","7","8","9","10","11","12"];
 const languageList =["English","Hebrew","Arabic"];
+const discountList =["50 % of booking amount","100 % of booking amount"];
+const regulatoryList = [
+    {
+        title:"Professional host",
+        description:"Providing accommodation is related to your trade, business, or profession."
+    },
+    {
+        title:"Private host",
+        description:"Providing accommodation is not related to your trade, business, or profession."
+    },
+]
 function Index2(props) {
     const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([]);
     const [buttonSelection, setButtonSelection] = useState([]);
@@ -190,8 +201,6 @@ function Index2(props) {
         });
     };
 
-    console.log(selectedLanguages)
-
     const handleDelete = (index) => {
         const newSelectedLanguages = selectedLanguages.filter((_, i) => i !== index);
         setSelectedLanguages(newSelectedLanguages);
@@ -202,6 +211,22 @@ function Index2(props) {
             ...policyData,
             [name]: value
         })
+    };
+
+    const handleUpdate = (path, value) => {
+        setPolicyData(prevState => {
+            const newState = { ...prevState };
+            const keys = path.split('.');
+            let currentLevel = newState;
+            keys.slice(0, -1).forEach(key => {
+                if (!currentLevel[key]) {
+                    currentLevel[key] = {};
+                }
+                currentLevel = currentLevel[key];
+            });
+            currentLevel[keys[keys.length - 1]] = value;
+            return newState;
+        });
     };
 
     const popover = (
@@ -277,39 +302,35 @@ function Index2(props) {
             <Container className="p-3 mb-3" style={borderStyle}>
                 <h3 className="mb-3" style={titleStyle}>Do you require any deposits?</h3>
                 <Button
-                    style={{...buttonStyle, backgroundColor:buttonSelection?.deposit==='yes'? '':Colors.white, color:buttonSelection?.deposit==='yes'? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData.paymentDeposit ? '':Colors.white, color:policyData.paymentDeposit? '':Colors.Dark}}
                     className="btn-rounded mb-3"
                     type="button"
-                    onClick={()=>{
-                        setButtonSelection({...buttonSelection,deposit:"yes"});
-                        setPolicyData({...policyData,paymentDeposit:true})}}
+                    onClick={() => handleUpdate('paymentDeposit', true)}
                 >
                     Yes
                 </Button>
                 <Button
-                    style={{...buttonStyle, backgroundColor:buttonSelection?.deposit==='no'? '':Colors.white,color:buttonSelection?.deposit==='no'? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData.paymentDeposit===false? '':Colors.white,color:policyData.paymentDeposit===false? '':Colors.Dark}}
                     className="btn-rounded mb-3 ms-3"
                     type="button"
-                    onClick={()=>{
-                        setButtonSelection({...buttonSelection,deposit:"no"});
-                        setPolicyData({...policyData,paymentDeposit:false})}}
+                    onClick={() => handleUpdate('paymentDeposit', false)}
                 >
                     No
                 </Button>
                 {
                     policyData.paymentDeposit &&
                     <>
-                        <Form.Check className="mb-2" type="checkbox" name="yearly" label="Yearly Deposit" style={labelStyle} onChange={handleDeposit} />
-                        <Form.Group className="mb-3 w-100 w-md-20">
-                            <Form.Label style={depositLabelStyle}>How much</Form.Label>
-                            <Form.Control type="number" style={inputDepositStyle} name="yearly" onChange={handleDepositAmount} />
-                        </Form.Group>
-
-                        <Form.Check className="mb-2" type="checkbox" name="monthly" label="Monthly Deposit" style={labelStyle} onChange={handleDeposit} />
-                        <Form.Group className="mb-3 w-100 w-md-20">
-                            <Form.Label style={depositLabelStyle}>How much</Form.Label>
-                            <Form.Control type="number" style={inputDepositStyle} name="monthly" onChange={handleDepositAmount} />
-                        </Form.Group>
+                        {
+                            ["Yearly","Monthly"].map((data)=>(
+                                <div key={data}>
+                                    <Form.Check className="mb-2" type="checkbox" name={data} label={`${data} Deposit`}  style={labelStyle} onChange={(e)=>handleUpdate(`deposit.${data}.availability`, e.target.checked)} />
+                                    <Form.Group className="mb-3 w-100 w-md-20">
+                                        <Form.Label style={depositLabelStyle}>How much</Form.Label>
+                                        <Form.Control type="number" style={inputDepositStyle} name={data} onChange={(e)=>handleUpdate(`deposit.${data}.amount`, e.target.value)} />
+                                    </Form.Group>
+                                </div>
+                            ))
+                        }
                     </>
                 }
             </Container>
@@ -318,39 +339,34 @@ function Index2(props) {
             <Container className="p-3 mb-3" style={borderStyle}>
                 <h3 className="mb-3" style={titleStyle}>Do you accept install payments</h3>
                 <Button
-                    style={{...buttonStyle, backgroundColor:buttonSelection?.payment==='yes'? '':Colors.white, color:buttonSelection?.payment==='yes'? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData?.paymentInstall? '':Colors.white, color:policyData?.paymentInstall ? '':Colors.Dark}}
                     className="btn-rounded mb-3"
                     type="button"
-                    onClick={()=>{
-                        setButtonSelection({...buttonSelection,payment:"yes"});
-                        setPolicyData({...policyData,paymentInstall:true})}}
+                    onClick={() => handleUpdate('paymentInstall', true)}
+
                 >
                     Yes
                 </Button>
                 <Button
-                    style={{...buttonStyle, backgroundColor:buttonSelection?.payment==='no'? '':Colors.white,color:buttonSelection?.payment==='no'? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData?.paymentInstall===false? '':Colors.white,color:policyData?.paymentInstall===false? '':Colors.Dark}}
                     className="btn-rounded mb-3 ms-3"
                     type="button"
-                    onClick={()=>{
-                        setButtonSelection({...buttonSelection,payment:"no"});
-                        setPolicyData({...policyData,paymentInstall:false})}}
+                    onClick={() => handleUpdate('paymentInstall', false)}
                 >
                     No
                 </Button>
                 {
-                    policyData.paymentInstall &&
+                    policyData?.paymentInstall &&
                     <>
                     {
                         paymentInstallList.map((data, index)=>(
                             <div key={index}>
-                                <Form.Check className="mb-2" type="checkbox" name={data} label={data} style={labelStyle} onChange={handlePaymentInstall} />
+                                <Form.Check className="mb-2" type="checkbox" name={data} label={data} style={labelStyle} onChange={(e)=>handleUpdate(`installPayment.${data}.availability`, e.target.checked)} />
                                 {
-                                    policyData.installPercentage?.map(installData => (
-                                            installData.name === data && (
-                                        <div key={installData}>
+                                    policyData?.installPayment?.[data]?.availability && (
+                                        <div>
                                             <InputGroup className="mb-3 w-40 w-md-10 ms-4 position-relative">
-                                            <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99" name={data} onChange={handlePercentage}/>
-                                            {/*<Form.Control type="text" style={inputPaymentInstallStyle} name={data} onChange={handlePercentage} />*/}
+                                            <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99" name={data} onChange={(e)=>handleUpdate(`installPayment.${data}.amount`, e.target.value)}/>
                                             <span className="position-absolute" style={{right:5, top:"20%"}}>%</span>
                                             <OverlayTrigger placement="top" overlay={popover} >
                                                             <span className="d-inline-block">
@@ -359,7 +375,7 @@ function Index2(props) {
                                             </OverlayTrigger>
                                             </InputGroup>
                                         </div>
-                                        )))}
+                                        )}
                             </div>
                         ))
                     }
@@ -367,97 +383,153 @@ function Index2(props) {
                 }
             </Container>
 
+            {/*Regulatory information*/}
+            {/*<Container className="p-3 mb-3" style={borderStyle}>*/}
+            {/*    <h3 className="mb-3" style={titleStyle}>Regulatory information</h3>*/}
+            {/*    <p className="mb-3" style={descStyle}>Are you a professional host or a private host?</p>*/}
+            {/*    {*/}
+            {/*        regulatoryList.map((data, index)=>(*/}
+            {/*            <div key={index} className="mb-3">*/}
+            {/*                <Form.Check*/}
+            {/*                    key={index}*/}
+            {/*                    type="radio"*/}
+            {/*                    name="regulatory"*/}
+            {/*                    label={data.title}*/}
+            {/*                    style={labelStyle}*/}
+            {/*                    onChange={(e) => handleUpdate(`regulatory`, data.title)} />*/}
+            {/*                <span className="ps-0 ps-md-3" style={descStyle}>{data.description}</span>*/}
+            {/*            </div>*/}
+            {/*        ))*/}
+            {/*    }*/}
+            {/*</Container>*/}
+
             {/*cancellation*/}
             <Container className="p-3 mb-3" style={borderStyle}>
                 <h3 className="mb-3" style={titleStyle}>Default cancellation policy</h3>
                 <p className="mb-3" style={descStyle}>Cancellation policy options</p>
-                <p className="mb-3" style={labelStyle}>A cancellation window is the amount of time before your local cancellation cutoff (18:00) on the day of check-in.</p>
+                <p className="mb-3 w-100 w-md-70" style={labelStyle}>A cancellation window is the amount of time before your local cancellation cutoff (18:00) on the day of check-in.</p>
                 {
-                    cancellationList.map((data)=>(
-                        <Form.Check key={data} className="mb-2" type="radio" name="cancellationPolicy" value={data} label={data} style={labelStyle} onChange={handleChanges} />
-                    ))
-                }
-            </Container>
-
-            {/* tax and fees */}
-            <Container className="p-3 mb-3" style={borderStyle}>
-                <h3 className="mb-3" style={titleStyle}>Taxes and fees</h3>
-                <p className="mb-3" style={descStyle}>What taxes do you include in your rates?</p>
-                {
-                    taxList.map((data, index)=>(
-                        <div key={index}>
-                            <Form.Check className="mb-2" type="checkbox" name={data} label={data} style={labelStyle} onChange={handleTaxAndFees} />
+                    cancellationList.map((data, index)=>(
+                        <div key={data}>
+                            <Form.Check
+                                className="mb-2"
+                                type="radio"
+                                name="cancellationPolicy"
+                                value={data}
+                                label={data}
+                                style={labelStyle}
+                                onChange={(e) => handleUpdate(`cancellationPolicy.policy`, data)} />
                             {
-                                policyData.taxAndFees?.map(installData => (
-                                    installData.name === data && (
-                                        <div key={installData}>
-                                            <InputGroup className="mb-3 w-40 w-md-10 ms-4 position-relative">
-                                                <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99 %" name={data} onChange={handleTaxPercentage}/>
-                                                {/*<Form.Control type="number" min={0} max={100} style={inputPaymentInstallStyle} name={data} onChange={handleTaxPercentage} />*/}
-                                            </InputGroup>
-                                        </div>
-                                    )))
+                                index===0 &&
+                                <div className={policyData?.cancellationPolicy?.policy === data ? "":"d-none"}>
+                                    <ul className="w-100 w-md-70" style={{...labelStyle,listStyleType:"disc"}}>
+                                        <li>Travelers who cancel 24 hours or more before 18:00 on the day of check-in are charged no fee.</li>
+                                        <li>Travelers who cancel less than 24 hours before 18:00 on the day of check-in (including no-shows) are charged:</li>
+                                    </ul>
+                                    <div className="w-100 w-md-35 ps-3 mb-3">
+                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.cancellationFee', selectedValue)}/>
+                                    </div>
+
+                                </div>
                             }
+                            {
+                                index===1 &&
+                                <div className={policyData?.cancellationPolicy?.policy === data ? "":"d-none"}>
+                                    <ul className="w-100 w-md-70" style={{...labelStyle,listStyleType:"disc"}}>
+                                        <li>Travelers who cancel 48 hours or more before 18:00 on the day of check-in are charged no fee.</li>
+                                        <li>Travelers who cancel less than 48 hours before 18:00 on the day of check-in (including no-shows) are charged:</li>
+                                    </ul>
+                                    <div className="w-100 w-md-35 ps-3 mb-3">
+                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.cancellationFee', selectedValue)}/>
+                                    </div>
+
+                                </div>
+                            }
+                            {
+                                index===2 &&
+                                <div className={policyData?.cancellationPolicy?.policy === data ? "":"d-none"}>
+                                    <ul className="w-100 w-md-70" style={{...labelStyle,listStyleType:"disc"}}>
+                                        <li>Travelers who cancel 72 hours or more before 18:00 on the day of check-in are charged no fee.</li>
+                                        <li>Travelers who cancel less than 72 hours before 18:00 on the day of check-in (including no-shows) are charged:</li>
+                                    </ul>
+                                    <div className="w-100 w-md-35 ps-3 mb-3">
+                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.cancellationFee', selectedValue)}/>
+                                    </div>
+
+                                </div>
+                            }
+                            {
+                                index===3 &&
+                                <div className={policyData?.cancellationPolicy?.policy === data ? "":"d-none"}>
+                                    <ul className="w-100 w-md-70" style={{...labelStyle,listStyleType:"disc"}}>
+                                        <li>Travelers who cancel 72 hours or more before 18:00 on the day of check-in are charged no fee.</li>
+                                    </ul>
+                                </div>
+                            }
+
                         </div>
                     ))
                 }
             </Container>
 
+            {/* tax and fees */}
+            {/*<Container className="p-3 mb-3" style={borderStyle}>*/}
+            {/*    <h3 className="mb-3" style={titleStyle}>Taxes and fees</h3>*/}
+            {/*    <p className="mb-3" style={descStyle}>What taxes do you include in your rates?</p>*/}
+            {/*    {*/}
+            {/*        taxList.map((data, index)=>(*/}
+            {/*            <div key={index}>*/}
+            {/*                <Form.Check className="mb-2" type="checkbox" name={data} label={data} style={labelStyle} onChange={handleTaxAndFees} />*/}
+            {/*                {*/}
+            {/*                    policyData.taxAndFees?.map(installData => (*/}
+            {/*                        installData.name === data && (*/}
+            {/*                            <div key={installData}>*/}
+            {/*                                <InputGroup className="mb-3 w-40 w-md-10 ms-4 position-relative">*/}
+            {/*                                    <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99 %" name={data} onChange={handleTaxPercentage}/>*/}
+            {/*                                    /!*<Form.Control type="number" min={0} max={100} style={inputPaymentInstallStyle} name={data} onChange={handleTaxPercentage} />*!/*/}
+            {/*                                </InputGroup>*/}
+            {/*                            </div>*/}
+            {/*                        )))*/}
+            {/*                }*/}
+            {/*            </div>*/}
+            {/*        ))*/}
+            {/*    }*/}
+            {/*</Container>*/}
+
             {/* rental */}
             <Container className="p-3 mb-3" style={borderStyle}>
-                <h3 className="mb-3" style={titleStyle}>Taxes and fees</h3>
-                <p className="mb-3" style={descStyle}>What taxes do you include in your rates?</p>
+                <h3 className="mb-3" style={titleStyle}>Discounts for Long-Term Rentals</h3>
+                <p className="mb-3" style={descStyle}>Would you like to offer a discount?</p>
                 {
                     rentalList.map((data, index)=>(
                         <div key={index}>
                             <h4 className="mb-3" style={labelStyle}>For rentals over {data} months</h4>
                             {/*<Form.Control type="submit" style={buttonStyle} name={data} onChange={handleTaxPercentage} />*/}
                             <Button
-                                style={{...buttonStyle, backgroundColor:buttonSelection?.[data]==='yes'? '':Colors.white, color:buttonSelection?.[data]==='yes'? '':Colors.Dark}}
+                                style={{...buttonStyle, backgroundColor:policyData?.rentalDiscount?.[data]?.availability ? '':Colors.white, color:policyData?.rentalDiscount?.[data]?.availability ? '':Colors.Dark}}
                                 className="btn-rounded mb-3"
                                 type="button"
-                                value="true"
-                                onClick={()=>{
-                                    setButtonSelection({ ...buttonSelection, [data]: "yes" });
-                                    handleRental({
-                                        target: {
-                                            name: `For rentals over ${data} months`,
-                                            value: 'true'
-                                        }
-                                    });
-                                }}
-                                name={`For rentals over ${data} months`}
+                                onClick={() => handleUpdate(`rentalDiscount.${data}.availability`, true)}
                             >
                                 Yes
                             </Button>
                             <Button
-                                style={{...buttonStyle, backgroundColor:buttonSelection?.[data]==='no'? '':Colors.white,color:buttonSelection?.[data]==='no'? '':Colors.Dark}}
+                                style={{...buttonStyle, backgroundColor:policyData?.rentalDiscount?.[data]?.availability === false? '':Colors.white,color:policyData?.rentalDiscount?.[data]?.availability === false? '':Colors.Dark}}
                                 className="btn-rounded mb-3 ms-3"
                                 type="button"
-                                value="false"
-                                onClick={()=>{
-                                    setButtonSelection({ ...buttonSelection, [data]: "no" });
-                                    handleRental({
-                                        target: {
-                                            name: `For rentals over ${data} months`,
-                                            value: 'false'
-                                        }
-                                    });
-                                }}
-                                name={`For rentals over ${data} months`}
+                                onClick={() => handleUpdate(`rentalDiscount.${data}.availability`, false)}
                             >
                                 No
                             </Button>
                             {
-                                policyData.rentalDiscount?.map(installData => (
-                                    installData.name === `For rentals over ${data} months` && installData.availability && (
-                                        <div key={installData}>
-                                            <InputGroup className="mb-3 w-40 w-md-10 ms-4 position-relative">
-                                                <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99 %" name={`For rentals over ${data} months`} onChange={handleRentalPercentage}/>
-                                                {/*<Form.Control type="submit" style={inputPaymentInstallStyle} name={data} onChange={handleTaxPercentage} />*/}
-                                            </InputGroup>
-                                        </div>
-                                    )))
+                                policyData?.rentalDiscount?.[data]?.availability &&(
+                                    <>
+                                        <p className="mb-1" style={depositLabelStyle}>Discount percentage</p>
+                                        <InputGroup className="mb-3 w-40 w-md-20">
+                                            <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99 %" onChange={(e) => handleUpdate(`rentalDiscount.${data}.percentage`, e.target.value)}/>
+                                        </InputGroup>
+                                    </>
+                                )
                             }
                         </div>
                     ))

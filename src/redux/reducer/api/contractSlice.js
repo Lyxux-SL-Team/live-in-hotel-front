@@ -1,17 +1,17 @@
 import { apiSlice } from "./apiSlice";
 
-const USERS_URL = "/property";
+const USERS_URL = "/contract";
 
-export const propertyApiSlice = apiSlice.injectEndpoints({
+export const contractApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        registerProperty: builder.mutation({
+        registerContact: builder.mutation({
             query: (data) => ({
-                url: `${USERS_URL}/properties`,
+                url: `${USERS_URL}/contracts`,
                 method: "POST",
                 body: data,
             }),
         }),
-        isPropertyVerified: builder.mutation({
+        isContactVerified: builder.mutation({
             query: (data) => ({
                 url: `${USERS_URL}/verify/${data}`,
                 method: "GET",
@@ -20,6 +20,6 @@ export const propertyApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const {useRegisterPropertyMutation, useIsPropertyVerifiedMutation} = propertyApiSlice;
+export const {useRegisterContactMutation, useIsContactVerifiedMutation} = contractApiSlice;
 
 

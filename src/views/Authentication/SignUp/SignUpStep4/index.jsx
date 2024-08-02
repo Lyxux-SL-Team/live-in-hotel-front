@@ -12,7 +12,7 @@ import CommanFooter1 from "../../CommanFooter1";
 import SimpleHeader from "../../SimpleHeader";
 import {colors, colors as Colors} from "../../../../configs/colors.js";
 import {useLocationSuggestMutation} from "../../../../redux/reducer/api/hotelSlice.js";
-import SignupFooter from "../../../../components/footer/SignupFooter.jsx";
+import SignupFooter from "../../../../layout/Footer/SignupFooter.jsx";
 
 const locations = ['Abu Dhabi - United Arab Emirates', 'Abu Dhabi University - Abu Dhabi - United Arab Emirates',];
 const Signup = (props) => {

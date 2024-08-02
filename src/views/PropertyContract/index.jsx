@@ -6,11 +6,12 @@ import {Link, useHistory} from "react-router-dom";
 import Agreement from "./Agreement.jsx";
 
 const repeat = [1, 2, 3]
-const PropertyContract = () => {
+const PropertyContract = (props) => {
 
     const history = useHistory();
 
-    const [nextPage, setNextPage] = useState(false)
+    const [nextPage, setNextPage] = useState(false);
+    const message =props.location.state;
 
     const paragraphStyle = {color: Colors.Grey, fontSize: 14};
     return (
@@ -48,7 +49,7 @@ const PropertyContract = () => {
                 <Container className="mb-3 p-3" style={{border: `1px solid ${Colors.white2}`}}>
                     <p style={{fontSize: 14, color: Colors.Dark}}>Agreement Type: <span style={{fontWeight: 600}}>Live in Hotels Traveler Preference</span>
                     </p>
-                    <p className="w-80" style={{fontSize: 14, color: Colors.Dark}}>Travelers have the option to pay
+                    <p className="w-100 w-md-80" style={{fontSize: 14, color: Colors.Dark}}>Travelers have the option to pay
                         you when
                         they stay, or pay us when they book. This is the most flexible payment option and appeals to
                         the widest
@@ -91,7 +92,7 @@ const PropertyContract = () => {
                 <Button
                     style={{backgroundColor: Colors.Dark}}
                     className="btn-rounded mb-3"
-                    onClick={() => history.push('property-contract/agreement')}
+                    onClick={() => history.push('property-contract/agreement',message)}
                 >
                     Next
                 </Button>

@@ -9,6 +9,7 @@ import Sidebar from '../../Sidebar/Sidebar';
 import { useWindowWidth } from '@react-hook/window-size';
 import ChatBotInterface from '../../../views/ChatPopup/ChatBot/ChatBotInterface';
 import {colors as Colors} from "../../../configs/colors.js";
+import SignupFooter from "../../Footer/SignupFooter.jsx";
 
 const LayoutClassic = ({ children, navCollapsed, topNavCollapsed, toggleCollapsedNav, maximize }) => {
 
@@ -52,7 +53,7 @@ const LayoutClassic = ({ children, navCollapsed, topNavCollapsed, toggleCollapse
             {dashboardRoute && <ChatBotInterface show={false} />}
             <div className={classNames("hk-pg-wrapper", { "pb-0": appRoutes })} style={{backgroundColor:propertyContract? Colors.white4:""}}>
                 {children}
-                {!appRoutes && <PageFooter />}
+                {!appRoutes && <SignupFooter />}
             </div>
         </div>
     )

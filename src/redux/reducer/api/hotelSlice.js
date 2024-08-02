@@ -18,9 +18,15 @@ export const hotelApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    isHotelVerified: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/verify/${data}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const {useLocationSuggestMutation, useRegisterHotelMutation} = hotelApiSlice;
+export const {useLocationSuggestMutation, useRegisterHotelMutation, useIsHotelVerifiedMutation} = hotelApiSlice;
 
 

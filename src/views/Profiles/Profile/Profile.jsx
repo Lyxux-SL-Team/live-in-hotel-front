@@ -34,10 +34,41 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Plus} from "react-feather";
 
+const hotelList=[
+    {
+        hotel:"Begin Hotel",
+        id:"344343"
+    },
+    {
+        hotel:"Aview var",
+        id:"344343"
+    },
+    {
+        hotel:"Sha Hotel",
+        id:"344343"
+    },
+]
 
 function MyProfile(props) {
     const [editProfile, setEditProfile] = useState(false);
     const [editData, setEditData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [manageNotificationOpen, setManageNotificationOpen] = useState({});
+    console.log(manageNotificationOpen)
+
+    const listPerPage = 2;
+    const totalPages = Math.ceil(hotelList.length / listPerPage);
+
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber > 0 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
+    const displayedProperties = hotelList.slice(
+        (currentPage - 1) * listPerPage,
+        currentPage * listPerPage
+    );
 
     console.log(editData);
 
@@ -437,88 +468,70 @@ function MyProfile(props) {
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td className="text-truncate">
-                                    <Stack direction="horizontal" className="align-items-start">
-                                        <img className="rounded-30" src={PropertyImage} alt="liveinhotels" width={40}
-                                             height={40}/>
-                                        <Stack className="ms-2">
-                                            <p className="mb-1" style={{color: colors.FooterBlue, fontSize: 12}}>begin
-                                                hotel</p>
-                                            <p style={{color: colors.Grey4, fontSize: 12}}>ID: 106153498</p>
-                                            <p className="mb-2" style={{color: colors.Grey4, fontSize: 12}}>Tel Aviv,
-                                                ISR</p>
-                                            <Badge bg="primary"
-                                                   style={{width: 'fit-content', transform: 'skew(-10deg)',}}>
-                                                <span style={{
-                                                    fontSize: 10,
-                                                    color: colors.white,
-                                                    transform: 'skew(10deg)'
-                                                }}>Inactive</span>
-                                            </Badge>
-                                        </Stack>
-                                    </Stack>
-                                </td>
-                                <td className="text-truncate"
-                                    style={{color: colors.Grey4, fontSize: 12}}>Administrator
-                                </td>
-                                <td className="text-truncate"><img src={MenuIcon} alt="liveinhotels" width={20}/></td>
-                            </tr>
-                            <tr className="table-row-gap">
-                                <td/>
-                            </tr>
-                            <tr>
-                                <td className="text-truncate">
-                                    <Stack direction="horizontal" className="align-items-start">
-                                        <img className="rounded-30" src={PropertyImage} alt="liveinhotels" width={40}
-                                             height={40}/>
-                                        <Stack className="ms-2">
-                                            <p className="mb-1" style={{color: colors.FooterBlue, fontSize: 12}}>begin
-                                                hotel</p>
-                                            <p style={{color: colors.Grey4, fontSize: 12}}>ID: 106153498</p>
-                                            <p className="mb-2" style={{color: colors.Grey4, fontSize: 12}}>Tel Aviv,
-                                                ISR</p>
-                                            <Badge bg="primary"
-                                                   style={{width: 'fit-content', transform: 'skew(-10deg)',}}>
-                                                <span style={{
-                                                    fontSize: 10,
-                                                    color: colors.white,
-                                                    transform: 'skew(10deg)'
-                                                }}>Inactive</span>
-                                            </Badge>
-                                        </Stack>
-                                    </Stack>
-                                </td>
-                                <td className="text-truncate"
-                                    style={{color: colors.Grey4, fontSize: 12}}>Administrator
-                                </td>
-                                <td className="text-truncate"><img src={MenuIcon} alt="liveinhotels" width={20}/></td>
-                            </tr>
+                            {
+                                displayedProperties.map((data,index)=>
+                                    <>
+                                        <tr>
+                                            <td>
+                                                <Stack direction="horizontal" className="align-items-start">
+                                                    <img className="rounded-30" src={PropertyImage} alt="liveinhotels" width={40}
+                                                         height={40}/>
+                                                    <Stack className="ms-2">
+                                                        <p className="mb-1" style={{color: colors.FooterBlue, fontSize: 12}}>{data.hotel}</p>
+                                                        <p style={{color: colors.Grey4, fontSize: 12}}>ID: 106153498</p>
+                                                        <p className="mb-2" style={{color: colors.Grey4, fontSize: 12}}>Tel Aviv,
+                                                            ISR</p>
+                                                        <Badge bg="primary"
+                                                               style={{width: 'fit-content', transform: 'skew(-10deg)',}}>
+                                                        <span style={{fontSize: 10, color: colors.white, transform: 'skew(10deg)'
+                                                            }}>Inactive</span>
+                                                        </Badge>
+                                                    </Stack>
+                                                </Stack>
+                                            </td>
+                                            <td
+                                                style={{color: colors.Grey4, fontSize: 12}}>Administrator
+                                            </td>
+                                            <td>
+                                                <div className="position-relative">
+                                                <img src={MenuIcon} alt="liveinhotels" width={20} onClick={()=>setManageNotificationOpen({index:index})} />
+                                                    <Container
+                                                        className={manageNotificationOpen.index===index? "position-absolute py-1 px-2 bg-white z-index-10": "d-none"}
+                                                        style={{border:`1px solid ${colors.white1}`, borderRadius:10, right:30, bottom:25, width:"fit-content"}}
+                                                        onMouseLeave={()=>setManageNotificationOpen({})}
+                                                    >
+                                                        <span style={{fontSize:14,color:colors.Dark}}>Manage notifications</span>
+                                                    </Container>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr className="table-row-gap">
+                                            <td/>
+                                        </tr>
+                                    </>
+                                )
+                            }
                             </tbody>
-                            <tfoot className="">
-                            <Pagination className='custom-pagination pagination-filled align-items-center'>
-                                <i className="ri-arrow-left-s-line" style={{fontSize: 24}}/>
-                                {/*<Pagination.Item active>{1}</Pagination.Item>*/}
-                                {/*<Pagination.Item>{2}</Pagination.Item>*/}
-                                {/*<Pagination.Item>{3}</Pagination.Item>*/}
-
-                                {/*<Pagination.Ellipsis />*/}
-                                {/*<Pagination.Item>{15}</Pagination.Item>*/}
-                                <span>1-1 of 1</span>
-                                <i className="ri-arrow-right-s-line" style={{fontSize: 24}}/>
-                            </Pagination>
-                            </tfoot>
                         </Table>
+                        <Stack direction="horizontal" className="justify-content-end py-3 px-1 px-md-2">
+                            <Button variant="link" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                                <i className="ri-arrow-left-s-line" style={{ fontSize: 24 }} />
+                            </Button>
+                            <span>{`${(currentPage - 1) * listPerPage + 1}-${Math.min(currentPage * listPerPage, hotelList.length)} of ${hotelList.length}`}</span>
+                            <Button variant="link" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                                <i className="ri-arrow-right-s-line" style={{ fontSize: 24 }} />
+                            </Button>
+                        </Stack>
                     </Container>
                 </Col>
                 <Col>
                     <Container className="p-3" style={{border: `1px solid ${colors.white2}`}}>
                         <h3 className="mb-3" style={{fontSize: 16, color: colors.Dark}}>Quick links</h3>
-                        <Link className="d-block mb-2" to="#" style={{color: colors.FooterBlue, fontSize: 12}}>Edit
+                        <Link className="d-block mb-2" to="/manage-property" style={{color: colors.FooterBlue, fontSize: 12}}>Edit
                             multi-property notifications</Link>
                         <Link className="d-block mb-2" to="#" style={{color: colors.FooterBlue, fontSize: 12}}>Secure
                             your account</Link>
-                        <Link className="d-block mb-2" to="#" style={{color: colors.FooterBlue, fontSize: 12}}>Manage
+                        <Link className="d-block mb-2" to="/role-specialties" style={{color: colors.FooterBlue, fontSize: 12}}>Manage
                             role specialties</Link>
                     </Container>
                 </Col>
