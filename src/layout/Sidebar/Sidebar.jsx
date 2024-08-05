@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button, Card, Nav } from 'react-bootstrap';
 import SimpleBar from 'simplebar-react';
 import { connect } from 'react-redux';
@@ -17,6 +17,12 @@ const Sidebar = ({ navCollapsed, toggleCollapsedNav }) => {
     const [activeSubMenu, setActiveSubMenu] = useState();
 
     const windowWidth = useWindowWidth();
+
+    useEffect(()=>{
+        if (windowWidth <= 1199) {
+            toggleCollapsedNav(false);
+        }
+    },[windowWidth])
 
     const handleClick = (menuName) => {
         setActiveMenu(menuName);

@@ -1,6 +1,6 @@
 import React from 'react';
 import {InputGroup,Form} from "react-bootstrap";
-import {colors as Colors} from "../../../configs/colors.js";
+import {colors as Colors} from "../../configs/colors.js";
 
 function CustomInputWithBlue({onChange}) {
 

@@ -37,10 +37,10 @@ function Welcome(props) {
     }
     if(message.type==="Property"){
       const res = await isPropertyVerified(message.data._id);
-      if (res.data?.success){
+      if (res.data.success){
         props.history.push('/property-contract',{message})
       } else{
-        toast.error(res.error.data.message, {
+        toast.error("Please Confirm the Email", {
           toastId: "toast4",
           position: "top-right",
           className: 'jq-toast-danger',

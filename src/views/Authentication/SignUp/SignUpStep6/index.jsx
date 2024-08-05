@@ -29,7 +29,7 @@ const Signup = (props) => {
 
     const FormData = z.object({
         propertyType: z.enum(selectProperty, {message: "Please select a property type."}),
-        numberOfUnites: z.string().regex(/^\d+$/, {message: "must be a number"})
+        numberOfUnits: z.string().regex(/^\d+$/, {message: "must be a number"})
             .min(1, {message: "No of Rooms is required"}),
         legalName: z.string().min(1, {message: "Legal Name of Property is required"}),
         legalNumber: z.string().min(1, {message: "Trade Licence Number is required"}),
@@ -58,7 +58,6 @@ const Signup = (props) => {
         console.log(data)
         if (data.propertyType==="Hotel"){
             const res = await registerHotel(data);
-            console.log(res)
             if(res.data.success){
                 props.history.push("/auth/welcome",{success:true, data:res.data.data, type:data.propertyType});
             } else {
@@ -75,9 +74,8 @@ const Signup = (props) => {
 
         } else if(data.propertyType==="Property"){
             const res = await registerProperty(data);
-            console.log(res)
             if(res.data.success){
-                props.history.push("/auth/welcome",{success:true, data:res.data, type:data.propertyType});
+                props.history.push("/auth/welcome",{success:true, data:res.data.property, type:data.propertyType});
             } else {
                 toast.error(res.error.data.message, {
                     toastId: "toast4",
@@ -168,13 +166,13 @@ const Signup = (props) => {
                         <Form.Group className="mb-3">
                             <Form.Label style={subTitleStyle}>Number of units (number of inventories)</Form.Label>
                             <Form.Control
-                                {...register('numberOfUnites')}
+                                {...register('numberOfUnits')}
                                 onChange={handleChanges}
                                 style={paragraphStyle}
                                 placeholder="Enter Number of rooms"
                             />
-                            {errors.numberOfUnites?.message &&
-                                <p className="text-danger">{errors.numberOfUnites?.message}</p>}
+                            {errors.numberOfUnits?.message &&
+                                <p className="text-danger">{errors.numberOfUnits?.message}</p>}
                         </Form.Group>
 
                         {/* Legal Name of Property */}

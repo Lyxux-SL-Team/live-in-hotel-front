@@ -11,11 +11,11 @@ import { Button } from 'react-bootstrap';
 const SidebarHeader = ({ navCollapsed, toggleCollapsedNav }) => {
 
     const toggleSidebar = () => {
-        toggleCollapsedNav(!navCollapsed);
+        toggleCollapsedNav(navCollapsed);
         document.getElementById('tggl-btn').blur();
     }
-    toggleCollapsedNav(false);
-    console.log(navCollapsed);
+    // toggleCollapsedNav(false);
+    // console.log(navCollapsed);
     return (
         <div className="menu-header">
             <span>

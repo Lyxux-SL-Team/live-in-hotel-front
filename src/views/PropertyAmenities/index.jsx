@@ -18,7 +18,8 @@ const PoliciesAndSettings = () => {
     GuestsCheckIn: { isLateCheckAvailable: false, from: '', to: '', noCheckInEnd: false },
     GuestsCheckOut: { checkOutTime: '' },
     Internet: {
-      isInternet: false, options: [
+      isInternet: false,
+      options: [
         {
           option: "Wi-Fi in guestrooms", isNeeded: false, data:
             { type: 'free', speed: 25, amount: 3, payType: 'month', restrictionsApply: false }
@@ -48,7 +49,8 @@ const PoliciesAndSettings = () => {
       ]
     },
     Parking: {
-      isParking: false, options: [
+      isParking: false,
+      options: [
         {
           option: 'Self parking', isNeeded: false, data:
           {

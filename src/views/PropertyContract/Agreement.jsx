@@ -30,12 +30,22 @@ function Agreement(props) {
         if(!contractAgree){
             if (message.type==="Hotel"){
                 const res = await registerContact({...data,hotelId:message.data._id});
-                console.log(res);
+                // if(res.data.success){
+                //     isContractSigned();
+                // }
             }
             if (message.type==="Property"){
                 const res = await registerContact({...data, hotelId:message.data._id});
-                console.log(res);
+                // if(res.data.success){
+                //     isContractSigned();
+                // }
             }
+        }
+        return isContractSigned();
+    }
+    const handleNext = ()=>{
+        if(contractAgree){
+            props.history.push('/policies-and-settings',message)
         }
     }
     return (
@@ -167,6 +177,20 @@ function Agreement(props) {
                         </tr>
                         </tbody>
                     </Table>
+                    <Stack className="align-items-end mt-5">
+                        <Button
+                            style={{backgroundColor: Colors.Dark}}
+                            className="btn-rounded mb-3"
+                            onClick={handleNext}
+                        >
+                        <span>
+                            <span>Next</span>
+                            {isLoading && (
+                                <span className="input-suffix ms-2"> <Spinner animation="border" size="sm" /></span>
+                            )}
+                         </span>
+                        </Button>
+                    </Stack>
                 </Container>
             }
         </Container>

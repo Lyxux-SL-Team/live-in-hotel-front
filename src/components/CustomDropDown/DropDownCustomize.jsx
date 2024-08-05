@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Collapse, Container, Form, InputGroup } from 'react-bootstrap';
-import { colors as Colors } from '../../../configs/colors.js';
+import { colors as Colors } from '../../configs/colors.js';
 
 function DropDownCustomize({ list, onChange, borderChange }) {
     const [open, setOpen] = useState(false);

@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
-import {Button, Container, Stack, Form} from "react-bootstrap";
-import {colors as Colors} from "../../configs/colors.js";
-import DropDownCustomize from "./Components/DropDownCustomize.jsx";
+import {Button, Container, Stack, Form, OverlayTrigger, Popover} from "react-bootstrap";
+import {colors, colors as Colors} from "../../configs/colors.js";
+import DropDownCustomize from "../../components/CustomDropDown/DropDownCustomize.jsx";
 import * as Icon from "./Icons/index.jsx";
-import CustomInputWithBlue from "./Components/CustomInputWithBlue.jsx";
+import CustomInputWithBlue from "../../components/CustomInput/CustomInputWithBlue.jsx";
 import {
     AnimalPrint,
     CarParking, Cleaningbroom,
@@ -14,8 +14,11 @@ import {
     SwimmingPool,
     Wheelchair
 } from "./Icons/index.jsx";
+import InfoIcon from "../../assets/img/info-icon.png";
+import InputWithArrowUpAndDown from "../../components/CustomInput/InputWithArrowUpAndDown.jsx";
 
 const timeList = ["06.00 AM", "06.30 AM", "07.00 AM", "07.30 AM", "08.00 AM"];
+const dayList = ["Monday","Tuesday","Wednesday","Thursdays","Friday","Saturday","Sunday"];
 const guestUnitAccessList =[
     {
         title:"Access code",
@@ -42,24 +45,75 @@ const ageList = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
 const internetList = ["Wi-Fi in guestrooms","Wi-Fi in public areas","Wired internet in guestrooms","Wired internet in public areas","Dial-up internet in guestrooms","Dial-up internet in public areas"];
 const netSpeedList=["25+ Mbps","50+ Mbps","100+ Mbps","250+ Mbps","500+ Mbps"];
 const Amenities = (props) => {
-    const [amenitiesData, setAmenitiesData] = useState({});
+    const [amenitiesData, setAmenitiesData] = useState({internet:{options:[]}});
     console.log(amenitiesData)
 
-    const handleUpdate = (path, value) => {
+    // const handleUpdate = (path, value) => {
+    //     setAmenitiesData(prevState => {
+    //         const newState = { ...prevState };
+    //         const keys = path.split('.');
+    //         let currentLevel = newState;
+    //         keys.slice(0, -1).forEach(key => {
+    //             if (!currentLevel[key]) {
+    //                 currentLevel[key] = {};
+    //             }
+    //             currentLevel = currentLevel[key];
+    //         });
+    //         currentLevel[keys[keys.length - 1]] = value;
+    //         return newState;
+    //     });
+    // };
+
+    const handleUpdate = (path, value, type='default', event = null) => {
         setAmenitiesData(prevState => {
             const newState = { ...prevState };
             const keys = path.split('.');
             let currentLevel = newState;
-            keys.slice(0, -1).forEach(key => {
-                if (!currentLevel[key]) {
-                    currentLevel[key] = {};
+
+            if (type === 'default') {
+                keys.slice(0, -1).forEach(key => {
+                    if (!currentLevel[key]) {
+                        currentLevel[key] = {};
+                    }
+                    currentLevel = currentLevel[key];
+                });
+                currentLevel[keys[keys.length - 1]] = value;
+            } else if (type === 'checked' && event) {
+                const optionName = event.target.name;
+                const isOptionExist = currentLevel[keys[0]]?.options?.find(d => d.option === optionName);
+
+                if (value && !isOptionExist) {
+                    currentLevel[keys[0]].options.push({ option: optionName, isAvailable: event.target.checked });
+                } else if (!value) {
+                    currentLevel[keys[0]].options = currentLevel[keys[0]].options.map(d =>
+                        d.option === optionName ? { ...d, isAvailable: event.target.checked } : d
+                    );
                 }
-                currentLevel = currentLevel[key];
-            });
-            currentLevel[keys[keys.length - 1]] = value;
+            } else if (type === 'type' && event) {
+                const name = event.target.name;
+                const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === name);
+                if (optionIndex !== -1) {
+                    currentLevel[keys[0]].options[optionIndex][type] = value;
+                }
+            } else if ((type === 'amount' || type === 'percentage') && event) {
+                const optionName = event.target.name;
+                const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === optionName);
+
+                if (optionIndex !== -1) {
+                    currentLevel[keys[0]].options[optionIndex][type] = value;
+                }
+            }
             return newState;
         });
     };
+
+    // const popover = (
+    //     <Popover id="popover-basic" className="custom-popover ms-3">
+    //         <Popover.Body style={{color:colors.white,fontSize:10, backgroundColor:colors.FooterBlue}}>
+    //             If you have a Virtual front desk(you can select this option)
+    //         </Popover.Body>
+    //     </Popover>
+    // );
 
     const titleStyle = {fontSize: 18, color: Colors.Dark};
     const subStyle = {fontSize: 20, color: Colors.Dark, fontWeight:600};
@@ -130,6 +184,19 @@ const Amenities = (props) => {
                         No
                     </Button>
                 </Stack>
+                {
+                    amenitiesData?.fontDesk?.isAvailable ===false &&
+
+                    <Stack className="position-relative mb-3" style={{width:"fit-content"}}>
+                        <Form.Check name="virtualFontDesk" type="checkbox" label="Virtual front desk" style={labelStyle}
+                                    onChange={(e) => handleUpdate('fontDesk.virtualFontDesk', e.target.checked)}/>
+                        {/*<OverlayTrigger placement="top" overlay={popover} >*/}
+                             <span className="d-inline-block">
+                                 <img className="ms-2" src={InfoIcon} alt="liveinhotel" style={{position:"absolute", right:-25, top:3}}/>
+                             </span>
+                        {/*</OverlayTrigger>*/}
+                    </Stack>
+                }
                 {amenitiesData?.fontDesk?.isAvailable && (
                     <>
                         <p className="mb-3" style={descStyle}>What is the front desk schedule?</p>
@@ -142,8 +209,21 @@ const Amenities = (props) => {
                                         onChange={() => handleUpdate('fontDesk.deskSchedule.schedule', '24/7')}/>
                         </Stack>
 
+                        {amenitiesData?.fontDesk?.deskSchedule?.schedule ==='selected days' && (
+                            <Stack direction="horizontal" className="my-3 w-90 w-md-40 w-lg-30" gap={3}>
+                                <Stack>
+                                    <p style={{...descStyle, fontSize: 12}}>Start Day</p>
+                                    <DropDownCustomize list={dayList} onChange={(selectedValue) => handleUpdate('fontDesk.deskSchedule.startDay', selectedValue)}/>
+                                </Stack>
+                                <Stack>
+                                    <p style={{...descStyle, fontSize: 12}}>End Day</p>
+                                    <DropDownCustomize list={dayList} onChange={(selectedValue) => handleUpdate('fontDesk.deskSchedule.endDay', selectedValue)}/>
+                                </Stack>
+                            </Stack>
+                        )}
+
                         {amenitiesData?.fontDesk?.deskSchedule?.schedule && (
-                            <Stack direction="horizontal" className="my-3 w-80 w-md-30" gap={3}>
+                            <Stack direction="horizontal" className="my-3 w-100 w-md-40 w-lg-30" gap={3}>
                                 <Stack>
                                     <p style={{...descStyle, fontSize: 12}}>Desk opens</p>
                                     <DropDownCustomize list={timeList} onChange={(selectedValue) => handleUpdate('fontDesk.deskSchedule.deskOpens', selectedValue)}/>
@@ -208,7 +288,7 @@ const Amenities = (props) => {
                         <DropDownCustomize list={timeList} onChange={(selectedValue) => handleUpdate('fontDesk.guestCheckIn.to', selectedValue)}/>
                     </Stack>
                 </Stack>
-                <Form.Check name="deskSchedule" type="radio" label="No check-in end time" style={labelStyle}
+                <Form.Check name="deskSchedule" type="checkbox" label="No check-in end time" style={labelStyle}
                             onChange={() => handleUpdate('fontDesk.guestCheckIn.noCheckingEndTime', true)}/>
                 <p className="my-2" style={descStyle}>Is late check-in available?</p>
                 <Stack direction="horizontal" gap={2}>
@@ -285,13 +365,18 @@ const Amenities = (props) => {
                     {
                         internetList.map((data,index)=>(
                             <div className="mb-3" key={index}>
-                            <Form.Check type="checkbox" label={data} onChange={(e) => handleUpdate(`internet.${data}.isAvailable`, e.target.checked)}/>
+                            <Form.Check type="checkbox" label={data} name={data} onChange={(e) => handleUpdate('internet.options', e.target.checked, 'checked', e)}/>
                                 {
-                                    index !== 5 && amenitiesData?.internet?.[data]?.isAvailable &&
+                                    index !== 5 && amenitiesData?.internet?.options.find(option => option.option === data)?.isAvailable &&
                                     <div className="ps-3">
                                         <Stack direction="horizontal" gap={3} className="mt-3">
-                                            <Form.Check type="radio" name="internetType" label="Free" onChange={(e) => handleUpdate(`internet.${data}.type`, 'free')}/>
-                                            <Form.Check type="radio" name="internetType" label="Surcharge" onChange={(e) => handleUpdate(`internet.${data}.type`, "Surcharge")}/>
+                                            {
+                                                ["Free","Surcharge"].map((data)=>
+                                                    <Form.Check key={data} type="radio" name="type" label={data} onChange={(e) => handleUpdate(`internet.options`, data,'type', e)}/>
+                                                )
+                                            }
+                                            {/*<Form.Check type="radio" name="type" label="Free" onChange={(e) => handleUpdate(`internet.options.type`, 'free','checked')}/>*/}
+                                            {/*<Form.Check type="radio" name="type" label="Surcharge" onChange={(e) => handleUpdate(`internet.${data}.type`, "Surcharge")}/>*/}
                                         </Stack>
                                         {
                                             index===0 && amenitiesData?.internet?.[data]?.type==='free' &&
@@ -302,42 +387,42 @@ const Amenities = (props) => {
                                         }
                                         {
                                             amenitiesData?.internet?.[data]?.type==='Surcharge' &&
-                                            <Stack direction="horizontal" gap={2} className="w-100 w-md-60 my-3 align-items-center">
-                                                <Stack className="w-80 w-md-20">
+                                            <Stack direction="horizontal" gap={2} className="w-100 w-md-60 my-3 align-items-end">
+                                                <div className="w-80 w-md-35">
                                                     <p style={{...descStyle, fontSize: 12}}>In-room WiFi fee amount -</p>
-                                                    <CustomInputWithBlue onChange={(value) => handleUpdate(`internet.${data}.fee`, value)}/>
-                                                </Stack>
-                                                <Stack className="w-80 w-md-20 pt-5 pt-lg-3 mt-1">
+                                                    <InputWithArrowUpAndDown mask={false} value={0} onChange={(value) => handleUpdate(`internet.${data}.fee`, value)}/>
+                                                </div>
+                                                <div className="w-80 w-md-35">
                                                     <DropDownCustomize borderChange={true} list={["Per month","Per year"]} onChange={(selectedValue) => handleUpdate(`internet.${data}.duration`, selectedValue)}/>
-                                                </Stack>
-                                                <Stack className="w-80 w-md-20">
+                                                </div>
+                                                <div className="w-80 w-md-35">
                                                     <p style={{...descStyle, fontSize: 12}}>Minimum WiFi speed</p>
                                                     <DropDownCustomize borderChange={true} list={netSpeedList} onChange={(selectedValue) => handleUpdate(`internet.${data}.speed`, selectedValue)}/>
-                                                </Stack>
+                                                </div>
                                             </Stack>
                                         }
                                         {
                                             (index === 0 || index === 1) && amenitiesData?.internet?.[data]?.type &&
                                             <>
-                                                <Form.Check type="radio" label="Restrictions apply" onChange={(e) => handleUpdate(`internet.${data}.restrictions.isRestrict`, e.target.checked)}/>
+                                                <Form.Check type="checkbox" label="Restrictions apply" onChange={(e) => handleUpdate(`internet.${data}.restrictions.isRestrict`, e.target.checked)}/>
                                                 {
                                                     amenitiesData?.internet?.[data]?.restrictions?.isRestrict &&
                                                     <div className="ps-2 my-3">
                                                         <Form.Check type="checkbox" label="Time limit" onChange={(e) => handleUpdate(`internet.${data}.restrictions.timeLimit.isAvailable`, e.target.checked)}/>
                                                         {
                                                             amenitiesData?.internet?.[data]?.restrictions?.timeLimit?.isAvailable &&
-                                                            <Stack direction="horizontal" gap={2} className="w-100 w-md-60 my-3 align-items-center">
-                                                                <Stack className="w-80 w-md-20">
+                                                            <Stack direction="horizontal" gap={2} className="w-100 w-md-60 my-3 d-flex align-items-end">
+                                                                <div className="w-80 w-md-35">
                                                                     <p style={{...descStyle, fontSize: 12}}>Free WiFi (limited) time</p>
-                                                                    <CustomInputWithBlue onChange={(value) => handleUpdate(`internet.${data}.restrictions.timeLimit.limitedTime`, value)}/>
-                                                                </Stack>
-                                                                <Stack className="w-80 w-md-20 pt-5 pt-lg-3 mt-1">
+                                                                    <InputWithArrowUpAndDown mask={false} value={0} onChange={(value) => handleUpdate(`internet.${data}.restrictions.timeLimit.limitedTime`, value)}/>
+                                                                </div>
+                                                                <div className="w-80 w-md-35">
                                                                     <DropDownCustomize borderChange={true} list={["Hours","Minutes"]} onChange={(selectedValue) => handleUpdate(`internet.${data}.restrictions.timeLimit.duration`, selectedValue)}/>
-                                                                </Stack>
-                                                                <Stack className="w-80 w-md-20">
+                                                                </div>
+                                                                <div className="w-80 w-md-35">
                                                                     <p style={{...descStyle, fontSize: 12}}>Minimum WiFi speed</p>
                                                                     <DropDownCustomize borderChange={true} list={netSpeedList} onChange={(selectedValue) => handleUpdate(`internet.${data}.restrictions.timeLimit.speed`, selectedValue)}/>
-                                                                </Stack>
+                                                                </div>
                                                             </Stack>
                                                         }
                                                         <Form.Check type="checkbox" label="Device limit" onChange={(e) => handleUpdate(`internet.${data}.restrictions.deviceLimit.isAvailable`, e.target.checked)}/>

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, Container, Form, InputGroup, ListGroup, OverlayTrigger, Popover, Stack} from "react-bootstrap";
+import {Button, Container, Form, InputGroup, ListGroup, OverlayTrigger, Popover, Spinner, Stack} from "react-bootstrap";
 import InputMask from 'react-input-mask';
 import {colors, colors as Colors} from '../../configs/colors.js'
 import InfoIcon from "../../assets/img/info-icon.png";
@@ -7,6 +7,9 @@ import './index.css'
 import {X} from "tabler-icons-react";
 import {useHistory} from "react-router-dom";
 import DropDownLabelCustomize from "../../components/CustomDropDown/DropDownLabelCustomize.jsx";
+import {useRegisterPolicyMutation} from "../../redux/reducer/api/policySlice.js";
+import {toast} from "react-toastify";
+import InputWithArrowUpAndDown from "../../components/CustomInput/InputWithArrowUpAndDown.jsx";
 
 const paymentMethodList = ["Credit / debit cards","Debit cards","JCB International","Visa","Discover","Mastercard","Carte Blanche","American Express","UnionPay","Diners Club","Bank transfer","Cheque (local only)","Crypto","Installments payments offered at front desk (for locals only)","Cash"];
 const paymentInstallList = ["Monthly","Quarterly","Half year","Yearly"];
@@ -27,14 +30,15 @@ const regulatoryList = [
 ]
 function Index2(props) {
     const [selectedPaymentMethods, setSelectedPaymentMethods] = useState([]);
-    const [buttonSelection, setButtonSelection] = useState([]);
-    const [policyData, setPolicyData] = useState({deposit: [], installPercentage:[], taxAndFees:[], rentalDiscount:[]});
+    const [policyData, setPolicyData] = useState({deposit:{options:[]},installPayment:{options:[]}, rental:{options:[]}});
     const [suggestions, setSuggestions] = useState([]);
     const [inputValue, setInputValue] = useState('');
     const [selectedLanguages, setSelectedLanguages] = useState([]);
-    console.log(policyData)
 
-    const history = useHistory();
+    const [registerPolicy,{isLoad}]=useRegisterPolicyMutation();
+    const message =props.location.state;
+
+    console.log(policyData)
 
     const handlePaymentMethod=(e)=>{
         const {checked,value}= e.target;
@@ -205,27 +209,105 @@ function Index2(props) {
         const newSelectedLanguages = selectedLanguages.filter((_, i) => i !== index);
         setSelectedLanguages(newSelectedLanguages);
     };
-    const handleChanges = (e) => {
-        const {name,value} = e.target;
-        setPolicyData({
-            ...policyData,
-            [name]: value
-        })
-    };
 
-    const handleUpdate = (path, value) => {
+    const handleSubmit = async ()=>{
+        const data={...policyData, languages:selectedLanguages, paymentMethods:selectedPaymentMethods, admin:message.data.admin}
+
+        if(message.type==="Hotel"){
+            const updatedData = {...data, hotel:message.data._id}
+            const res = await registerPolicy(updatedData);
+            if (res?.data?.success){
+                props.history.push('/property-amenities', message)
+            } else if(res?.error?.data?.message){
+                toast.error(res.error.data.message, {
+                    toastId: "toast4",
+                    position: "top-right",
+                    className: 'jq-toast-danger',
+                    theme: 'light',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
+            }
+        }
+        if(message.type==="Property"){
+            const updatedData = {...data, property:message.data._id}
+            const res = await registerPolicy(updatedData);
+            if (res?.data?.success){
+                props.history.push('/property-amenities', message)
+            } else if(res?.error?.data?.message){
+                toast.error(res.error.data.message, {
+                    toastId: "toast4",
+                    position: "top-right",
+                    className: 'jq-toast-danger',
+                    theme: 'light',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
+            }
+        }
+    }
+
+
+    //setPolicyData(prevState => {
+    //                 const newState = { ...prevState };
+    //                 const keys = path.split('.');
+    //                 let currentLevel = newState;
+    //                 keys.slice(0, -1).forEach(key => {
+    //                     if (!currentLevel[key]) {
+    //                         currentLevel[key] = {};
+    //                     }
+    //                     currentLevel = currentLevel[key];
+    //                 });
+    //                 currentLevel[keys[keys.length - 1]] = value;
+    //                 return newState;
+    //             });
+    const handleUpdate = (path, value, type='default', event = null) => {
         setPolicyData(prevState => {
             const newState = { ...prevState };
             const keys = path.split('.');
             let currentLevel = newState;
-            keys.slice(0, -1).forEach(key => {
-                if (!currentLevel[key]) {
-                    currentLevel[key] = {};
+
+            if (type === 'default') {
+                keys.slice(0, -1).forEach(key => {
+                    if (!currentLevel[key]) {
+                        currentLevel[key] = {};
+                    }
+                    currentLevel = currentLevel[key];
+                });
+                currentLevel[keys[keys.length - 1]] = value;
+            } else if (type === 'checked' && event) {
+                const optionName = event.target.name;
+                const isOptionExist = currentLevel[keys[0]]?.options?.find(d => d.option === optionName);
+
+                if (value && !isOptionExist) {
+                    currentLevel[keys[0]].options.push({ option: optionName, isAvailable: event.target.checked });
+                } else if (!value) {
+                    currentLevel[keys[0]].options = currentLevel[keys[0]].options.map(d =>
+                        d.option === optionName ? { ...d, isAvailable: event.target.checked } : d
+                    );
                 }
-                currentLevel = currentLevel[key];
-            });
-            currentLevel[keys[keys.length - 1]] = value;
-            return newState;
+            } else if ((type === 'amount' || type === 'percentage') && event) {
+                const optionName = event.target.name;
+                const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === optionName);
+
+                if (optionIndex !== -1) {
+                    currentLevel[keys[0]].options[optionIndex][type] = value;
+                }
+            }else if (type === 'rental' && event) {
+                const optionName = event.target.name;
+                const isOptionExist = currentLevel[keys[0]]?.options?.find(d => d.option === optionName);
+
+                if (!isOptionExist) {
+                    currentLevel[keys[0]].options.push({ option: optionName, isAvailable: value });
+                } else {
+                    currentLevel[keys[0]].options = currentLevel[keys[0]].options.map(d =>
+                        d.option === optionName ? { ...d, isAvailable: value } : d
+                    );
+                }
+            }
+                return newState;
         });
     };
 
@@ -302,32 +384,41 @@ function Index2(props) {
             <Container className="p-3 mb-3" style={borderStyle}>
                 <h3 className="mb-3" style={titleStyle}>Do you require any deposits?</h3>
                 <Button
-                    style={{...buttonStyle, backgroundColor:policyData.paymentDeposit ? '':Colors.white, color:policyData.paymentDeposit? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData.deposit?.isDeposit ? '':Colors.white, color:policyData.deposit?.isDeposit? '':Colors.Dark}}
                     className="btn-rounded mb-3"
                     type="button"
-                    onClick={() => handleUpdate('paymentDeposit', true)}
+                    onClick={() => handleUpdate('deposit.isDeposit', true)}
                 >
                     Yes
                 </Button>
                 <Button
-                    style={{...buttonStyle, backgroundColor:policyData.paymentDeposit===false? '':Colors.white,color:policyData.paymentDeposit===false? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData.deposit?.isDeposit===false? '':Colors.white,color:policyData.deposit?.isDeposit===false? '':Colors.Dark}}
                     className="btn-rounded mb-3 ms-3"
                     type="button"
-                    onClick={() => handleUpdate('paymentDeposit', false)}
+                    onClick={() => handleUpdate('deposit.isDeposit', false)}
                 >
                     No
                 </Button>
                 {
-                    policyData.paymentDeposit &&
+                    policyData?.deposit?.isDeposit &&
                     <>
                         {
-                            ["Yearly","Monthly"].map((data)=>(
+                            ["Yearly", "Monthly"].map((data) => (
                                 <div key={data}>
-                                    <Form.Check className="mb-2" type="checkbox" name={data} label={`${data} Deposit`}  style={labelStyle} onChange={(e)=>handleUpdate(`deposit.${data}.availability`, e.target.checked)} />
-                                    <Form.Group className="mb-3 w-100 w-md-20">
-                                        <Form.Label style={depositLabelStyle}>How much</Form.Label>
-                                        <Form.Control type="number" style={inputDepositStyle} name={data} onChange={(e)=>handleUpdate(`deposit.${data}.amount`, e.target.value)} />
-                                    </Form.Group>
+                                    <Form.Check className="mb-2" type="checkbox" name={data} label={`${data} Deposit`} style={labelStyle} onChange={(e) => handleUpdate('deposit.options', e.target.checked, 'checked', e)} />
+                                    {
+                                        policyData.deposit.options.find(option => option.option === data)?.isAvailable &&
+                                        <Form.Group className="mb-3 w-100 w-md-20">
+                                            <Form.Label style={depositLabelStyle}>How much</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                style={inputDepositStyle}
+                                                name={data}
+                                                value={policyData.deposit.options.find(option => option.option === data)?.amount || ''}
+                                                onChange={(e) => handleUpdate('deposit.options', e.target.value, 'amount', e)}
+                                            />
+                                        </Form.Group>
+                                    }
                                 </div>
                             ))
                         }
@@ -339,43 +430,42 @@ function Index2(props) {
             <Container className="p-3 mb-3" style={borderStyle}>
                 <h3 className="mb-3" style={titleStyle}>Do you accept install payments</h3>
                 <Button
-                    style={{...buttonStyle, backgroundColor:policyData?.paymentInstall? '':Colors.white, color:policyData?.paymentInstall ? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData?.installPayment?.isInstallPayment? '':Colors.white, color:policyData?.installPayment?.isInstallPayment ? '':Colors.Dark}}
                     className="btn-rounded mb-3"
                     type="button"
-                    onClick={() => handleUpdate('paymentInstall', true)}
+                    onClick={() => handleUpdate('installPayment.isInstallPayment', true)}
 
                 >
                     Yes
                 </Button>
                 <Button
-                    style={{...buttonStyle, backgroundColor:policyData?.paymentInstall===false? '':Colors.white,color:policyData?.paymentInstall===false? '':Colors.Dark}}
+                    style={{...buttonStyle, backgroundColor:policyData?.installPayment?.isInstallPayment===false? '':Colors.white,color:policyData?.installPayment?.isInstallPayment===false? '':Colors.Dark}}
                     className="btn-rounded mb-3 ms-3"
                     type="button"
-                    onClick={() => handleUpdate('paymentInstall', false)}
+                    onClick={() => handleUpdate('installPayment.isInstallPayment', false)}
                 >
                     No
                 </Button>
                 {
-                    policyData?.paymentInstall &&
+                    policyData?.installPayment?.isInstallPayment &&
                     <>
                     {
                         paymentInstallList.map((data, index)=>(
                             <div key={index}>
-                                <Form.Check className="mb-2" type="checkbox" name={data} label={data} style={labelStyle} onChange={(e)=>handleUpdate(`installPayment.${data}.availability`, e.target.checked)} />
+                                <Form.Check className="mb-2" type="checkbox" name={data} label={data} style={labelStyle} onChange={(e)=>handleUpdate('installPayment.options', e.target.checked, 'checked', e)} />
                                 {
-                                    policyData?.installPayment?.[data]?.availability && (
-                                        <div>
-                                            <InputGroup className="mb-3 w-40 w-md-10 ms-4 position-relative">
-                                            <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99" name={data} onChange={(e)=>handleUpdate(`installPayment.${data}.amount`, e.target.value)}/>
+                                    policyData.installPayment.options.find(option => option.option === data)?.isAvailable && (
+                                        <InputGroup className="mb-3 w-40 w-md-10 ms-4 position-relative">
+                                            <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99" name={data} onChange={(e) => handleUpdate('installPayment.options', e.target.value, 'percentage', e)} />
                                             <span className="position-absolute" style={{right:5, top:"20%"}}>%</span>
                                             <OverlayTrigger placement="top" overlay={popover} >
-                                                            <span className="d-inline-block">
-                                                                <img className="ms-2" src={InfoIcon} alt="liveinhotel" style={{position:"absolute", right:-25, top:10}}/>
-                                                            </span>
+                                                <span className="d-inline-block">
+                                                    <img className="ms-2" src={InfoIcon} alt="liveinhotel" style={{position:"absolute", right:-25, top:10}}/>
+                                                </span>
                                             </OverlayTrigger>
-                                            </InputGroup>
-                                        </div>
-                                        )}
+                                        </InputGroup>
+                                    )
+                                }
                             </div>
                         ))
                     }
@@ -427,7 +517,7 @@ function Index2(props) {
                                         <li>Travelers who cancel less than 24 hours before 18:00 on the day of check-in (including no-shows) are charged:</li>
                                     </ul>
                                     <div className="w-100 w-md-35 ps-3 mb-3">
-                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.cancellationFee', selectedValue)}/>
+                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.option', selectedValue)}/>
                                     </div>
 
                                 </div>
@@ -440,7 +530,7 @@ function Index2(props) {
                                         <li>Travelers who cancel less than 48 hours before 18:00 on the day of check-in (including no-shows) are charged:</li>
                                     </ul>
                                     <div className="w-100 w-md-35 ps-3 mb-3">
-                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.cancellationFee', selectedValue)}/>
+                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.option', selectedValue)}/>
                                     </div>
 
                                 </div>
@@ -453,7 +543,7 @@ function Index2(props) {
                                         <li>Travelers who cancel less than 72 hours before 18:00 on the day of check-in (including no-shows) are charged:</li>
                                     </ul>
                                     <div className="w-100 w-md-35 ps-3 mb-3">
-                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.cancellationFee', selectedValue)}/>
+                                        <DropDownLabelCustomize list={discountList} label="ddddd" onChange={(selectedValue) => handleUpdate('cancellationPolicy.option', selectedValue)}/>
                                     </div>
 
                                 </div>
@@ -506,28 +596,32 @@ function Index2(props) {
                             <h4 className="mb-3" style={labelStyle}>For rentals over {data} months</h4>
                             {/*<Form.Control type="submit" style={buttonStyle} name={data} onChange={handleTaxPercentage} />*/}
                             <Button
-                                style={{...buttonStyle, backgroundColor:policyData?.rentalDiscount?.[data]?.availability ? '':Colors.white, color:policyData?.rentalDiscount?.[data]?.availability ? '':Colors.Dark}}
+                                style={{...buttonStyle, backgroundColor:policyData.rental.options.find(option => option.option === `For rentals over ${data} months`)?.isAvailable ? '':Colors.white, color:policyData.rental.options.find(option => option.option === `For rentals over ${data} months`)?.isAvailable ? '':Colors.Dark}}
                                 className="btn-rounded mb-3"
                                 type="button"
-                                onClick={() => handleUpdate(`rentalDiscount.${data}.availability`, true)}
+                                name={`For rentals over ${data} months`}
+                                onClick={(e)=>handleUpdate('rental.options', true, 'rental', e)}
                             >
                                 Yes
                             </Button>
                             <Button
-                                style={{...buttonStyle, backgroundColor:policyData?.rentalDiscount?.[data]?.availability === false? '':Colors.white,color:policyData?.rentalDiscount?.[data]?.availability === false? '':Colors.Dark}}
+                                style={{...buttonStyle, backgroundColor:policyData.rental.options.find(option => option.option === `For rentals over ${data} months`)?.isAvailable === false? '':Colors.white,color:policyData.rental.options.find(option => option.option === `For rentals over ${data} months`)?.isAvailable === false? '':Colors.Dark}}
                                 className="btn-rounded mb-3 ms-3"
                                 type="button"
-                                onClick={() => handleUpdate(`rentalDiscount.${data}.availability`, false)}
+                                name={`For rentals over ${data} months`}
+                                onClick={(e)=>handleUpdate('rental.options', false, 'rental', e)}
                             >
                                 No
                             </Button>
                             {
-                                policyData?.rentalDiscount?.[data]?.availability &&(
+                                policyData.rental.options.find(option => option.option === `For rentals over ${data} months`)?.isAvailable &&(
                                     <>
                                         <p className="mb-1" style={depositLabelStyle}>Discount percentage</p>
-                                        <InputGroup className="mb-3 w-40 w-md-20">
-                                            <InputMask className='form-control' style={inputPaymentInstallStyle} mask="99 %" onChange={(e) => handleUpdate(`rentalDiscount.${data}.percentage`, e.target.value)}/>
-                                        </InputGroup>
+                                        <InputWithArrowUpAndDown
+                                            name={`For rentals over ${data} months`}
+                                            value={policyData.rental.options.find(option => option.option === `For rentals over ${data} months`)?.percentage || ''}
+                                            onChange={(value, e) => handleUpdate(`rental.options`, value, 'percentage', e)}
+                                        />
                                     </>
                                 )
                             }
@@ -540,9 +634,14 @@ function Index2(props) {
                 <Button
                     style={{backgroundColor: Colors.Dark, fontSize:16, fontWeight:500}}
                     className="btn-rounded mb-3 px-5"
-                    onClick={() => history.push('/property-amenities')}
+                    onClick={handleSubmit}
                 >
-                    Next
+                        <span>
+                            <span>Next</span>
+                            {isLoad && (
+                                <span className="input-suffix ms-2"> <Spinner animation="border" size="sm" /></span>
+                            )}
+                         </span>
                 </Button>
             </Stack>
         </Container>
