@@ -331,6 +331,17 @@ const Natural = () => {
     )
 }
 
+const Calendar = ()=>{
+    return (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.5 3V6" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M7.5 3V6" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M16.5 16H7.5" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M16.5 12H7.5" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="3" y="4.5" width="18" height="16.5" rx="3" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
 
 
 export {
@@ -360,4 +371,5 @@ export {
     Winery,
     City,
     Natural,
+    Calendar
 }
