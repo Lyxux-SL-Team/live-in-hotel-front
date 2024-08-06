@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Form, InputGroup, Stack} from 'react-bootstrap';
 import InputMask from 'react-input-mask';
 import { colors as Colors} from '../../configs/colors';
 
 function InputWithArrowUpAndDown({ name, value, onChange, mask = true }) {
     const [internalValue, setInternalValue] = useState(value);
+
+    useEffect(() => {
+        setInternalValue(value);
+    }, [value]);
 
     const handleIncrement = () => {
         setInternalValue(prevValue => {
