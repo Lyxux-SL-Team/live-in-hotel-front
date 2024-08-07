@@ -62,23 +62,23 @@ const TopNav = ({ navCollapsed, toggleCollapsedNav }) => {
                         </span>
                     </Button>
                     {/* Search */}
-                    <div className="no-caret position-relative border border rounded">
-                        <Search className='position-absolute top-50 start-0 translate-middle-y ms-2' />
-                        <InputGroup className="ms-5 border border-0 d-xl-flex d-none">
-                            <span className="input-affix-wrapper input-search affix-border">
-                                <Form.Control
-                                    type="text"
-                                    className="search-inp" data-navbar-search-close="false"
-                                    placeholder="Search" aria-label="Search"
-                                    onFocus={() => setShowDropdown(true)}
-                                    onBlur={() => setShowDropdown(false)}
-                                    value={searchValue} onChange={e =>
-                                        setSearchValue(e.target.value)
-                                    }
-                                />
-                            </span>
-                        </InputGroup>
-                    </div>
+                    {/*<div className="no-caret position-relative border border rounded">*/}
+                    {/*    <Search className='position-absolute top-50 start-0 translate-middle-y ms-2' />*/}
+                    {/*    <InputGroup className="ms-5 border border-0 d-xl-flex d-none">*/}
+                    {/*        <span className="input-affix-wrapper input-search affix-border">*/}
+                    {/*            <Form.Control*/}
+                    {/*                type="text"*/}
+                    {/*                className="search-inp" data-navbar-search-close="false"*/}
+                    {/*                placeholder="Search" aria-label="Search"*/}
+                    {/*                onFocus={() => setShowDropdown(true)}*/}
+                    {/*                onBlur={() => setShowDropdown(false)}*/}
+                    {/*                value={searchValue} onChange={e =>*/}
+                    {/*                    setSearchValue(e.target.value)*/}
+                    {/*                }*/}
+                    {/*            />*/}
+                    {/*        </span>*/}
+                    {/*    </InputGroup>*/}
+                    {/*</div>*/}
                 </div>
                 {/* /Start Nav */}
 
@@ -148,7 +148,7 @@ const TopNav = ({ navCollapsed, toggleCollapsedNav }) => {
                                     className='border'
                                 >
                                     <button className='btn'>User settings</button>
-                                    <button className='btn' onClick={logoutUser}>Sing out</button>
+                                    <button className='btn' onClick={logoutUser}>Sign out</button>
                                 </div>
                             )}
                         </Overlay>

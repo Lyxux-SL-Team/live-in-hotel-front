@@ -52,17 +52,15 @@ const Index = () => {
 
 
     const registerHandler = async() => {
-      const contact = String(step2.ccode) + String(step2.mobile);
       const res = await register({
         email: step1.email,
         password: step3.password,
-        firstName: step2.fname,
-        lastName: step2.lname,
-        contact: contact,
+        firstName: step2.firstName,
+        lastName: step2.lastName,
+        phoneNumber: step2.phoneNumber,
+        countryCode: step2.countryCode,
       });
-      
-    
-      if (res.data.status) {
+      if (res.data.success) {
         dispatch(setUser(res.data))
         navigate();
       }else{
@@ -79,22 +77,22 @@ const Index = () => {
 
  
 
-  const userRegister = async () => {
-    const res = await register({
-      email: step1.email,
-      password: step3.password,
-      firstName: step2.fname,
-      lastName: step2.lname,
-      contact: step2.mobile,
-    })
-    if (res.data.status) {
-      navigate()
-    }
-  };
+  // const userRegister = async () => {
+  //   const res = await register({
+  //     email: step1.email,
+  //     password: step3.password,
+  //     firstName: step2.firstName,
+  //     lastName: step2.lastName,
+  //     phoneNumber: step2.phoneNumber,
+  //     countryCode: step2.countryCode,
+  //   })
+  //   if (res.data.status) {
+  //     navigate()
+  //   }
+  // };
   const navigate = () => {
     window.location.href = "/auth/signup-step-4";
   }
-
 
   const updateStep = (e) => {
     switch (signUpStep) {
@@ -121,7 +119,6 @@ const Index = () => {
 
   return (
     <div className="hk-pg-wrapper py-0">
-
       <div className="hk-pg-body py-0">
         <Container fluid>
           <Row className="auth-split">
@@ -138,7 +135,7 @@ const Index = () => {
               lg={6}
               md={7}
               sm={10}
-              className="position-relative mx-auto"
+              className="position-relative "
             >
               <div className="auth-content flex-column pt-8 pb-md-8 pb-13">
                 <div className="text-center mb-7">
@@ -169,7 +166,7 @@ const Index = () => {
                     setSignUpStep={setSignUpStep}
                     step={step3}
                     updateStep={updateStep}
-                    userRegister={userRegister}
+                    // userRegister={userRegister}
                     isLoading={isLoading}
                     registerHandler={registerHandler}
                   />

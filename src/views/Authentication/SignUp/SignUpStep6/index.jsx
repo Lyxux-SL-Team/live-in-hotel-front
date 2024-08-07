@@ -1,318 +1,306 @@
-import React, { useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import CommanFooter1 from "../../CommanFooter1";
+import React, {useState} from "react";
+import {Button, Container, FloatingLabel, Form, OverlayTrigger, Popover, Spinner, Stack} from "react-bootstrap";
 import * as Icons from "tabler-icons-react";
 
 import "../../../../styles/css/signup.css";
 import SimpleHeader from "../../SimpleHeader";
+import {z} from "zod";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {colors as Colors} from "../../../../configs/colors.js";
+import SignupFooter from "../../../../layout/Footer/SignupFooter.jsx";
+import {useRegisterPropertyMutation} from "../../../../redux/reducer/api/propertySlice.js";
+import {useRegisterHotelMutation} from "../../../../redux/reducer/api/hotelSlice.js";
+import {useSelector} from "react-redux";
+import {useHistory} from "react-router-dom";
+import {toast} from "react-toastify";
 
+const selectProperty = ["Hotel", "Property"];
+const selectCurrency = ["United Arab Emirates Dirhams", "LKR", "KUD"];
 const Signup = (props) => {
-  const [propertyName, setPropertyName] = useState("");
-  const [propertyType, setPropertyType] = useState("");
-  const [numberOfRooms, setNumberOfRooms] = useState("");
-  const [legalNameOfProperty, setLegalNameOfProperty] = useState("");
-  const [selectCurrency, setSelectCurrency] = useState("");
-  const [isPropertyChannelManager, setIsPropertyChannelManager] =
-    useState(null);
-  const [isPropertyPartOfChain, setIsPropertyChain] = useState(null);
+    const [propertyData, setPropertyData] = useState([]);
+    const [fileNameDisplay, setFileNameDisplay] = useState(false);
 
-  const [isPropertyNameValid, setIsPropertyNameValid] = useState(true);
-  const [isPropertyTypeValid, setIsPropertyTypeValid] = useState(true);
-  const [isNumberOfRoomsValid, setIsNumberOfRoomsValid] = useState(true);
-  const [isLegalNameOfPropertyValid, setIsLegalNameOfPropertyValid] =
-    useState(true);
-  const [isSelectCurrencyValid, setIsSelectCurrencyValid] = useState(true);
-  const [isPropertyChannelManagerValid, setIsPropertyChannelManagerValid] =
-    useState(true);
-  const [isPropertyPartOfChainValid, setIsPropertyPartOfChainValid] =
-    useState(true);
+    const [registerHotel , { isLoading }] = useRegisterHotelMutation();
+    const [registerProperty , { isLoad }] = useRegisterPropertyMutation();
 
-  const validateForm = () => {
-    let isValid = true;
+    const message =props.location.state;
+    const user = useSelector(state => state.auth.user);
 
-    if (propertyName.trim() === "") {
-      setIsPropertyNameValid(false);
-      isValid = false;
-    } else {
-      setIsPropertyNameValid(true);
+    const FormData = z.object({
+        propertyType: z.enum(selectProperty, {message: "Please select a property type."}),
+        numberOfUnits: z.string().regex(/^\d+$/, {message: "must be a number"})
+            .min(1, {message: "No of Rooms is required"}),
+        legalName: z.string().min(1, {message: "Legal Name of Property is required"}),
+        legalNumber: z.string().min(1, {message: "Trade Licence Number is required"}),
+        currency: z.enum(selectCurrency, {message: "Please select a currency"}),
+        // channelManager:z.enum(['true','false'],{message:"Please select whether property uses a channel manager."}),
+        partOfChina: z.enum(['true','false'],{message:"Please select whether property is part of a chain."})
+    });
+
+    const {
+        register,
+        handleSubmit,
+        formState: {errors},
+    } = useForm({
+        resolver: zodResolver(FormData),
+    });
+
+    const handleChanges = (e) => {
+        setPropertyData({
+            ...propertyData,
+            [e.target.name]: e.target.value
+        })
     }
 
-    if (propertyType.trim() === "") {
-      setIsPropertyTypeValid(false);
-      isValid = false;
-    } else {
-      setIsPropertyTypeValid(true);
-    }
+    const handleSubmits = async (e) => {
+        const data = {...propertyData,...message.property,location:message.location, image:"dfff", admin:user._id,email:user.email}
+        console.log(data)
+        if (data.propertyType==="Hotel"){
+            const res = await registerHotel(data);
+            if(res.data.success){
+                props.history.push("/auth/welcome",{success:true, data:res.data.data, type:data.propertyType});
+            } else {
+                toast.error(res.error.data.message, {
+                    toastId: "toast4",
+                    position: "top-right",
+                    className: 'jq-toast-danger',
+                    theme: 'light',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
+            }
 
-    if (numberOfRooms.trim() === "") {
-      setIsNumberOfRoomsValid(false);
-      isValid = false;
-    } else {
-      setIsNumberOfRoomsValid(true);
-    }
+        } else if(data.propertyType==="Property"){
+            const res = await registerProperty(data);
+            if(res.data.success){
+                props.history.push("/auth/welcome",{success:true, data:res.data.property, type:data.propertyType});
+            } else {
+                toast.error(res.error.data.message, {
+                    toastId: "toast4",
+                    position: "top-right",
+                    className: 'jq-toast-danger',
+                    theme: 'light',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                });
+            }
+        } else{
+            toast.error("something went wrong!", {
+                toastId: "toast4",
+                position: "top-right",
+                className: 'jq-toast-danger',
+                theme: 'light',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+            });
+        }
+        // props.history.push("/dashboard");
+    };
+    const popover = (
+        <Popover id="popover-basic" className="custom-popover">
+            <Popover.Body style={{backgroundColor:Colors.FooterBlue, color:Colors.white, fontSize:9}}>
+                Click on the drop-down list and select the property type
+            </Popover.Body>
+        </Popover>
+    );
 
-    if (legalNameOfProperty.trim() === "") {
-      setIsLegalNameOfPropertyValid(false);
-      isValid = false;
-    } else {
-      setIsLegalNameOfPropertyValid(true);
-    }
+    const subTitleStyle = {fontSize: 18, color: Colors.Dark, fontWeight: 500};
+    const paragraphStyle = {color: Colors.Grey, fontSize: 16};
 
-    if (selectCurrency.trim() === "") {
-      setIsSelectCurrencyValid(false);
-      isValid = false;
-    } else {
-      setIsSelectCurrencyValid(true);
-    }
-
-    if (isPropertyChannelManager === null) {
-      setIsPropertyChannelManagerValid(false);
-      isValid = false;
-    } else {
-      setIsPropertyChannelManagerValid(true);
-    }
-
-    if (isPropertyPartOfChain === null) {
-      setIsPropertyPartOfChainValid(false);
-      isValid = false;
-    } else {
-      setIsPropertyPartOfChainValid(true);
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const isValid = validateForm();
-
-    if (isValid) {
-      props.history.push("/dashboard");
-    }
-  };
-
-  return (
-    <div className="hk-pg-wrapper py-0">
-      <div className="hk-pg-body py-0">
-        <Container fluid>
-          <Row className="auth-split">
-            <SimpleHeader />
-            <Col
-              xl={7}
-              lg={6}
-              md={7}
-              sm={10}
-              className="position-relative mx-auto"
-            >
-              <div className="auth-content flex-column pt-8 pb-md-8 pb-13">
-                <Form className="w-100" onSubmit={handleSubmit}>
-                  <Row>
-                    <Col xxl={7} xl={7} lg={10} className="mx-auto" gap={5}>
-                      <div className="form-step">
-                        <span className="fs-7 text-light">Step 2 of 2</span>
-                        <h4 className="font-scale-vf">
-                          Tell us a little about your property
-                        </h4>
+    return (
+        <Container fluid className="pb-10">
+            <SimpleHeader/>
+            <div className="mx-auto w-lg-50 w-md-60 w-xl-35 pt-3 pb-7">
+                <Form onSubmit={handleSubmit(handleSubmits)}>
+                    <Stack className="form-step">
+                        <span style={{color: Colors.Grey, fontSize: 16}}>Step 2 of 2</span>
+                        <h4 className="my-3 font-scale-vf" style={{fontSize: 24, color: Colors.Dark}}>Tell us a little
+                            about your property</h4>
 
                         {/* Property Name */}
-                        <p className="fw-bolder text-black">Property name</p>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Enter your property name</Form.Label>
-                          <Form.Control
-                            onChange={(e) => setPropertyName(e.target.value)}
-                            placeholder="Enter your property name"
-                            type="text"
-                            className={!isPropertyNameValid ? "is-invalid" : ""}
-                          />
-                          {!isPropertyNameValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please enter the property name.
-                            </Form.Text>
-                          )}
-                        </Form.Group>
+                        <h6 style={subTitleStyle}>Property name</h6>
+                        <FloatingLabel
+                            controlId="floatingInput"
+                            label="Enter your property name"
+                            className="mb-3"
+                        >
+                            <Form.Control
+                                onChange={handleChanges}
+                                style={{...paragraphStyle, backgroundColor:Colors.white}}
+                                readOnly
+                                value={message?.property?.propertyName}
+                                />
+                        </FloatingLabel>
 
                         {/* Property Type */}
-                        <p className="fw-bolder text-black">Property Type</p>
-                        <Form.Group className="mb-3">
-                          <Form.Label>Select property type</Form.Label>
-                          <Form.Select
-                            onChange={(e) => setPropertyType(e.target.value)}
-                            className={!isPropertyTypeValid ? "is-invalid" : ""}
-                          >
-                            <option value="">-Select-</option>
-                            <option value="1">Abidabi</option>
-                            <option value="2">Abidabi</option>
-                          </Form.Select>
-                          {!isPropertyTypeValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please select property type.
-                            </Form.Text>
-                          )}
-                        </Form.Group>
+                        <h6 style={subTitleStyle}>
+                            Property Type
+
+                            <OverlayTrigger placement="top" overlay={popover}>
+                                <span className="d-inline-block">
+                                    <Icons.InfoSquare color={Colors.Grey2} className="ms-3"/>
+                                </span>
+                            </OverlayTrigger>
+                        </h6>
+                        <FloatingLabel controlId="floatingSelectType" label="Select property type" className="mb-3">
+                            <Form.Select
+                                {...register('propertyType')}
+                                onChange={handleChanges}
+                            >
+                                <option defaultChecked>-Select-</option>
+                                {
+                                    selectProperty.map((data, index) => (
+                                        <option key={index} value={data}>{data}</option>
+                                    ))
+                                }
+                            </Form.Select>
+                            {errors.propertyType?.message &&
+                                <p className="text-danger">{errors.propertyType?.message}</p>}
+                        </FloatingLabel>
 
                         {/* Number of Rooms */}
-                        <p className="fw-bolder text-black">Number of rooms</p>
                         <Form.Group className="mb-3">
-                          <Form.Control
-                            onChange={(e) => setNumberOfRooms(e.target.value)}
-                            placeholder="Enter Number of rooms"
-                            type="text"
-                            className={
-                              !isNumberOfRoomsValid ? "is-invalid" : ""
-                            }
-                          />
-                          {!isNumberOfRoomsValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please enter number of rooms.
-                            </Form.Text>
-                          )}
+                            <Form.Label style={subTitleStyle}>Number of units (number of inventories)</Form.Label>
+                            <Form.Control
+                                {...register('numberOfUnits')}
+                                onChange={handleChanges}
+                                style={paragraphStyle}
+                                placeholder="Enter Number of rooms"
+                            />
+                            {errors.numberOfUnits?.message &&
+                                <p className="text-danger">{errors.numberOfUnits?.message}</p>}
                         </Form.Group>
 
                         {/* Legal Name of Property */}
-                        <p className="fw-bolder text-black">
-                          Legal name of your property
-                        </p>
                         <Form.Group className="mb-3">
-                          <Form.Control
-                            onChange={(e) =>
-                              setLegalNameOfProperty(e.target.value)
-                            }
-                            placeholder="Enter Legal name of your property"
-                            type="text"
-                            className={
-                              !isLegalNameOfPropertyValid ? "is-invalid" : ""
-                            }
-                          />
-                          {!isLegalNameOfPropertyValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please enter legal name of your property.
-                            </Form.Text>
-                          )}
+                            <Form.Label style={subTitleStyle}>Legal name of your property (trade licenses name)</Form.Label>
+                            <Form.Control
+                                {...register('legalName')}
+                                onChange={handleChanges}
+                                style={paragraphStyle}
+                                placeholder="Enter Legal name of your property"
+                            />
+                            {errors.legalName?.message &&
+                                <p className="text-danger">{errors.legalName?.message}</p>}
                         </Form.Group>
+
+                        {/* Trade license number */}
+                        <Form.Group className="mb-3">
+                            <Form.Label style={subTitleStyle}>Trade license number</Form.Label>
+                            <Form.Control
+                                {...register('legalNumber')}
+                                onChange={handleChanges}
+                                style={paragraphStyle}
+                                placeholder="Enter trade license number"
+                            />
+                            {errors.legalNumber?.message &&
+                                <p className="text-danger">{errors.legalNumber?.message}</p>}
+                        </Form.Group>
+
+                        {/* file select*/}
+                        <Container className="p-4 mb-3 d-flex justify-content-center" style={{border:`1px dashed ${Colors.white1}`, borderRadius:10, backgroundColor:Colors.Grey7}}>
+                            <Form.Group controlId="formFile">
+                                <Stack direction="horizontal" gap={2} className="position-relative justify-content-center" onMouseOver={()=>setFileNameDisplay(true)} onMouseOut={()=>setFileNameDisplay(false)}>
+                                    <i className="fa fa-upload p-1" style={{color:Colors.FooterBlue, border:`1px solid ${Colors.FooterBlue}`, borderRadius:5}}/>
+                                    <span style={{color:Colors.FooterBlue,fontSize:16}}>{(fileNameDisplay && propertyData?.file)? propertyData.file?.name:"Upload file" }</span>
+                                    <Form.Control type="file" className="position-absolute" style={{opacity:0}} accept="image/png, image/jpeg, .pdf"  onChange={(e) => setPropertyData({ ...propertyData, file: e.target.files[0] })}/>
+                                </Stack>
+                                <Form.Label className="mt-2" style={{fontSize: 14, color: Colors.Dark}}>Upload trade license photo or pdf</Form.Label>
+                            </Form.Group>
+                        </Container>
 
                         {/* Currency */}
-                        <p className="fw-bolder text-black">Currency</p>
-                        <Form.Group className="mb-3">
-                          <Form.Select
-                            onChange={(e) => setSelectCurrency(e.target.value)}
-                            className={
-                              !isSelectCurrencyValid ? "is-invalid" : ""
-                            }
-                          >
-                            <option value="">
-                              United Arab Emirates Dirhams
-                            </option>
-                            <option value="lkr">LKR</option>
-                            <option value="kud">KUD</option>
-                          </Form.Select>
-                          {!isSelectCurrencyValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please select currency.
-                            </Form.Text>
-                          )}
-                        </Form.Group>
+                        <h6 style={subTitleStyle}>Currency</h6>
+                        <FloatingLabel controlId="floatingSelectCurrency" label="Select currency" className="mb-3">
+                            <Form.Select
+                                {...register('currency')}
+                                onChange={handleChanges}
+                            >
+                                <option defaultChecked>-Select-</option>
+                                {
+                                    selectCurrency.map((data, index) => (
+                                        <option key={index} value={data}>{data}</option>
+                                    ))
+                                }
+                            </Form.Select>
+                            {errors.currency?.message && <p className="text-danger">{errors.currency?.message}</p>}
+                        </FloatingLabel>
 
                         {/* Channel Manager */}
-                        <p className="fw-bolder text-black">
-                          Does this property work with a channel manager?{" "}
-                          <span className="text-light">
-                            <Icons.InfoSquare />
-                          </span>
-                        </p>
-                        <Form.Group className="mb-3">
-                          <Form.Check
-                            type="radio"
-                            name="channel-manager"
-                            value={true}
-                            onChange={(e) =>
-                              setIsPropertyChannelManager(e.target.value)
-                            }
-                            label="Yes"
-                            id="channel-manager-yes"
-                            className={
-                              !isPropertyChannelManagerValid ? "is-invalid" : ""
-                            }
-                          />
-                          <Form.Check
-                            type="radio"
-                            name="channel-manager"
-                            value={false}
-                            onChange={(e) =>
-                              setIsPropertyChannelManager(e.target.value)
-                            }
-                            label="No"
-                            id="channel-manager-no"
-                            className={
-                              !isPropertyChannelManagerValid ? "is-invalid" : ""
-                            }
-                          />
-                          {!isPropertyChannelManagerValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please select whether property uses a channel
-                              manager.
-                            </Form.Text>
-                          )}
-                        </Form.Group>
+                        {/*<h6 style={subTitleStyle}>*/}
+                        {/*    Does this property work with a channel manager?*/}
+                        {/*    <Icons.InfoSquare color={Colors.Grey2} className="ms-3"/>*/}
+                        {/*</h6>*/}
+                        {/*<Form.Group className="mb-3">*/}
+                        {/*    <Form.Check*/}
+                        {/*        type="radio"*/}
+                        {/*        value={true}*/}
+                        {/*        {...register('channelManager')}*/}
+                        {/*        onChange={handleChanges}*/}
+                        {/*        label="Yes"*/}
+                        {/*        id="channel-manager-yes"*/}
+                        {/*    />*/}
+                        {/*    <Form.Check*/}
+                        {/*        type="radio"*/}
+                        {/*        value={false}*/}
+                        {/*        {...register('channelManager')}*/}
+                        {/*        onChange={handleChanges}*/}
+                        {/*        label="No"*/}
+                        {/*        id="channel-manager-no"*/}
+                        {/*    />*/}
+                        {/*    {errors.channelManager?.message && <p className="text-danger">{errors.channelManager?.message}</p>}*/}
+                        {/*</Form.Group>*/}
 
                         {/* Property Chain */}
-                        <p className="fw-bolder text-black">
-                          Is this property part of a chain?{" "}
-                          <span className="text-light">
-                            <Icons.InfoSquare />
-                          </span>
-                        </p>
+                        <h6 style={subTitleStyle}>
+                            Is this property part of a chain?
+                            <Icons.InfoSquare color={Colors.Grey2} className="ms-3"/>
+                        </h6>
                         <Form.Group className="mb-3">
-                          <Form.Check
-                            type="radio"
-                            name="is-chain"
-                            value={true}
-                            onChange={() => setIsPropertyChain(true)}
-                            label="Yes"
-                            id="is-chain-yes"
-                            className={
-                              !isPropertyPartOfChainValid ? "is-invalid" : ""
-                            }
-                          />
-                          <Form.Check
-                            type="radio"
-                            name="is-chain"
-                            value={false}
-                            onChange={() => setIsPropertyChain(false)}
-                            label="No"
-                            id="is-chain-no"
-                            className={
-                              !isPropertyPartOfChainValid ? "is-invalid" : ""
-                            }
-                          />
-                          {!isPropertyPartOfChainValid && (
-                            <Form.Text className="invalid-feedback">
-                              Please select whether property is part of a chain.
-                            </Form.Text>
-                          )}
+                            <Form.Check
+                                type="radio"
+                                value={true}
+                                {...register('partOfChina')}
+                                onChange={handleChanges}
+                                label="Yes"
+                                id="is-chain-yes"
+                            />
+                            <Form.Check
+                                type="radio"
+                                value={false}
+                                {...register('partOfChina')}
+                                onChange={handleChanges}
+                                label="No"
+                                id="is-chain-no"
+                            />
+                            {errors.partOfChina?.message && <p className="text-danger">{errors.partOfChina?.message}</p>}
                         </Form.Group>
 
                         {/* Submit Button */}
                         <Button
-                          variant="dark"
-                          className="btn-rounded btn-block mb-3"
-                          type="submit"
+                            style={{backgroundColor:Colors.Dark}}
+                            className="btn-rounded btn-wth-icon btn-block mb-3 opacity-60"
+                            type="submit"
+                            disabled={isLoading || isLoad}
                         >
-                          Next
+                            <span>
+                                <span>Next</span>
+                                {(isLoading || isLoad) && (
+                                    <span className="input-suffix ms-3"> <Spinner animation="border" size="sm" /></span>
+                                )}
+                            </span>
                         </Button>
-                      </div>
-                    </Col>
-                  </Row>
+                    </Stack>
                 </Form>
-              </div>
-              {/* Page Footer */}
-              <CommanFooter1 />
-            </Col>
-          </Row>
+            </div>
+            {/* Page Footer */}
+            <SignupFooter/>
         </Container>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Signup;

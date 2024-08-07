@@ -2,7 +2,7 @@ import React from 'react'
 
 const Wifi = () => {
     return (
-        <svg style={{ width: "24px" }} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg style={{ width: "22px" }} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21.5 8.95502L12 20L2.5 8.95502" stroke="#323232" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M2.5 8.95501C7.747 3.68101 16.253 3.68101 21.5 8.95501" stroke="#323232" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M11.9996 9.92798C9.51459 9.92798 7.28459 11.002 5.72559 12.706" stroke="#323232" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -331,6 +331,17 @@ const Natural = () => {
     )
 }
 
+const Calendar = ()=>{
+    return (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.5 3V6" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M7.5 3V6" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M16.5 16H7.5" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M16.5 12H7.5" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="3" y="4.5" width="18" height="16.5" rx="3" stroke="#DBDBDB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+    )
+}
 
 
 export {
@@ -360,4 +371,5 @@ export {
     Winery,
     City,
     Natural,
+    Calendar
 }

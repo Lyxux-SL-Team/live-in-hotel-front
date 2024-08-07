@@ -8,6 +8,8 @@ import TopNav from '../../Header/TopNav';
 import Sidebar from '../../Sidebar/Sidebar';
 import { useWindowWidth } from '@react-hook/window-size';
 import ChatBotInterface from '../../../views/ChatPopup/ChatBot/ChatBotInterface';
+import {colors as Colors} from "../../../configs/colors.js";
+import SignupFooter from "../../Footer/SignupFooter.jsx";
 
 const LayoutClassic = ({ children, navCollapsed, topNavCollapsed, toggleCollapsedNav, maximize }) => {
 
@@ -15,6 +17,7 @@ const LayoutClassic = ({ children, navCollapsed, topNavCollapsed, toggleCollapse
     const appRoutes = useRouteMatch('/apps/');
     const errro404Route = useRouteMatch('/error-404');
     const dashboardRoute = useRouteMatch("/dashboard");
+    const propertyContract = useRouteMatch("/property-contract/agreement");
     const windowWidth = useWindowWidth();
 
     useEffect(() => {
@@ -48,9 +51,9 @@ const LayoutClassic = ({ children, navCollapsed, topNavCollapsed, toggleCollapse
             <Sidebar />
             {/* Chat-bot */}
             {dashboardRoute && <ChatBotInterface show={false} />}
-            <div className={classNames("hk-pg-wrapper", { "pb-0": appRoutes })}>
+            <div className={classNames("hk-pg-wrapper", { "pb-0": appRoutes })} style={{backgroundColor:propertyContract? Colors.white4:""}}>
                 {children}
-                {!appRoutes && <PageFooter />}
+                {!appRoutes && <SignupFooter />}
             </div>
         </div>
     )

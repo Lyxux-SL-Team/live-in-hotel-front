@@ -22,6 +22,7 @@
     "@fullcalendar/list": "^6.1.11",
     "@fullcalendar/react": "^6.1.11",
     "@fullcalendar/timegrid": "^6.1.11",
+    "@hookform/resolvers": "^3.9.0",
     "@react-hook/window-size": "^3.1.1",
     "@reduxjs/toolkit": "^2.2.5",
     "@sweetalert2/theme-bootstrap-4": "^5.0.16",
@@ -49,10 +50,12 @@
     "react-bootstrap": "^2.10.1",
     "react-bootstrap-daterangepicker": "^8.0.0",
     "react-datepicker": "^6.2.0",
+    "react-day-picker": "^9.0.7",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-dropzone-component": "^3.2.0",
     "react-feather": "^2.0.10",
+    "react-hook-form": "^7.52.1",
     "react-input-mask": "^2.0.4",
     "react-notifications-component": "^4.0.1",
     "react-perfect-scrollbar": "^1.5.8",
@@ -70,7 +73,9 @@
     "styled-components": "^6.1.8",
     "sweetalert2": "^11.10.5",
     "swiper": "^8.4.5",
-    "tabler-icons-react": "^1.56.0"
+    "tabler-icons-react": "^1.56.0",
+    "timezones-list": "^3.0.3",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",

@@ -17,11 +17,6 @@ export const SidebarMenu = [
   //       name: "Dashboard",
   //       icon: <Icons.Template />,
   //       path: "/dashboard",
-  //       badge: (
-  //         <HkBadge size="sm" bg="pink" soft className="ms-auto">
-  //           hot
-  //         </HkBadge>
-  //       ),
   //     },
   //   ],
   // },
@@ -30,7 +25,7 @@ export const SidebarMenu = [
     contents: [
       {
         name: "Property Contract",
-        icon: <img src={PropertContract} />,
+        icon: <img src={PropertContract}/>,
         path: "/property-contract",
       },
       {

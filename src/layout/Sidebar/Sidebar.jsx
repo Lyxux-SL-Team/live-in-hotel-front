@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button, Card, Nav } from 'react-bootstrap';
 import SimpleBar from 'simplebar-react';
 import { connect } from 'react-redux';
@@ -9,6 +9,7 @@ import SidebarHeader from './SidebarHeader';
 import { SidebarMenu } from './SidebarMenu';
 import classNames from 'classnames';
 import { useWindowWidth } from '@react-hook/window-size';
+import {colors} from "../../configs/colors.js";
 
 const Sidebar = ({ navCollapsed, toggleCollapsedNav }) => {
 
@@ -16,6 +17,12 @@ const Sidebar = ({ navCollapsed, toggleCollapsedNav }) => {
     const [activeSubMenu, setActiveSubMenu] = useState();
 
     const windowWidth = useWindowWidth();
+
+    useEffect(()=>{
+        if (windowWidth <= 1199) {
+            toggleCollapsedNav(false);
+        }
+    },[windowWidth])
 
     const handleClick = (menuName) => {
         setActiveMenu(menuName);
@@ -140,7 +147,7 @@ const Sidebar = ({ navCollapsed, toggleCollapsedNav }) => {
                                                                                 {menus.icon}
                                                                             </span>
                                                                         </span>
-                                                                        <span className="nav-link-text">{menus.name}</span>
+                                                                        <span className="nav-link-text" style={{color:colors.Dark, fontWeight:500, fontSize:16}}>{menus.name}</span>
                                                                         {menus.badge && menus.badge}
                                                                     </Nav.Link>
                                                             }

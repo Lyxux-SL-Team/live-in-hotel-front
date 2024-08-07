@@ -1,19 +1,26 @@
 import { apiSlice } from "./apiSlice";
 
-const USERS_URL = "/auth";
+const USERS_URL = "/admin";
 
 export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/register`,
+        url: `${USERS_URL}/createAdmin`,
         method: "POST",
         body: data,
       }),
     }),
     validateEmail: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/email-validate`,
+        url: `${USERS_URL}/checkEmail`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    login: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/loginAdmin`,
         method: "POST",
         body: data,
       }),
@@ -21,4 +28,4 @@ export const userApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useRegisterMutation, useValidateEmailMutation } = userApiSlice;
+export const { useRegisterMutation, useValidateEmailMutation, useLoginMutation } = userApiSlice;

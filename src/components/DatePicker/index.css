@@ -1,0 +1,24 @@
+.model-width{
+    left:40px
+}
+
+/* Styles for screens smaller than or equal to 600px */
+@media (max-width: 600px) {
+    .model-width{
+        left:0;
+        right:0
+    }
+}
+
+/* Styles for screens between 601px and 900px */
+@media (min-width: 601px) and (max-width: 900px) {
+    .model-width{
+        left:70px;
+    }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+    .model-width{
+        left:70px;
+    }
+}

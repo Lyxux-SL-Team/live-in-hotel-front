@@ -60,13 +60,24 @@ import Photos from "../views/Photos"
 import PhotosLabel from "../views/PhotosLabel";
 import Feedback from "../views/Feedback";
 import Review from "../views/Review"
+import UserSettings from "../views/Profiles/Settings/UserSettings.jsx";
+import MyProfile from "../views/Profiles/Profile/Profile.jsx";
+import ManageProperty from "../views/Property/ManageProperty.jsx";
+import ManageNotification from "../views/Property/ManageNotification.jsx";
+import RoleSpecialties from "../views/Property/RoleSpecialties .jsx";
+import People from "../views/Profiles/Settings/People.jsx";
+import InviteUser from "../views/Profiles/Settings/InviteUser.jsx";
+import Index2 from "../views/PoliciesAndSettings/index2.jsx";
+import Amenities from "../views/PropertyAmenities/Amenities.jsx";
+import Agreement from "../views/PropertyContract/Agreement.jsx";
 
 export const routes = [
 
     { path: 'dashboard', exact: true, component: Dashboard },
     { path: 'property-contract', exact: true, component: PropertyContract },
-    { path: 'policies-and-settings', exact: true, component: PoliciesAndSettings },
-    { path: 'property-amenities', exact: true, component: PropertyAmenities },
+    { path: 'property-contract/agreement', exact: true, component: Agreement },
+    { path: 'policies-and-settings', exact: true, component: Index2 },
+    { path: 'property-amenities', exact: true, component: Amenities },
     { path: 'commissions', exact: true, component: Commissions },
     { path: 'properties-and-rates', exact: true, component: PropertiesAndRates },
     { path: 'taxes', exact: true, component: Taxes },
@@ -74,6 +85,14 @@ export const routes = [
     { path: 'photo-label', exact: true, component: PhotosLabel },
     { path: 'feedback', exact: true, component: Feedback },
     { path: 'review', exact: true, component: Review },
+    { path: 'user-settings', exact: true, component: UserSettings },
+    { path: 'user-settings/people', exact: true, component: People },
+    { path: 'user-settings/people/invite-user', exact: true, component: InviteUser },
+
+    // property
+    { path: 'manage-property', exact: true, component: ManageProperty },
+    { path: 'manage-notification', exact: true, component: ManageNotification },
+    { path: 'role-specialties', exact: true, component: RoleSpecialties },
 
     
     //Apps
@@ -109,6 +128,7 @@ export const routes = [
     { path: 'pages/profile', exact: true, component: Profile },
     { path: 'pages/edit-profile', exact: true, component: EditProfile },
     { path: 'pages/account', exact: true, component: Account },
+    { path: 'pages/my-profile', exact: true, component: MyProfile },
     //Error
     { path: 'error-404', exact: true, component: Error404 },
 ]
