@@ -1,160 +1,48 @@
-import React, {useState} from 'react';
-import {Button, Container, Stack, Form, OverlayTrigger, Popover} from "react-bootstrap";
+import React, {useEffect, useState} from 'react';
+import {Button, Container, Stack, Form} from "react-bootstrap";
 import { colors as Colors} from "../../configs/colors.js";
 import DropDownCustomize from "../../components/CustomDropDown/DropDownCustomize.jsx";
 import * as Icon from "./Icons/index.jsx";
 import CustomInputWithBlue from "../../components/CustomInput/CustomInputWithBlue.jsx";
-import {
-    AnimalPrint,
-    CarParking, Cleaningbroom,
-    CoffeeCup, DepositBox,
-    Smooking,
-    Spa,
-    SpoonKnife,
-    SwimmingPool,
-    Wheelchair
-} from "./Icons/index.jsx";
 import InfoIcon from "../../assets/img/info-icon.png";
 import InputWithArrowUpAndDown from "../../components/CustomInput/InputWithArrowUpAndDown.jsx";
 import CustomizedDatePicker from "../../components/DatePicker/CustomizedDatePicker.jsx";
+import {
+    timeList,
+    dayList,
+    monthList,
+    guestUnitAccessList,
+    ageList,
+    internetList,
+    netSpeedList,
+    parkingList,
+    poolList,
+    poolHowManyList,
+    diningList,
+    galaDinnerList,
+    dayShortList,
+    spaList,
+    spaServiceList, massageList, spaTreatmentsList
+} from './DataLists/DataLists.js'
 
-const timeList = ["06.00 AM", "06.30 AM", "07.00 AM", "07.30 AM", "08.00 AM"];
-const dayList = ["Monday","Tuesday","Wednesday","Thursdays","Friday","Saturday","Sunday"];
-const monthList = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const guestUnitAccessList =[
-    {
-        title:"Access code",
-        description:"Numeric pad that unlocks doors"
-    },
-    {
-        title:"Key retrieval instructions",
-        description:"Hidden key, etc."
-    },
-    {
-        title:"Lockbox instructions",
-        description:"Locked container that holds a key"
-    },
-    {
-        title:"Smart lock code",
-        description:"WiFi-enabled lock"
-    },
-    {
-        title:"Express check-in",
-        description:"Guests can use a kiosk to check-in"
-    }
-]
-const ageList = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-const internetList = ["Wi-Fi in guestrooms","Wi-Fi in public areas","Wired internet in guestrooms","Wired internet in public areas","Dial-up internet in guestrooms","Dial-up internet in public areas"];
-const netSpeedList=["25+ Mbps","50+ Mbps","100+ Mbps","250+ Mbps","500+ Mbps"];
-const parkingList=[
-    {
-        path:"inOutPrivileges",
-        id:"In/out privileges"
-    },
-    {
-        path:"coveredParking",
-        id:"Covered parking"
-    },
-    {
-        path:"uncoveredParking",
-        id:"Uncovered parking"
-    },
-    {
-        path:"securedParking",
-        id:"Secured parking"
-    },
 
-];
-const poolList = ["Outdoor pool (open all year)","Outdoor seasonal pool","Indoor pool","Children's pool","Pool hours","Access to nearby indoor pool","Access to nearby outdoor pool","Poolside bar","Swim-up bar","Water park","Waterslide","Lazy river","Steam room","Spa tub","Lifeguard on site","Sauna","Fence around pool","Pool gate","Pool umbrellas","Pool sun loungers","Pool cabanas"];
-const poolHowManyList = ["1", "2","3","4","5","6","7","8"];
-const diningList = ["Snack bar/deli","Coffee/tea in common areas","Free reception","Gala dinners","Hosted evening meal"]
 const Amenities = (props) => {
-    const [amenitiesData, setAmenitiesData] = useState({internet:{options:[]}, parking:{options:[]}, poolAccess:{options:[]}, diningVenues:{options:[]}});
+    const [amenitiesData, setAmenitiesData] = useState({internet:{options:[]}, parking:{options:[]}, poolAccess:{options:[]}, diningVenues:{options:[]}, spa:{options:[]}});
     console.log(amenitiesData)
+    const [selectedDays, setSelectedDays] = useState([]);
 
+    // update the selected date in amenities data
+    useEffect(() => {
+        handleUpdate(`diningVenues.options`, selectedDays, 'type', "selectedDays", "Hosted evening meal")
+    }, [selectedDays]);
+    const handleDayClick = (day) => {
+        if (selectedDays.includes(day)) {
+            setSelectedDays(selectedDays.filter(d => d !== day));
+        } else if (selectedDays.length < 5) {
+            setSelectedDays([...selectedDays, day]);
+        }
 
-    // const handleUpdate = (path, value) => {
-    //     setAmenitiesData(prevState => {
-    //         const newState = { ...prevState };
-    //         const keys = path.split('.');
-    //         let currentLevel = newState;
-    //         keys.slice(0, -1).forEach(key => {
-    //             if (!currentLevel[key]) {
-    //                 currentLevel[key] = {};
-    //             }
-    //             currentLevel = currentLevel[key];
-    //         });
-    //         currentLevel[keys[keys.length - 1]] = value;
-    //         return newState;
-    //     });
-    // };
-
-    // const handleUpdate = (path, value, type = 'default', event = null, name = null) => {
-    //     console.log('handleUpdate called with:', { path, value, type, event, name });
-    //     setAmenitiesData(prevState => {
-    //         const newState = { ...prevState };
-    //         const keys = path.split('.');
-    //         let currentLevel = newState;
-    //
-    //         if (type === 'default') {
-    //             console.log('default update');
-    //             keys.slice(0, -1).forEach(key => {
-    //                 if (!currentLevel[key]) {
-    //                     currentLevel[key] = {};
-    //                 }
-    //                 currentLevel = currentLevel[key];
-    //             });
-    //             currentLevel[keys[keys.length - 1]] = value;
-    //         } else if (type === 'checked' && event) {
-    //             console.log('checked update');
-    //             const optionName = event.target.name;
-    //             const isOptionExist = currentLevel[keys[0]]?.options?.find(d => d.option === optionName);
-    //
-    //             if (value && !isOptionExist) {
-    //                 currentLevel[keys[0]].options.push({ option: optionName, isAvailable: event.target.checked });
-    //             } else if (!value) {
-    //                 currentLevel[keys[0]].options = currentLevel[keys[0]].options.map(d =>
-    //                     d.option === optionName ? { ...d, isAvailable: event.target.checked } : d
-    //                 );
-    //             }
-    //         } else if (type === 'type' && event ) {
-    //             console.log('type update');
-    //             const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === name);
-    //             if (optionIndex !== -1) {
-    //                 currentLevel[keys[0]].options[optionIndex][event?.target?.name || event] = value;
-    //             }
-    //         } else if ((type === 'amount' || type === 'percentage') && event) {
-    //             console.log('amount or percentage update');
-    //             const optionName = event.target.name;
-    //             const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === optionName);
-    //
-    //             if (optionIndex !== -1) {
-    //                 currentLevel[keys[0]].options[optionIndex][type] = value;
-    //             }
-    //         } else if (type === 'layer 3 checked' && event) {
-    //             console.log('checked layer 3 update');
-    //             // const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === name);
-    //             // console.log(optionIndex)
-    //             // if (optionIndex !== -1) {
-    //             //     currentLevel[keys[0]].options[optionIndex][event?.target?.name || event] = value;
-    //             // }
-    //             //
-    //             // const isOptionExist = currentLevel[keys[0]]?.options?.find(d => d.option === optionName);
-    //
-    //             if (value) {
-    //                 currentLevel[keys[0]].options = currentLevel[keys[0]].options.map(d =>
-    //                     d.option === name ? [ ...d, {event.target.name:event.target.checked} ] : d
-    //                 );
-    //             } else {
-    //                 currentLevel[keys[0]].options = currentLevel[keys[0]].options.map(d =>
-    //                     d.option === name ? { ...d, isAvailable: event.target.checked } : d
-    //                 );
-    //             }
-    //         }
-    //
-    //         return newState;
-    //     });
-    // };
+    };
 
     const handleUpdate = (path, value, type = 'default', event = null, name = null) => {
         setAmenitiesData(prevState => {
@@ -240,29 +128,47 @@ const Amenities = (props) => {
                         currentLevel[keys[0]].options[optionIndex].restrictions.options[restrictionOptionIndex][keys[keys.length - 1]] = value;
                     }
                 }
-            }
+            } else if (type === 'layer 5 checked' && event) {
+                const optionName = name;
+                const restrictionOptionName = event.target.name;
+                const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === optionName);
 
-            return newState;
+                if (optionIndex !== -1) {
+                    if (!currentLevel[keys[0]].options[optionIndex].data) {
+                        currentLevel[keys[0]].options[optionIndex].data = [];
+                    }
+
+                    const restrictionOptionIndex = currentLevel[keys[0]].options[optionIndex].data.findIndex(opt => opt.name === restrictionOptionName);
+
+                    if (event.target.checked) {
+                        if (restrictionOptionIndex === -1) {
+                            currentLevel[keys[0]].options[optionIndex].data.push({ name: restrictionOptionName, isAvailable: true });
+                        }
+                    } else {
+                        if (restrictionOptionIndex !== -1) {
+                            currentLevel[keys[0]].options[optionIndex].data.splice(restrictionOptionIndex, 1);
+                        }
+                    }
+                }
+            } else if (type === 'gala nested update' && name) {
+                const [optionName, restrictionOptionName] = name.split(':');
+                const optionIndex = currentLevel[keys[0]].options.findIndex(d => d.option === optionName);
+
+                if (optionIndex !== -1) {
+                    const restrictionOptionIndex = currentLevel[keys[0]].options[optionIndex].data.findIndex(opt => opt.name === restrictionOptionName);
+
+                    if (restrictionOptionIndex !== -1) {
+                        currentLevel[keys[0]].options[optionIndex].data[restrictionOptionIndex][keys[keys.length - 1]] = value;
+                    }
+                }
+            }
+                return newState;
         });
     };
 
-    // const popover = (
-    //     <Popover id="popover-basic" className="custom-popover ms-3">
-    //         <Popover.Body style={{color:colors.white,fontSize:10, backgroundColor:colors.FooterBlue}}>
-    //             If you have a Virtual front desk(you can select this option)
-    //         </Popover.Body>
-    //     </Popover>
-    // );
-
     const titleStyle = {fontSize: 18, color: Colors.Dark};
     const subStyle = {fontSize: 20, color: Colors.Dark, fontWeight:600};
-    const buttonStyle = {
-        fontSize: 14,
-        color: Colors.white,
-        border: `1px solid ${Colors.Grey3}`,
-        backgroundColor: Colors.Dark,
-        borderRadius: 20
-    };
+    const buttonStyle = {fontSize: 14, color: Colors.white, border: `1px solid ${Colors.Grey3}`, backgroundColor: Colors.Dark, borderRadius: 20};
     const descStyle = {fontSize: 14, color: Colors.Grey};
     const labelStyle = {fontSize: 14, color: Colors.Dark};
     const containerBorder = {borderBottom: `1px solid ${Colors.Grey3}`};
@@ -713,7 +619,6 @@ const Amenities = (props) => {
                                                     </Stack>
                                                 </Stack>
                                                 {
-
                                                     parkingList.map((item)=>(
                                                 <Form.Check className="mt-2" key={item.id} checked={amenitiesData?.parking?.options?.find(option => option.option === data)?.[item.path] || false} type="checkbox" name={item.path} label={item.id} onChange={(e) => handleUpdate(`parking.options`, e.target.checked,'type',e, data)}/>
                                                 ))
@@ -918,9 +823,9 @@ const Amenities = (props) => {
             {/* Do you offer dining venues? */}
             <Container className="pt-3 mb-3" style={containerBorderFull}>
                 <h3 className="mb-3" style={titleStyle}>
-                    <span className="me-2 pb-1">
-                        <Icon.SpoonKnife/>
-                    </span>
+                <span className="me-2 pb-1">
+                    <Icon.SpoonKnife />
+                </span>
                     Do you offer dining venues?
                 </h3>
                 <Stack direction="horizontal" gap={2} className="mb-3">
@@ -948,29 +853,284 @@ const Amenities = (props) => {
                 {
                     amenitiesData?.diningVenues?.isAvailable &&
                     <>
-                    <p className="mb-3" style={descStyle}>How many venues do you have at your property?</p>
+                        <p className="mb-3" style={descStyle}>How many venues do you have at your property?</p>
                         <Stack className="w-80 w-md-15 mb-3">
-                            <p style={{...descStyle, fontSize: 12}}>Restaurants</p>
-                            <DropDownCustomize list={monthList} onChange={(selectedValue) => handleUpdate('diningVenues.restaurants', selectedValue)}/>
+                            <p style={{ ...descStyle, fontSize: 12 }}>Restaurants</p>
+                            <DropDownCustomize list={monthList} onChange={(selectedValue) => handleUpdate('diningVenues.restaurants', selectedValue)} />
                         </Stack>
                         <Stack className="w-80 w-md-15 mb-3">
-                            <p style={{...descStyle, fontSize: 12}}>Bars</p>
-                            <DropDownCustomize list={monthList} onChange={(selectedValue) => handleUpdate('diningVenues.bars', selectedValue)}/>
+                            <p style={{ ...descStyle, fontSize: 12 }}>Bars</p>
+                            <DropDownCustomize list={monthList} onChange={(selectedValue) => handleUpdate('diningVenues.bars', selectedValue)} />
                         </Stack>
                         <Stack className="w-80 w-md-15 mb-3">
-                            <p style={{...descStyle, fontSize: 12}}>Coffee shop or café</p>
-                            <DropDownCustomize list={monthList} onChange={(selectedValue) => handleUpdate('diningVenues.coffeShopOrCafe', selectedValue)}/>
+                            <p style={{ ...descStyle, fontSize: 12 }}>Coffee shop or café</p>
+                            <DropDownCustomize list={monthList} onChange={(selectedValue) => handleUpdate('diningVenues.coffeShopOrCafe', selectedValue)} />
                         </Stack>
                         {
-                            diningList.map((data,index)=>(
-                                <div key={index}>
-                                    <Form.Check className="mb-2" type="checkbox" label={data} name={data} onChange={(e) => handleUpdate(`diningVenues.options`, e.target.checked, 'checked', e)}/>
+                            diningList.map((data, index) => (
+                                <div key={index} className="mb-3">
+                                    <Form.Check className="mb-2" type="checkbox" label={data} name={data} onChange={(e) => handleUpdate('diningVenues.options', e.target.checked, 'checked', e)} />
                                     {
-                                        amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.isAvailable &&
+                                        index === 2 && amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.isAvailable &&
                                         <div className="ps-3 mb-3">
                                             <Stack direction="horizontal" gap={3} className="mt-3">
                                                 {
                                                     ["Daily", "Select days"].map((item) =>
+                                                        <Form.Check
+                                                            key={item}
+                                                            type="radio"
+                                                            name="type"
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate('diningVenues.options', item.toLowerCase(), 'type', e, data)}
+                                                        />
+                                                    )
+                                                }
+                                            </Stack>
+                                        </div>
+                                    }
+                                    {
+                                        index === 3 && amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <div className="ps-3 mb-3">
+                                            <Stack gap={3} className="mt-3">
+                                                {
+                                                    galaDinnerList.map((item, index) =>
+                                                        <div key={index}>
+                                                            <Form.Check
+                                                                type="checkbox"
+                                                                name={item}
+                                                                label={item}
+                                                                onChange={(e) => handleUpdate('diningVenues.options', e.target.checked, 'layer 5 checked', e, data)}
+                                                            />
+                                                            {
+                                                                index !==5 && amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.data?.find(d => d.name === item)?.isAvailable &&
+                                                                <>
+                                                                    <Stack direction="horizontal" className="ps-0 ps-md-4 mt-3" gap={3}>
+                                                                        {
+                                                                            ["Included in room rate", "Collected at property"].map((items, index) =>
+                                                                                <Form.Check
+                                                                                    key={index}
+                                                                                    type="radio"
+                                                                                    name="type"
+                                                                                    label={items}
+                                                                                    onChange={(e) => handleUpdate(`diningVenues.options.${data}.data.${item}.type`, items.toLowerCase(), 'gala nested update', null, `${data}:${item}`)}
+                                                                                />
+                                                                            )
+                                                                        }
+                                                                    </Stack>
+                                                                    {
+                                                                        amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.type ==="collected at property" &&
+                                                                        <>
+                                                                            <Stack direction="horizontal" gap={3} className="my-3 ps-0 ps-md-4">
+                                                                                <div>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>{item} fee amount -</p>
+                                                                                    <InputWithArrowUpAndDown
+                                                                                        mask={false}
+                                                                                        value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.feeAmount || 0}
+                                                                                        onChange={(value) => handleUpdate(`diningVenues.options.${data}.data.${item}.feeAmount`, value, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>{item} fee child amount -</p>
+                                                                                    <InputWithArrowUpAndDown
+                                                                                        mask={false}
+                                                                                        value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.childAmount || 0}
+                                                                                        onChange={(value) => handleUpdate(`diningVenues.options.${data}.data.${item}.childAmount`, value, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </div>
+                                                                            </Stack>
+                                                                            <Stack direction="horizontal" gap={3} className="w-100 w-md-45 w-lg-40 ps-0 ps-md-4">
+                                                                                <Stack>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Minimum child age</p>
+                                                                                    <DropDownCustomize
+                                                                                        list={poolHowManyList}
+                                                                                        onChange={(selectedValue) => handleUpdate(`diningVenues.options.${data}.data.${item}.minChildAge`, selectedValue, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </Stack>
+                                                                                <Stack>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Maximum child age</p>
+                                                                                    <DropDownCustomize
+                                                                                        list={poolHowManyList}
+                                                                                        onChange={(selectedValue) => handleUpdate(`diningVenues.options.${data}.data.${item}.maxChildAge`, selectedValue, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </Stack>
+                                                                            </Stack>
+                                                                        </>
+                                                                    }
+                                                                </>
+                                                            }
+                                                            {
+                                                                index ===5 && amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.data?.find(d => d.name === item)?.isAvailable &&
+                                                                <>
+                                                                    <Stack className="mt-3 w-80 w-md-20 w-lg-15">
+                                                                        <p style={{...descStyle, fontSize: 12}}>Date 1</p>
+                                                                        <CustomizedDatePicker onChange={(value)=> handleUpdate(`diningVenues.options.${data}.data.${item}.dayOne`, value, 'gala nested update', null, `${data}:${item}`)}/>
+                                                                    </Stack>
+                                                                    <Stack direction="horizontal" className="my-3" gap={3}>
+                                                                        {
+                                                                            ["Included in room rate", "Collected at property"].map((items, index) =>
+                                                                                <Form.Check
+                                                                                    key={index}
+                                                                                    type="radio"
+                                                                                    name="dayOneType"
+                                                                                    label={items}
+                                                                                    onChange={(e) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayOneType`, items.toLowerCase(), 'gala nested update', null, `${data}:${item}`)}
+                                                                                />
+                                                                            )
+                                                                        }
+                                                                    </Stack>
+                                                                    {
+                                                                        amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayOneType ==="collected at property" &&
+                                                                        <>
+                                                                            <Stack direction="horizontal" gap={3} className="mb-3 ps-0 ps-md-4">
+                                                                                <div>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Gala dinner fee amount -</p>
+                                                                                    <InputWithArrowUpAndDown
+                                                                                        mask={false}
+                                                                                        value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayOneFeeAmount || 0}
+                                                                                        onChange={(value) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayOneFeeAmount`, value, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Gala dinner fee child amount -</p>
+                                                                                    <InputWithArrowUpAndDown
+                                                                                        mask={false}
+                                                                                        value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayOneChildAmount || 0}
+                                                                                        onChange={(value) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayOneChildAmount`, value, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </div>
+                                                                            </Stack>
+                                                                            <Stack direction="horizontal" gap={3} className="w-100 w-md-45 w-lg-40 ps-0 ps-md-4">
+                                                                                <Stack>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Minimum child age</p>
+                                                                                    <DropDownCustomize
+                                                                                        list={poolHowManyList}
+                                                                                        onChange={(selectedValue) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayOneMinChildAge`, selectedValue, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </Stack>
+                                                                                <Stack>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Maximum child age</p>
+                                                                                    <DropDownCustomize
+                                                                                        list={poolHowManyList}
+                                                                                        onChange={(selectedValue) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayOneMaxChildAge`, selectedValue, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </Stack>
+                                                                            </Stack>
+                                                                                </>
+                                                                        }
+                                                                        {/*    day 2 */}
+                                                                        <Stack className="mt-3 w-80 w-md-20 w-lg-15">
+                                                                            <p style={{...descStyle, fontSize: 12}}>Date 2</p>
+                                                                            <CustomizedDatePicker onChange={(value)=> handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwo`, value, 'gala nested update', null, `${data}:${item}`)}/>
+                                                                        </Stack>
+                                                                        <Stack direction="horizontal" className="mt-3" gap={3}>
+                                                                            {
+                                                                                ["Included in room rate", "Collected at property"].map((items, index) =>
+                                                                                    <Form.Check
+                                                                                        key={index}
+                                                                                        type="radio"
+                                                                                        name="dayTwoType"
+                                                                                        label={items}
+                                                                                        onChange={(e) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoType`, items.toLowerCase(), 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                )
+                                                                            }
+                                                                        </Stack>
+                                                                        {
+                                                                            amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayTwoType ==="collected at property" &&
+                                                                        <>
+                                                                            <Stack direction="horizontal" gap={3} className="mb-3 ps-0 ps-md-4">
+                                                                                <div>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Gala dinner fee (second date) amount -</p>
+                                                                                    <InputWithArrowUpAndDown
+                                                                                        mask={false}
+                                                                                        value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayTwoFeeAmount || 0}
+                                                                                        onChange={(value) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoFeeAmount`, value, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </div>
+                                                                                <div>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Gala dinner fee (second date) child amount -</p>
+                                                                                    <InputWithArrowUpAndDown
+                                                                                        mask={false}
+                                                                                        value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayTwoChildAmount || 0}
+                                                                                        onChange={(value) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoChildAmount`, value, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </div>
+                                                                            </Stack>
+                                                                            <Stack direction="horizontal" gap={3} className="w-100 w-md-45 w-lg-40 ps-0 ps-md-4">
+                                                                                <Stack>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Minimum child age</p>
+                                                                                    <DropDownCustomize
+                                                                                        list={poolHowManyList}
+                                                                                        onChange={(selectedValue) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoMinChildAge`, selectedValue, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </Stack>
+                                                                                <Stack>
+                                                                                    <p style={{ ...descStyle, fontSize: 12 }}>Maximum child age</p>
+                                                                                    <DropDownCustomize
+                                                                                        list={poolHowManyList}
+                                                                                        onChange={(selectedValue) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoMaxChildAge`, selectedValue, 'gala nested update', null, `${data}:${item}`)}
+                                                                                    />
+                                                                                </Stack>
+                                                                            </Stack>
+                                                                        </>
+                                                                    }
+                                                                </>
+                                                            }
+                                                        </div>
+                                                    )
+                                                }
+                                            </Stack>
+                                        </div>
+                                    }
+                                    {
+                                        index ===4 && amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <Stack className="ps-3 my-3" gap={3}>
+                                            <Form.Check
+                                                key={index}
+                                                type="checkbox"
+                                                name="reservationRequired"
+                                                label="Reservation required"
+                                                onChange={(e) => handleUpdate(`diningVenues.options`, e.target.checked, 'type', e, data )}
+                                            />
+                                            <Stack className="w-80 w-md-25">
+                                                <p className="mb-1" style={{ ...descStyle, fontSize: 12 }}>Hosted evening meal amount</p>
+                                                <InputWithArrowUpAndDown
+                                                    mask={false}
+                                                    value={amenitiesData?.diningVenues?.options.find(option => option.option === data)?.mealAmount || 0}
+                                                    onChange={(value) => handleUpdate(`diningVenues.options`, value, 'type', 'mealAmount', data )}
+                                                />
+                                            </Stack>
+                                            <Stack direction="horizontal" gap={3} className="d-none d-md-flex">
+                                            {
+                                                ["Daily","Weekdays","Weekends","Select days"].map((item)=>
+                                                    <Form.Check
+                                                        key={item}
+                                                        type="radio"
+                                                        name="type"
+                                                        label={item}
+                                                        onChange={(e) => handleUpdate(`diningVenues.options`, item.toLowerCase(), 'type', e, data)}
+                                                    />
+                                                )
+                                            }
+                                            </Stack>
+                                            {/*<Row className="w-60">*/}
+                                            {/*    {*/}
+                                            {/*        ["Daily","Weekdays","Weekends","Select days"].map((item)=>*/}
+                                            {/*            <Col xs={6} md={3} key={item}>*/}
+                                            {/*                <Form.Check*/}
+                                            {/*                    key={item}*/}
+                                            {/*                    type="radio"*/}
+                                            {/*                    name="type"*/}
+                                            {/*                    label={item}*/}
+                                            {/*                    onChange={(e) => handleUpdate(`diningVenues.options.${data}.data.${item}.type`, items.toLowerCase(), 'gala nested update', null, `${data}:${item}`)}*/}
+                                            {/*                />*/}
+                                            {/*            </Col>*/}
+                                            {/*        )*/}
+                                            {/*    }*/}
+                                            {/*</Row>*/}
+                                            <Stack direction="horizontal" gap={3} className="d-md-none">
+                                                {
+                                                    ["Daily","Weekdays"].map((item)=>
                                                         <Form.Check
                                                             key={item}
                                                             type="radio"
@@ -981,7 +1141,69 @@ const Amenities = (props) => {
                                                     )
                                                 }
                                             </Stack>
-                                        </div>
+                                            <Stack direction="horizontal" gap={3} className="d-md-none ">
+                                                {
+                                                    ["Weekends","Select days"].map((item)=>
+                                                        <Form.Check
+                                                            key={item}
+                                                            type="radio"
+                                                            name="type"
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`diningVenues.options`, item.toLowerCase(), 'type', e, data)}
+                                                        />
+                                                    )
+                                                }
+                                            </Stack>
+                                            {
+                                                amenitiesData?.diningVenues?.options?.find(option => option.option === data)?.type === 'select days' &&
+                                                <>
+                                                    {
+                                                        <div className="d-md-block d-none">
+                                                            <p className="mb-2" style={{...labelStyle, fontSize:12}}>Which Day(s)? <span style={{...descStyle,fontSize:12}}>Select up to five.</span></p>
+                                                            <Stack direction="horizontal" gap={1}>
+                                                                {
+                                                                    dayShortList.map((day,index)=>
+                                                                        <span className="px-2 py-1" key={index}
+                                                                              style={{...containerBorderFull,...labelStyle,borderRadius:20,
+                                                                                  backgroundColor: selectedDays.includes(day) ? Colors.Dark : 'transparent',
+                                                                                  color: selectedDays.includes(day) ? Colors.white : Colors.Dark,}} onClick={() => handleDayClick(day)}>{day}</span>
+                                                                    )
+                                                                }
+                                                            </Stack>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        <div className="d-md-none">
+                                                            <p className="mb-2" style={{...labelStyle, fontSize:12}}>Which Day(s)? <span style={{...descStyle,fontSize:12}}>Select up to five.</span></p>
+                                                            <Stack direction="horizontal" gap={1}>
+                                                                {
+                                                                    dayShortList.slice(0,5).map((day,index)=>
+                                                                        <span className="px-2 py-1" key={index}
+                                                                              style={{...containerBorderFull,...labelStyle,borderRadius:20,
+                                                                                  backgroundColor: selectedDays.includes(day) ? Colors.Dark : 'transparent',
+                                                                                  color: selectedDays.includes(day) ? Colors.white : Colors.Dark,}} onClick={() => handleDayClick(day)}>{day}</span>
+                                                                    )
+                                                                }
+                                                            </Stack>
+                                                        </div>
+                                                    }
+                                                    {
+                                                        <div className="d-md-none">
+                                                            <Stack direction="horizontal" gap={1}>
+                                                                {
+                                                                    dayShortList.slice(5,7).map((day,index)=>
+                                                                        <span className="px-2 py-1" key={index}
+                                                                              style={{...containerBorderFull,...labelStyle,borderRadius:20,
+                                                                                  backgroundColor: selectedDays.includes(day) ? Colors.Dark : 'transparent',
+                                                                                  color: selectedDays.includes(day) ? Colors.white : Colors.Dark,}} onClick={() => handleDayClick(day)}>{day}</span>
+                                                                    )
+                                                                }
+                                                            </Stack>
+                                                        </div>
+                                                    }
+                                                </>
+                                            }
+                                        </Stack>
                                     }
                                 </div>
                             ))
@@ -1020,6 +1242,130 @@ const Amenities = (props) => {
                         No
                     </Button>
                 </Stack>
+                {
+                    amenitiesData?.spa?.isAvailable &&
+                    <>
+                        {
+                            spaList.map((data,index)=>(
+                                <div key={index}>
+                                    <Form.Check className="mb-2" type="checkbox" label={data} name={data} onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'checked', e)}/>
+                                    {
+                                        index ===0 && amenitiesData?.spa?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <div className="ps-4 mb-3">
+                                            <Stack direction="horizontal" gap={3} className="mt-3">
+                                                {
+                                                    ["Full-service spa", "Spa services onsite"].map((item) =>
+                                                        <Form.Check
+                                                            key={item}
+                                                            type="radio"
+                                                            name="type"
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`spa.options`, item.toLowerCase(), 'type', e, data)}
+                                                        />
+                                                    )
+                                                }
+                                            </Stack>
+                                            {
+                                                 amenitiesData?.spa?.options.find(option => option.option === data)?.type === 'full-service spa' &&
+                                                <>
+                                                    <Stack className="w-80 w-md-15 my-3">
+                                                        <p style={{ ...descStyle, fontSize: 12 }}>Spa name</p>
+                                                        <Form.Control
+                                                            type="text"
+                                                            name="spaName"
+                                                            onChange={(e) => handleUpdate(`spa.options`, e.target.value, 'type', e, data)}
+                                                        />
+                                                    </Stack>
+                                                    <Stack direction="horizontal" gap={3}>
+                                                        {
+                                                            ["Open daily", "Open select days"].map((item) =>
+                                                                <Form.Check
+                                                                    key={item}
+                                                                    type="radio"
+                                                                    name="openType"
+                                                                    label={item}
+                                                                    onChange={(e) => handleUpdate(`spa.options`, item.toLowerCase(), 'type', e, data)}
+                                                                />
+                                                            )
+                                                        }
+                                                    </Stack>
+                                                    {
+                                                        spaServiceList.map((item) =>
+                                                        <Form.Check className="mt-2" key={item} type="checkbox"
+                                                                    label={item}
+                                                                    name={item}
+                                                                    onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}/>
+                                                    )}
+                                                </>
+                                            }
+                                        </div>
+                                    }
+                                    {
+                                        index ===1 && amenitiesData?.spa?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <Stack className="ps-4 my-3" gap={3}>
+                                            {
+                                                massageList.map((item,index) =>
+                                                    <div key={index}>
+                                                    <Form.Check
+                                                        type="checkbox"
+                                                        name={item}
+                                                        label={item}
+                                                        onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
+                                                    />
+                                                        {
+                                                            index ===0 &&
+                                                            <p className="mt-3" style={{...descStyle,fontSize:12}}>Types of massages available</p>
+                                                        }
+                                                    </div>
+                                                )
+                                            }
+                                        </Stack>
+                                    }
+                                    {
+                                        index ===2 && amenitiesData?.spa?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <Stack className="ps-4 my-3" gap={2}>
+                                            <Stack gap={1} className="w-80 w-md-35 w-lg-25">
+                                                <p style={{...descStyle,fontSize:12}}>Number of treatment rooms</p>
+                                                <DropDownCustomize
+                                                    borderChange={true}
+                                                    list={poolHowManyList}
+                                                    onChange={(selectedValue) => handleUpdate(`spa.options`, selectedValue, 'type', 'treatmentRooms', data)}
+                                                />
+                                            </Stack>
+                                            {
+                                                ["Couples treatment rooms","Outdoor treatment areas"].map((item,index) =>
+                                                        <Form.Check
+                                                            key={index}
+                                                            type="checkbox"
+                                                            name={item}
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
+                                                        />
+                                                )
+                                            }
+                                        </Stack>
+                                    }
+                                    {
+                                        index ===3 && amenitiesData?.spa?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <Stack className="ps-4 my-3" gap={2}>
+                                            {
+                                                spaTreatmentsList.map((item,index) =>
+                                                    <Form.Check
+                                                        key={index}
+                                                        type="checkbox"
+                                                        name={item}
+                                                        label={item}
+                                                        onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
+                                                    />
+                                                )
+                                            }
+                                        </Stack>
+                                    }
+                                </div>
+                            ))
+                        }
+                    </>
+                }
             </Container>
 
             {/* Do you allow pets? */}
