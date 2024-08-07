@@ -26,7 +26,7 @@ function DropDownCustomize({ list, onChange, borderChange }) {
                 </span>
             </span>
             <Collapse in={open}>
-                <Container id="open-id" className="position-absolute bg-white overflow-auto p-2 z-index-10" style={{ top: 40, border: `1px solid ${Colors.white1}`, borderRadius: 10, height: "170px" }}>
+                <Container id="open-id" className="position-absolute bg-white overflow-auto p-2 " style={{zIndex:999, top: 40, border: `1px solid ${Colors.white1}`, borderRadius: 10, height: "170px" }}>
                     {list.map((data,index) => (
                         data.title ?
                         <div key={index} className="mb-2" onClick={() => handleSelect(data.title)}>

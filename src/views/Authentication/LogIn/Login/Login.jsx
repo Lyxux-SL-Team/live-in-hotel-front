@@ -27,7 +27,6 @@ const Login = () => {
     const userLogin = async (data) => {
         resetField("password");
         const res = await login(data);
-        console.log(res)
         if (res.data?.success) {
             dispatch(setUser(res.data))
             navigate();

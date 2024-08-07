@@ -48,7 +48,7 @@ function CustomizedDatePicker({onChange}) {
                     readOnly
                 />
             </InputGroup>
-            <Container className={open ? "shadow px-1 px-md-3 py-2 position-absolute model-width" :"d-none"} style={{backgroundColor:Colors.white, borderRadius:16, color:Colors.Dark, width:"fit-content"}}>
+            <Container className={open ? "shadow px-1 px-md-3 py-2 position-absolute model-width" :"d-none"} style={{backgroundColor:Colors.white, borderRadius:16, color:Colors.Dark, width:"fit-content", zIndex:999}}>
                 <DayPicker
                     mode="single"
                     selected={selectedDate}
