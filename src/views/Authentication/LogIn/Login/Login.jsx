@@ -27,11 +27,12 @@ const Login = () => {
     const userLogin = async (data) => {
         resetField("password");
         const res = await login(data);
-        if (res.data.status) {
+        console.log(res)
+        if (res.data?.success) {
             dispatch(setUser(res.data))
             navigate();
-        }else{
-            toast.error(res.data.message, {
+        } else {
+            toast.error(res.error.data.message, {
                 toastId: "toast4",
                 position: "top-right",
                 className: 'jq-toast-danger',
@@ -39,7 +40,8 @@ const Login = () => {
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
-            })}
+            })
+        }
     };
     const navigate = () => {
         window.location.href = "/dashboard";
@@ -51,7 +53,7 @@ const Login = () => {
 
     const FormData = z.object({
         email: z.string().min(1, { message: "Email is required" }).email('Invalid email format'),
-        password: z.string().min(9,'Password must contain at least 10 characters')
+        password: z.string().min(1,'Password is required')
     });
 
     const {
