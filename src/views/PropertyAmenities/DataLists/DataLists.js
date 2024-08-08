@@ -53,4 +53,38 @@ export const galaDinnerList = ["Christmas Eve gala dinner fee","Christmas Day ga
 export const spaList = ["Spa or spa services","Massages","Spa treatment room(s)","Spa treatments","Advance reservations for spa services"];
 export const spaServiceList = ["Mud bath in spa","Sauna in spa","Steam room in spa","Spa tub in spa","Hot springs/mineral springs in spa","Adult supervision required","Age restriction applies"];
 export const massageList = ["Advanced reservations for massages","Deep tissue massage","Hot stone massage","Prenatal massage","Sports massage","Swedish massage","Thai massage"];
-export const spaTreatmentsList =["Aromatherapy treatments","Ayurvedic treatments","Body scrubs","Body treatments","Body wraps","Facial treatments","Hydrotherapy treatments","Manicures and pedicures","Thalassotherapy treatments","Detoxification wrap","Reflexology","Turkish bath/Hammam"]
+export const spaTreatmentsList =["Aromatherapy treatments","Ayurvedic treatments","Body scrubs","Body treatments","Body wraps","Facial treatments","Hydrotherapy treatments","Manicures and pedicures","Thalassotherapy treatments","Detoxification wrap","Reflexology","Turkish bath/Hammam"];
+export const petOptionsList=[
+    {
+        path:"restrictions",
+        id:"Restrictions"
+    },
+    {
+        path:"petDeposit",
+        id:"Pet deposit"
+    },
+    {
+        path:"petCleaningFee",
+        id:"Pet cleaning fee"
+    },
+]
+export const petFeaturesList = ["Food and water bowls","Litter box","Dog exercise area","Pet-sitting services","Pet grooming services"];
+export const wheelChairAccessibleList = ["Front desk","Concierge desk","Fitness center","Lounge","Meeting spaces/business center","On-site restaurant","Parking","Van parking","Valet for wheelchair-equipped vehicle","Path of travel","Pool","Public washroom","Spa","Wheelchair-accessible shuttle"];
+export const propertyEntranceList = ["Well-lit path/walkway","Stair-free path/walkway","Stairs required to reach entrance","Ramp to front entrance"];
+export const otherPropertyAccessibilityFeatures = ["Assistive listening devices available","Assistive listening devices in meeting rooms","Braille or raised signage","Handrails in hallways","Handrails in stairways","Hospital bed available","Portable hoist available","Pool hoist on site","Pool ramp on site","Sign language-capable staff","Visual alarms in hallways","Wheelchairs available on site"];
+export const guestServicesList =["Luggage storage","Lockers available","Laundry facilities","Dry cleaning/laundry service","Tours/ticket assistance","Concierge services","Newspapers in lobby","Safe-deposit box at front desk","ATM/banking","Computer station","Fireplace in lobby","Communal living room","Free grocery shopping service","Gift shops or newsstand","Grocery/convenience store","Hair salon","Library","Multilingual staff","Porter/bellhop","Reception facilities","Shared microwave","Shared refrigerator","Shopping on site","Television in common areas","Water dispenser","Wedding services","Vending machine"];
+export const reciptionFacilitiesList = [
+    {
+        id:"Shared microwave",
+        path:"sharedMicrowave"
+    },
+    {
+        id:"Shared refrigerator",
+        path:"sharedRefrigerator"
+    },
+    {
+        id:"Shopping on site",
+        path:"shoppingOnSite"
+    },
+];
+export const roomConveniencesList = ["Local maps","Guidebooks or recommendations","Restaurant dining guide","Chef","Meal delivery service available","In-room massage available","Slippers","Child-size slippers","Turndown service","Iron/ironing board","In-room laundry","Laundry detergent","Blackout drapes/curtains","Window screens","Soundproofed rooms","Noise-free rooms not guaranteed","In-room safe","Mobile key entry","Free newspaper","Phone","Smartphone","Electrical adapters/chargers","Computer monitor","Printer"];

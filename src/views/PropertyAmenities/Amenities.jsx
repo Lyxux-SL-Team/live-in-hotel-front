@@ -22,12 +22,22 @@ import {
     galaDinnerList,
     dayShortList,
     spaList,
-    spaServiceList, massageList, spaTreatmentsList
+    spaServiceList,
+    massageList,
+    spaTreatmentsList,
+    petOptionsList,
+    petFeaturesList,
+    wheelChairAccessibleList,
+    propertyEntranceList,
+    otherPropertyAccessibilityFeatures,
+    guestServicesList,
+    reciptionFacilitiesList,
+    roomConveniencesList
 } from './DataLists/DataLists.js'
 
 
 const Amenities = (props) => {
-    const [amenitiesData, setAmenitiesData] = useState({internet:{options:[]}, parking:{options:[]}, poolAccess:{options:[]}, diningVenues:{options:[]}, spa:{options:[]}});
+    const [amenitiesData, setAmenitiesData] = useState({internet:{options:[]}, parking:{options:[]}, poolAccess:{options:[]}, diningVenues:{options:[]}, spa:{options:[]}, pet:{}});
     console.log(amenitiesData)
     const [selectedDays, setSelectedDays] = useState([]);
 
@@ -49,6 +59,7 @@ const Amenities = (props) => {
             const newState = { ...prevState };
             const keys = path.split('.');
             let currentLevel = newState;
+            console.log("sdds",keys)
 
             if (type === 'default') {
                 keys.slice(0, -1).forEach(key => {
@@ -161,8 +172,40 @@ const Amenities = (props) => {
                         currentLevel[keys[0]].options[optionIndex].data[restrictionOptionIndex][keys[keys.length - 1]] = value;
                     }
                 }
+            } else if (type === 'checked array' && event) {
+                const optionName = event.target.name;
+                const isChecked = event.target.checked;
+                let targetLevel = currentLevel;
+                keys.forEach((key, index) => {
+                    if (!targetLevel[key]) {
+                        targetLevel[key] = (index === keys.length - 1) && [];
+                    }
+                    targetLevel = targetLevel[key];
+                });
+                // const featuresArray = targetLevel;
+                // if (!Array.isArray(featuresArray)) {
+                //     console.error(`Expected an array at the last key, but found: ${typeof featuresArray}`);
+                //     return;
+                // }
+                const optionIndex = targetLevel.findIndex(d => d.option === optionName);
+                if (optionIndex === -1 && isChecked) {
+                    targetLevel.push({ option: optionName, isAvailable: true });
+                } else if (optionIndex !== -1) {
+                    targetLevel[optionIndex].isAvailable = isChecked;
+                }
+            } else if (type === 'options update' && event) {
+                const optionName = event?.target?.name || event;
+                let targetLevel = currentLevel;
+                keys.forEach((key) => {
+                    targetLevel = targetLevel[key];
+                });
+                const optionIndex = targetLevel.findIndex(d => d.option === name);
+
+                if (optionIndex !== -1) {
+                    targetLevel[optionIndex][optionName] = value;
+                }
             }
-                return newState;
+            return newState;
         });
     };
 
@@ -236,7 +279,7 @@ const Amenities = (props) => {
                         <Form.Check name="virtualFontDesk" type="checkbox" label="Virtual front desk" style={labelStyle}
                                     onChange={(e) => handleUpdate('fontDesk.virtualFontDesk', e.target.checked)}/>
                         {/*<OverlayTrigger placement="top" overlay={popover} >*/}
-                             <span className="d-inline-block">
+                        <span className="d-inline-block">
                                  <img className="ms-2" src={InfoIcon} alt="liveinhotel" style={{position:"absolute", right:-25, top:3}}/>
                              </span>
                         {/*</OverlayTrigger>*/}
@@ -310,7 +353,7 @@ const Amenities = (props) => {
                     <>
                         <p className="mb-2" style={{...descStyle, fontSize: 12}}>How will guests access their unit?</p>
                         <Stack className="w-80 w-md-30 mb-3">
-                        <DropDownCustomize list={guestUnitAccessList} onChange={(selectedValue) => handleUpdate('fontDesk.selfChecking.guestAccess', selectedValue)}/>
+                            <DropDownCustomize list={guestUnitAccessList} onChange={(selectedValue) => handleUpdate('fontDesk.selfChecking.guestAccess', selectedValue)}/>
                         </Stack>
                         <p className="mb-2" style={{...descStyle, fontSize: 12}}>Is a mobile app recommended or required?</p>
                         <Stack className="w-80 w-md-30">
@@ -363,10 +406,10 @@ const Amenities = (props) => {
             {/* guests check out */}
             <Container className="py-3" style={containerBorder}>
                 <h3 className="mb-3" style={titleStyle}>When do guests need to check out?</h3>
-                    <Stack className="w-80 w-md-30 w-lg-20">
-                        <p style={{...descStyle, fontSize: 12}}>Check-out time</p>
-                        <DropDownCustomize list={timeList} onChange={(selectedValue) => handleUpdate('fontDesk.guestCheckOut', selectedValue)}/>
-                    </Stack>
+                <Stack className="w-80 w-md-30 w-lg-20">
+                    <p style={{...descStyle, fontSize: 12}}>Check-out time</p>
+                    <DropDownCustomize list={timeList} onChange={(selectedValue) => handleUpdate('fontDesk.guestCheckOut', selectedValue)}/>
+                </Stack>
 
             </Container>
 
@@ -580,56 +623,56 @@ const Amenities = (props) => {
                 {
                     amenitiesData?.parking?.isAvailable &&
                     <>
-                    {
-                        ["Self parking","Valet parking"].map((data,index)=>(
-                            <div key={index}>
-                                <Form.Check className="mb-2" type="checkbox" label={data} name={data} onChange={(e) => handleUpdate(`parking.options`, e.target.checked, 'checked', e)}/>
-                                {
-                                    amenitiesData?.parking?.options?.find(option => option.option === data)?.isAvailable &&
-                                    <div className="ps-3 mb-3">
-                                        <Stack direction="horizontal" gap={3} className="mt-3">
-                                            {
-                                                ["Free", "Surcharge"].map((item) =>
-                                                    <Form.Check
-                                                        key={item}
-                                                        type="radio"
-                                                        name="type"
-                                                        label={item}
-                                                        onChange={(e) => handleUpdate(`parking.options`, item.toLowerCase(), 'type', e, data)}
-                                                    />
-                                                )
-                                            }
-                                        </Stack>
-                                        {
-                                            amenitiesData?.parking?.options.find(option => option.option === data)?.type === 'free' &&
-                                            parkingList.slice(1).map((item)=>(
-                                                <Form.Check className="mt-2" key={item.id} checked={amenitiesData?.parking?.options?.find(option => option.option === data)?.[item.path] || false} type="checkbox" name={item.path} label={item.id} onChange={(e) => handleUpdate(`parking.options`, e.target.checked,'type',e, data)}/>
-                                            ))
-                                        }
-                                        {
-                                            amenitiesData?.parking?.options.find(option => option.option === data)?.type ==='surcharge' &&
-                                            <>
-                                                <Stack direction="horizontal" gap={2} className="w-100 w-md-40 my-3 align-items-center">
-                                                    <Stack className="w-80 w-md-20">
-                                                        <p style={{...descStyle, fontSize: 12}}>Self parking fee amount -</p>
-                                                        <CustomInputWithBlue onChange={(value) => handleUpdate(`parking.options`, value,'type','parkingFee', data)}/>
-                                                    </Stack>
-                                                    <Stack className="w-80 w-md-20 pt-5 pt-lg-3">
-                                                        <DropDownCustomize borderChange={true} list={["Month","Year"]} onChange={(selectedValue) => handleUpdate(`parking.options`, selectedValue,'type','duration', data)}/>
-                                                    </Stack>
-                                                </Stack>
+                        {
+                            ["Self parking","Valet parking"].map((data,index)=>(
+                                <div key={index}>
+                                    <Form.Check className="mb-2" type="checkbox" label={data} name={data} onChange={(e) => handleUpdate(`parking.options`, e.target.checked, 'checked', e)}/>
+                                    {
+                                        amenitiesData?.parking?.options?.find(option => option.option === data)?.isAvailable &&
+                                        <div className="ps-3 mb-3">
+                                            <Stack direction="horizontal" gap={3} className="mt-3">
                                                 {
-                                                    parkingList.map((item)=>(
-                                                <Form.Check className="mt-2" key={item.id} checked={amenitiesData?.parking?.options?.find(option => option.option === data)?.[item.path] || false} type="checkbox" name={item.path} label={item.id} onChange={(e) => handleUpdate(`parking.options`, e.target.checked,'type',e, data)}/>
-                                                ))
+                                                    ["Free", "Surcharge"].map((item) =>
+                                                        <Form.Check
+                                                            key={item}
+                                                            type="radio"
+                                                            name="type"
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`parking.options`, item.toLowerCase(), 'type', e, data)}
+                                                        />
+                                                    )
                                                 }
-                                            </>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        ))
-                    }
+                                            </Stack>
+                                            {
+                                                amenitiesData?.parking?.options.find(option => option.option === data)?.type === 'free' &&
+                                                parkingList.slice(1).map((item)=>(
+                                                    <Form.Check className="mt-2" key={item.id} checked={amenitiesData?.parking?.options?.find(option => option.option === data)?.[item.path] || false} type="checkbox" name={item.path} label={item.id} onChange={(e) => handleUpdate(`parking.options`, e.target.checked,'type',e, data)}/>
+                                                ))
+                                            }
+                                            {
+                                                amenitiesData?.parking?.options.find(option => option.option === data)?.type ==='surcharge' &&
+                                                <>
+                                                    <Stack direction="horizontal" gap={2} className="w-100 w-md-40 my-3 align-items-center">
+                                                        <Stack className="w-80 w-md-20">
+                                                            <p style={{...descStyle, fontSize: 12}}>Self parking fee amount -</p>
+                                                            <CustomInputWithBlue onChange={(value) => handleUpdate(`parking.options`, value,'type','parkingFee', data)}/>
+                                                        </Stack>
+                                                        <Stack className="w-80 w-md-20 pt-5 pt-lg-3">
+                                                            <DropDownCustomize borderChange={true} list={["Month","Year"]} onChange={(selectedValue) => handleUpdate(`parking.options`, selectedValue,'type','duration', data)}/>
+                                                        </Stack>
+                                                    </Stack>
+                                                    {
+                                                        parkingList.map((item)=>(
+                                                            <Form.Check className="mt-2" key={item.id} checked={amenitiesData?.parking?.options?.find(option => option.option === data)?.[item.path] || false} type="checkbox" name={item.path} label={item.id} onChange={(e) => handleUpdate(`parking.options`, e.target.checked,'type',e, data)}/>
+                                                        ))
+                                                    }
+                                                </>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            ))
+                        }
                     </>
                 }
             </Container>
@@ -737,19 +780,19 @@ const Amenities = (props) => {
                                     {
                                         (index ===4) && amenitiesData?.poolAccess?.options?.find(option => option.option === data)?.isAvailable &&
                                         <div className="ps-3">
-                                        <Stack direction="horizontal" gap={3} className="my-3">
-                                            {
-                                                ["24 hours", "Time range"].map((item) =>
-                                                    <Form.Check
-                                                        key={item}
-                                                        type="radio"
-                                                        name="type"
-                                                        label={item}
-                                                        onChange={(e) => handleUpdate(`poolAccess.options`,item.toLowerCase(),'type', e, data)}
-                                                    />
-                                                )
-                                            }
-                                        </Stack>
+                                            <Stack direction="horizontal" gap={3} className="my-3">
+                                                {
+                                                    ["24 hours", "Time range"].map((item) =>
+                                                        <Form.Check
+                                                            key={item}
+                                                            type="radio"
+                                                            name="type"
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`poolAccess.options`,item.toLowerCase(),'type', e, data)}
+                                                        />
+                                                    )
+                                                }
+                                            </Stack>
                                             {
                                                 amenitiesData?.poolAccess?.options?.find(option => option.option === data)?.type ==="time range" &&
                                                 <Stack direction="horizontal" className="my-3 w-100 w-md-40 w-lg-30" gap={3}>
@@ -1015,28 +1058,28 @@ const Amenities = (props) => {
                                                                                     />
                                                                                 </Stack>
                                                                             </Stack>
-                                                                                </>
-                                                                        }
-                                                                        {/*    day 2 */}
-                                                                        <Stack className="mt-3 w-80 w-md-20 w-lg-15">
-                                                                            <p style={{...descStyle, fontSize: 12}}>Date 2</p>
-                                                                            <CustomizedDatePicker onChange={(value)=> handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwo`, value, 'gala nested update', null, `${data}:${item}`)}/>
-                                                                        </Stack>
-                                                                        <Stack direction="horizontal" className="mt-3" gap={3}>
-                                                                            {
-                                                                                ["Included in room rate", "Collected at property"].map((items, index) =>
-                                                                                    <Form.Check
-                                                                                        key={index}
-                                                                                        type="radio"
-                                                                                        name="dayTwoType"
-                                                                                        label={items}
-                                                                                        onChange={(e) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoType`, items.toLowerCase(), 'gala nested update', null, `${data}:${item}`)}
-                                                                                    />
-                                                                                )
-                                                                            }
-                                                                        </Stack>
+                                                                        </>
+                                                                    }
+                                                                    {/*    day 2 */}
+                                                                    <Stack className="mt-3 w-80 w-md-20 w-lg-15">
+                                                                        <p style={{...descStyle, fontSize: 12}}>Date 2</p>
+                                                                        <CustomizedDatePicker onChange={(value)=> handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwo`, value, 'gala nested update', null, `${data}:${item}`)}/>
+                                                                    </Stack>
+                                                                    <Stack direction="horizontal" className="mt-3" gap={3}>
                                                                         {
-                                                                            amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayTwoType ==="collected at property" &&
+                                                                            ["Included in room rate", "Collected at property"].map((items, index) =>
+                                                                                <Form.Check
+                                                                                    key={index}
+                                                                                    type="radio"
+                                                                                    name="dayTwoType"
+                                                                                    label={items}
+                                                                                    onChange={(e) => handleUpdate(`diningVenues.options.${data}.data.${item}.dayTwoType`, items.toLowerCase(), 'gala nested update', null, `${data}:${item}`)}
+                                                                                />
+                                                                            )
+                                                                        }
+                                                                    </Stack>
+                                                                    {
+                                                                        amenitiesData?.diningVenues?.options.find(option => option.option === data)?.data?.find(d => d.name === item)?.dayTwoType ==="collected at property" &&
                                                                         <>
                                                                             <Stack direction="horizontal" gap={3} className="mb-3 ps-0 ps-md-4">
                                                                                 <div>
@@ -1101,17 +1144,17 @@ const Amenities = (props) => {
                                                 />
                                             </Stack>
                                             <Stack direction="horizontal" gap={3} className="d-none d-md-flex">
-                                            {
-                                                ["Daily","Weekdays","Weekends","Select days"].map((item)=>
-                                                    <Form.Check
-                                                        key={item}
-                                                        type="radio"
-                                                        name="type"
-                                                        label={item}
-                                                        onChange={(e) => handleUpdate(`diningVenues.options`, item.toLowerCase(), 'type', e, data)}
-                                                    />
-                                                )
-                                            }
+                                                {
+                                                    ["Daily","Weekdays","Weekends","Select days"].map((item)=>
+                                                        <Form.Check
+                                                            key={item}
+                                                            type="radio"
+                                                            name="type"
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`diningVenues.options`, item.toLowerCase(), 'type', e, data)}
+                                                        />
+                                                    )
+                                                }
                                             </Stack>
                                             {/*<Row className="w-60">*/}
                                             {/*    {*/}
@@ -1266,7 +1309,7 @@ const Amenities = (props) => {
                                                 }
                                             </Stack>
                                             {
-                                                 amenitiesData?.spa?.options.find(option => option.option === data)?.type === 'full-service spa' &&
+                                                amenitiesData?.spa?.options.find(option => option.option === data)?.type === 'full-service spa' &&
                                                 <>
                                                     <Stack className="w-80 w-md-15 my-3">
                                                         <p style={{ ...descStyle, fontSize: 12 }}>Spa name</p>
@@ -1291,11 +1334,11 @@ const Amenities = (props) => {
                                                     </Stack>
                                                     {
                                                         spaServiceList.map((item) =>
-                                                        <Form.Check className="mt-2" key={item} type="checkbox"
-                                                                    label={item}
-                                                                    name={item}
-                                                                    onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}/>
-                                                    )}
+                                                            <Form.Check className="mt-2" key={item} type="checkbox"
+                                                                        label={item}
+                                                                        name={item}
+                                                                        onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}/>
+                                                        )}
                                                 </>
                                             }
                                         </div>
@@ -1306,12 +1349,12 @@ const Amenities = (props) => {
                                             {
                                                 massageList.map((item,index) =>
                                                     <div key={index}>
-                                                    <Form.Check
-                                                        type="checkbox"
-                                                        name={item}
-                                                        label={item}
-                                                        onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
-                                                    />
+                                                        <Form.Check
+                                                            type="checkbox"
+                                                            name={item}
+                                                            label={item}
+                                                            onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
+                                                        />
                                                         {
                                                             index ===0 &&
                                                             <p className="mt-3" style={{...descStyle,fontSize:12}}>Types of massages available</p>
@@ -1334,13 +1377,13 @@ const Amenities = (props) => {
                                             </Stack>
                                             {
                                                 ["Couples treatment rooms","Outdoor treatment areas"].map((item,index) =>
-                                                        <Form.Check
-                                                            key={index}
-                                                            type="checkbox"
-                                                            name={item}
-                                                            label={item}
-                                                            onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
-                                                        />
+                                                    <Form.Check
+                                                        key={index}
+                                                        type="checkbox"
+                                                        name={item}
+                                                        label={item}
+                                                        onChange={(e) => handleUpdate(`spa.options`, e.target.checked, 'layer 5 checked', e, data)}
+                                                    />
                                                 )
                                             }
                                         </Stack>
@@ -1398,6 +1441,158 @@ const Amenities = (props) => {
                         No
                     </Button>
                 </Stack>
+                {
+                    amenitiesData?.pet?.isAvailable &&
+                    <>
+                        <p style={{...subStyle,fontSize:14}}>Do you have a surcharge for pets?</p>
+                        <Stack direction="horizontal" gap={3} className="mt-3">
+                            {
+                                ["Yes", "No"].map(data=>
+                                    <Form.Check key={data} className="mb-2" type="radio" label={data} name="surcharge" onChange={(e) => handleUpdate(`pet.surcharge.isAvailable`, data.toLowerCase())}/>
+                                )
+                            }
+                        </Stack>
+                        {
+                            amenitiesData?.pet?.surcharge?.isAvailable==="yes" &&
+                            <>
+                                <Stack direction="horizontal" gap={2} className="w-100 w-md-60 mb-3 d-flex align-items-end">
+                                    <div className="w-80 w-md-35">
+                                        <p style={{ ...descStyle, fontSize: 12 }}>Pet fee amount -</p>
+                                        <InputWithArrowUpAndDown
+                                            mask={false}
+                                            value={amenitiesData?.pet?.surcharge?.petFeeAmount || 0}
+                                            onChange={(value) => handleUpdate(`pet.surcharge.petFeeAmount`, value)}
+                                        />
+                                    </div>
+                                    <div className="w-80 w-md-35">
+                                        <DropDownCustomize
+                                            borderChange={true}
+                                            list={["Per pet", "Per accommodation"]}
+                                            onChange={(selectedValue) => handleUpdate(`pet.surcharge.type`, selectedValue)}
+                                        />
+                                    </div>
+                                    <div className="w-80 w-md-35">
+                                        <DropDownCustomize
+                                            borderChange={true}
+                                            list={["Per day","Per night","Per stay","Per week"]}
+                                            onChange={(selectedValue) => handleUpdate(`pet.surcharge.duration`, selectedValue)}
+                                        />
+                                    </div>
+                                </Stack>
+
+                                <Form.Check className="mb-2" type="checkbox" label="Maximum fee per stay" name="MaximumFeePerStay" onChange={(e) => handleUpdate(`pet.surcharge.MaximumFeePerStay`, e.target.checked)}/>
+                                {
+                                    amenitiesData?.pet?.surcharge?.MaximumFeePerStay &&
+                                    <div className="w-80 w-md-35 my-3">
+                                        <p style={{ ...descStyle, fontSize: 12 }}>FeePet-MaxAmt</p>
+                                        <InputWithArrowUpAndDown
+                                            mask={false}
+                                            value={amenitiesData?.pet?.surcharge?.feePerStay || 0}
+                                            onChange={(value) => handleUpdate(`pet.surcharge.feePerStay`, value)}
+                                        />
+                                    </div>
+                                }
+                                <Form.Check className="mb-2" type="checkbox" label="Pet fee may vary based on length of stay" name="feeVary" onChange={(e) => handleUpdate(`pet.surcharge.feeVary`, e.target.checked)}/>
+                            </>
+                        }
+                        <p className="my-3" style={{...subStyle,fontSize:14}}>Do you have pet type restrictions?</p>
+                        <div className="w-80 w-md-30 mb-3">
+                            <DropDownCustomize
+                                borderChange={true}
+                                list={["Only dogs are allowed","Only cats are allowed","Only dogs and cats are allowed"]}
+                                onChange={(selectedValue) => handleUpdate(`pet.typeRestrictions`, selectedValue)}
+                            />
+                        </div>
+                        {
+                            petOptionsList.map((item, index)=>
+                                <div key={index}>
+                                    <Form.Check className="mb-2" type="checkbox" label={item.id} name={item.id} onChange={(e) => handleUpdate(`pet.${item.path}.isAvailable`, e.target.checked)}/>
+                                    {
+                                        index === 0 && amenitiesData?.pet?.[`${item.path}`]?.isAvailable &&
+                                        <Stack className="ps-4">
+                                            <Form.Check className="mb-2" type="checkbox" label="Maximum weight limit per pet" name="maxWeightLimitPerPet" onChange={(e) => handleUpdate(`pet.${item.path}.maxWeightLimitPerPet.isAvailable`, e.target.checked)}/>
+                                            {
+                                                amenitiesData?.pet?.[`${item.path}`]?.maxWeightLimitPerPet?.isAvailable &&
+                                                <Stack direction="horizontal" gap={2} className="w-100 w-md-40 mb-3 d-flex align-items-end">
+                                                    <InputWithArrowUpAndDown
+                                                        mask={false}
+                                                        value={amenitiesData?.pet?.[`${item.path}`]?.maxWeightLimitPerPet.amount || 0}
+                                                        onChange={(value) => handleUpdate(`pet.${item.path}.maxWeightLimitPerPet.amount`, value)}
+                                                    />
+                                                    <DropDownCustomize
+                                                        borderChange={true}
+                                                        list={["Kilograms", "Pounds"]}
+                                                        onChange={(selectedValue) => handleUpdate(`pet.${item.path}.maxWeightLimitPerPet.unit`, selectedValue)}
+                                                    />
+                                                </Stack>
+                                            }
+                                            <Form.Check className="mb-2" type="checkbox" label="Small pets only" name="smallPetOnly" onChange={(e) => handleUpdate(`pet.${item.path}.smallPetOnly`, e.target.checked)}/>
+                                            <div className="w-80 w-md-25 mb-3">
+                                                <p style={{ ...descStyle, fontSize: 12 }}>Maximum per room</p>
+                                                <DropDownCustomize
+                                                    borderChange={true}
+                                                    list={["1","2","3","4"]}
+                                                    onChange={(selectedValue) => handleUpdate(`pet.${item.path}.maxPerRoom`, selectedValue)}
+                                                />
+                                            </div>
+                                            {
+                                                ["Pets allowed in smoking rooms only", "Pets allowed in specific rooms only", "Pets cannot be left unattended", "Other pet restrictions apply"].map(data => (
+                                                    <Form.Check
+                                                        key={data}
+                                                        className="mb-2"
+                                                        type="checkbox"
+                                                        label={data}
+                                                        name={data}
+                                                        onChange={(e) => handleUpdate(`pet.restrictions.features`, e.target.checked, 'checked array', e)}
+                                                    />
+                                                ))
+                                            }
+                                        </Stack>
+                                    }
+                                    {
+                                        index ===1 && amenitiesData?.pet?.[`${item.path}`]?.isAvailable &&
+                                        <Stack direction="horizontal" gap={2} className="w-100 w-md-60 mb-3 d-flex align-items-end ps-4">
+                                            <div className="w-80 w-md-35">
+                                                <p style={{ ...descStyle, fontSize: 12 }}>Pet deposit amount -</p>
+                                                <InputWithArrowUpAndDown
+                                                    mask={false}
+                                                    value={amenitiesData?.pet?.[`${item.path}`]?.petDepositAmount || 0}
+                                                    onChange={(value) => handleUpdate(`pet.${item.path}.petDepositAmount`, value)}
+                                                />
+                                            </div>
+                                            <div className="w-80 w-md-35">
+                                                <DropDownCustomize
+                                                    borderChange={true}
+                                                    list={["Per day","Per night","Per stay","Per week"]}
+                                                    onChange={(selectedValue) => handleUpdate(`pet.${item.path}.duration`, selectedValue)}
+                                                />
+                                            </div>
+                                        </Stack>
+
+                                    }
+                                    {
+                                        index ===2 && amenitiesData?.pet?.[`${item.path}`]?.isAvailable &&
+                                        <Stack className="w-80 w-md-30 mb-3 ps-4">
+                                            <p style={{ ...descStyle, fontSize: 12 }}>Pet deposit amount -</p>
+                                            <InputWithArrowUpAndDown
+                                                mask={false}
+                                                value={amenitiesData?.pet?.[`${item.path}`]?.petDepositAmount || 0}
+                                                onChange={(value) => handleUpdate(`pet.${item.path}.petDepositAmount`, value)}
+                                            />
+                                        </Stack>
+
+                                    }
+                                </div>
+                            )
+                        }
+                        <p className="mb-2" style={{...subStyle,fontSize:14}}>Pet-friendly features</p>
+                        {
+                            petFeaturesList.map(item=>
+                                <Form.Check key={item} className="mb-2" type="checkbox" label={item} name={item} onChange={(e) => handleUpdate(`pet.options`, e.target.checked, 'checked array', e)}/>
+                            )
+                        }
+                    </>
+                }
             </Container>
 
             {/* Do you have accessibility features at your property? */}
@@ -1430,6 +1625,165 @@ const Amenities = (props) => {
                         No
                     </Button>
                 </Stack>
+                {
+                    amenitiesData?.accessibilityFeatures?.isAvailable &&
+                    <>
+                        <p className="mb-2" style={descStyle}>Accessible features provide comfort and convenience for guests that require additional assistance.</p>
+                        <p className="mb-2" style={{...subStyle,fontSize:14}}>Are the common areas of your property wheelchair accessible?</p>
+                        <Stack direction="horizontal" gap={3} className="my-3">
+                            {
+                                [{id:"Yes (may have limitations)",checked:true},{id:"No",checked:false}].map(data=>
+                                    <Form.Check key={data.id} className="mb-2" type="radio" label={data.id} name="wheelchairAccessible" onChange={(e) => handleUpdate(`accessibilityFeatures.wheelchairAccessible.isAvailable`, data.checked)}/>
+                                )
+                            }
+                        </Stack>
+                        {
+                            amenitiesData?.accessibilityFeatures?.wheelchairAccessible?.isAvailable &&
+                            <Stack className="ps-4">
+                                <p className="mb-2" style={{...subStyle,fontSize:14}}>Which features of your property are wheelchair accessible?</p>
+                                {
+                                    wheelChairAccessibleList.map((data,index)=>
+                                        <div key={index}>
+                                            <Form.Check key={data} className="mb-2" type="checkbox" label={data} name={data} onChange={(e) => handleUpdate(`accessibilityFeatures.wheelchairAccessible.accessibleList`, e.target.checked,'checked array', e)}/>
+                                            {
+                                                index ===0 && amenitiesData?.accessibilityFeatures?.wheelchairAccessible?.accessibleList?.find(option => option.option === data)?.isAvailable &&
+                                                <Stack direction="horizontal" gap={2} className="w-100 w-md-60 mb-3 d-flex align-items-end ps-4">
+                                                    <div>
+                                                        <p style={{ ...descStyle, fontSize: 12 }}>Registration desk height (inches)</p>
+                                                        <InputWithArrowUpAndDown
+                                                            mask={false}
+                                                            value={amenitiesData?.accessibilityFeatures?.wheelchairAccessible?.accessibleList?.find(option => option.option === data)?.registrationDeskHeightInches || 0}
+                                                            onChange={(value) => handleUpdate(`accessibilityFeatures.wheelchairAccessible.accessibleList`, value, "options update","registrationDeskHeightInches",data)}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <p style={{ ...descStyle, fontSize: 12 }}>Registration desk height (centimeters)</p>
+                                                        <InputWithArrowUpAndDown
+                                                            mask={false}
+                                                            value={amenitiesData?.accessibilityFeatures?.wheelchairAccessible?.accessibleList?.find(option => option.option === data)?.registrationDeskHeightCentiMeters || 0}
+                                                            onChange={(value) => handleUpdate(`accessibilityFeatures.wheelchairAccessible.accessibleList`, value, "options update","registrationDeskHeightCentiMeters",data)}
+                                                        />
+                                                    </div>
+                                                </Stack>
+                                            }
+                                            {
+                                                index === 6 && amenitiesData?.accessibilityFeatures?.wheelchairAccessible?.accessibleList?.find(option => option.option === data)?.isAvailable &&
+                                                <div className="ps-4 mb-3">
+                                                    <p style={{ ...descStyle, fontSize: 12 }}>Number of on-site accessible parking spots</p>
+                                                    <div className="w-100 w-md-45">
+                                                        <DropDownCustomize
+                                                            borderChange={true}
+                                                            list={poolHowManyList}
+                                                            onChange={(selectedValue) => handleUpdate(`accessibilityFeatures.wheelchairAccessible.accessibleList`, selectedValue, "options update","noOfOnSiteParkingSpots",data)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    )
+                                }
+                            </Stack>
+                        }
+
+                        <p className="mb-2" style={{...subStyle,fontSize:14}}>Are there elevators?</p>
+                        <Stack direction="horizontal" gap={3} className="mt-3">
+                            {
+                                [{id:"Yes",checked:true},{id:"No",checked:false}].map(data=>
+                                    <Form.Check key={data.id} className="mb-2" type="radio" label={data.id} name="elevators" onChange={(e) => handleUpdate(`accessibilityFeatures.elevators.isAvailable`, data.checked)}/>
+                                )
+                            }
+                        </Stack>
+                        {
+                            amenitiesData?.accessibilityFeatures?.elevators?.isAvailable &&
+                            <Stack className="ps-4">
+                                <Stack direction="horizontal" gap={2} className="w-100 w-md-60 mb-3 d-flex align-items-end">
+                                    <div>
+                                        <p style={{ ...descStyle, fontSize: 12 }}>Elevator door width (inches)</p>
+                                        <InputWithArrowUpAndDown
+                                            mask={false}
+                                            value={amenitiesData?.accessibilityFeatures?.elevators?.registrationDeskHeightInches || 0}
+                                            onChange={(value) => handleUpdate(`accessibilityFeatures.elevators.registrationDeskHeightInches`, value)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <p style={{ ...descStyle, fontSize: 12 }}>Elevator door width (centimeters)</p>
+                                        <InputWithArrowUpAndDown
+                                            mask={false}
+                                            value={amenitiesData?.accessibilityFeatures?.elevators?.registrationDeskHeightCentimeters || 0}
+                                            onChange={(value) => handleUpdate(`accessibilityFeatures.elevators.registrationDeskHeightCentimeters`, value)}
+                                        />
+                                    </div>
+                                </Stack>
+                                <Form.Check className="mb-2" type="checkbox" label="Wheelchair-accessible path to elevator" name="WheelchairAccessiblePathToElevator" onChange={(e) => handleUpdate(`accessibilityFeatures.elevators.WheelchairAccessiblePathToElevator`, e.target.checked)}/>
+                            </Stack>
+                        }
+                        <p className="mb-3" style={{...subStyle,fontSize:14}}>Property entrance</p>
+                        <Stack className="mb-3">
+                            {
+                                propertyEntranceList.map((item,index)=>
+                                    <div className="ps-3" key={item}>
+                                        <Form.Check className="mb-2" type="checkbox" label={item} name={item} onChange={(e) => handleUpdate(`accessibilityFeatures.propertyEntranceList`, e.target.checked, 'checked array',e)}/>
+                                        {
+                                            index === 2 && amenitiesData?.accessibilityFeatures?.propertyEntranceList?.find(option => option.option === item)?.isAvailable &&
+                                            <div className="ps-4 mb-3">
+                                                <p style={{ ...descStyle, fontSize: 12 }}>Number of on-site accessible parking spots</p>
+                                                <div className="w-100 w-md-45">
+                                                    <DropDownCustomize
+                                                        borderChange={true}
+                                                        list={poolHowManyList}
+                                                        onChange={(selectedValue) => handleUpdate(`accessibilityFeatures.propertyEntranceList`, selectedValue, "options update","noOfOnSiteParkingSpots",item)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                )
+                            }
+                        </Stack>
+                        <p className="mb-2" style={{...subStyle,fontSize:14}}>Do you allow service animals?</p>
+                        <p className="mb-2 w-100 w-md-60" style={descStyle}>Some countries require properties to welcome service animals. Please be aware of the laws and regulations that apply to your property.</p>
+                        <Stack direction="horizontal" gap={3} className="mt-3">
+                            {
+                                [{id:"Yes",checked:true},{id:"No",checked:false}].map(data=>
+                                    <Form.Check key={data.id} className="mb-2" type="radio" label={data.id} name="elevators" onChange={(e) => handleUpdate(`accessibilityFeatures.elevators.isAvailable`, data.checked)}/>
+                                )
+                            }
+                        </Stack>
+                        <p className="mb-3" style={descStyle}>Service animals are exempt from fees/restrictions</p>
+                        <p className="mb-3" style={{...subStyle,fontSize:14}}>Other property accessibility features</p>
+                        <Stack className="mb-3">
+                            {
+                                otherPropertyAccessibilityFeatures.map((item,index)=>
+                                    <div className="ps-3" key={index}>
+                                        <Form.Check className="mb-2" type="checkbox" label={item} name={item} onChange={(e) => handleUpdate(`accessibilityFeatures.otherPropertyAccessibilityFeatures`, e.target.checked, 'checked array',e)}/>
+                                        {
+                                            (index === 4 || index ===3) && amenitiesData?.accessibilityFeatures?.otherPropertyAccessibilityFeatures?.find(option => option.option === item)?.isAvailable &&
+                                            <Stack direction="horizontal" gap={2} className="w-100 w-md-60 mb-3 d-flex align-items-end ps-4">
+                                                <div>
+                                                    <p style={{ ...descStyle, fontSize: 12 }}>Hallway handrail height (inches)</p>
+                                                    <InputWithArrowUpAndDown
+                                                        mask={false}
+                                                        value={amenitiesData?.accessibilityFeatures?.otherPropertyAccessibilityFeatures?.find(option => option.option === item)?.hallwayHandrailHeightInches || 0}
+                                                        onChange={(value) => handleUpdate(`accessibilityFeatures.otherPropertyAccessibilityFeatures`, value, 'options update','hallwayHandrailHeightInches',item )}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <p style={{ ...descStyle, fontSize: 12 }}>Hallway handrail height (centimeters)</p>
+                                                    <InputWithArrowUpAndDown
+                                                        mask={false}
+                                                        value={amenitiesData?.accessibilityFeatures?.otherPropertyAccessibilityFeatures?.find(option => option.option === item)?.hallwayHandrailHeightCentimeters || 0}
+                                                        onChange={(value) => handleUpdate(`accessibilityFeatures.otherPropertyAccessibilityFeatures`, value, 'options update','hallwayHandrailHeightCentimeters',item )}
+                                                    />
+                                                </div>
+                                            </Stack>
+                                        }
+                                    </div>
+                                )
+                            }
+                        </Stack>
+                    </>
+
+                }
             </Container>
 
             {/* Do you offer guest services such as, smoking areas, laundry, or concierge? */}
@@ -1462,6 +1816,59 @@ const Amenities = (props) => {
                         No
                     </Button>
                 </Stack>
+                {
+                    amenitiesData?.guestServices?.isAvailable &&
+                    <>
+                        <p className="mb-2" style={{...subStyle,fontSize:14}}>Smoking Preferences</p>
+                        <Stack direction="horizontal" gap={3} className="mb-2">
+                            {
+                                ["Smoke-free property","Designated smoking areas"].map(data=>
+                                    <Form.Check key={data} type="radio" label={data} name="smokingPreferences" onChange={(e) => handleUpdate(`guestServices.smokingPreferences`, data.toLowerCase())}/>
+                                )
+                            }
+                        </Stack>
+                        {
+                            amenitiesData?.guestServices?.smokingPreferences ==='designated smoking areas' &&
+                            <div className="ps-4 mb-2">
+                                <Form.Check type="checkbox" label="Designated smoking areas (fines apply)" name="smokingAreas" onChange={(e) => handleUpdate(`guestServices.smokingAreas`, e.target.checked)}/>
+                            </div>
+                        }
+                        {guestServicesList.map((item, index) =>
+                            <div className="" key={index}>
+                                <Form.Check className="mb-2" type="checkbox" label={item} name={item}
+                                            onChange={(e) => handleUpdate(`guestServices.guestServicesList`, e.target.checked, 'checked array', e)}/>
+                                {
+                                    index ===2 && amenitiesData?.guestServices?.guestServicesList?.find(option => option.option === item)?.isAvailable &&
+                                    <div className="ps-4">
+                                        <Form.Check className="mb-2" type="checkbox" label="Coin-operated laundry on site" name="coinOperatedLaundryOnSite"
+                                                    onChange={(e) => handleUpdate(`guestServices.guestServicesList`, e.target.checked, 'options update',e,item)}/>
+                                    </div>
+                                }
+                                {
+                                    index ===6 && amenitiesData?.guestServices?.guestServicesList?.find(option => option.option === item)?.isAvailable &&
+                                    <Stack direction="horizontal" gap={3} className="mb-2 ps-4">
+                                        {
+                                            ["Free","Surcharge"].map(data=>
+                                                <Form.Check key={data} type="radio" label={data} name="type" onChange={(e) => handleUpdate(`guestServices.guestServicesList`, data.toLowerCase(), 'options update',e,item)}/>
+                                            )
+                                        }
+                                    </Stack>
+                                }
+                                {
+                                    index ===19 && amenitiesData?.guestServices?.guestServicesList?.find(option => option.option === item)?.isAvailable &&
+                                    <div className="ps-4">
+                                        {
+                                            reciptionFacilitiesList.map(data=>
+                                                <Form.Check key={data.id} type="checkbox" label={data.id} name={data.path} onChange={(e) => handleUpdate(`guestServices.guestServicesList`, e.target.checked, 'options update',e,item)}/>
+                                            )
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        )
+                        }
+                    </>
+                }
             </Container>
 
             <h3 className="mb-3" style={subStyle}>Room conveniences</h3>
@@ -1496,6 +1903,102 @@ const Amenities = (props) => {
                         No
                     </Button>
                 </Stack>
+                {
+                    amenitiesData?.inRoomConveniences?.isAvailable &&
+                    <>
+                        {roomConveniencesList.map((item, index) =>
+                            <div className="" key={index}>
+                                <Form.Check className="mb-2" type="checkbox" label={item} name={item}
+                                            onChange={(e) => handleUpdate(`inRoomConveniences.roomConveniencesList`, e.target.checked, 'checked array', e)}/>
+                                {
+                                    index ===10 && amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.isAvailable &&
+                                    <div className="w-80 w-md-35 ps-4 mb-2">
+                                        <DropDownCustomize
+                                            borderChange={true}
+                                            list={["Washer/dryer", "Washing machine","Dryer","All-in-one washer and dryer"]}
+                                            onChange={(selectedValue) => handleUpdate(`inRoomConveniences.roomConveniencesList`, selectedValue, 'options update',"type",item)}
+                                        />
+                                    </div>
+                                }
+                                {
+                                    index ===16 && amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.isAvailable &&
+                                    <div className="w-80 w-md-35 ps-4 mb-2">
+                                        <DropDownCustomize
+                                            borderChange={true}
+                                            list={["In-room safe","In-room safe (laptop compatible)","In-room safe (surcharge)"]}
+                                            onChange={(selectedValue) => handleUpdate(`inRoomConveniences.roomConveniencesList`, selectedValue, 'options update',"type",item)}
+                                        />
+                                    </div>
+                                }
+                                {
+                                    index ===9 && amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.isAvailable &&
+                                    <Stack direction="horizontal" gap={3} className="mb-2 ps-4">
+                                        {
+                                            ["In room","On request"].map(data=>
+                                                <Form.Check key={data} type="radio" label={data} name="type" onChange={(e) => handleUpdate(`inRoomConveniences.roomConveniencesList`, data.toLowerCase(), 'options update',e,item)}/>
+                                            )
+                                        }
+                                    </Stack>
+                                }
+                                {
+                                    index ===18 && amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.isAvailable &&
+                                    <Stack direction="horizontal" gap={3} className="mb-2 ps-4">
+                                        {
+                                            ["Daily","Weekdays"].map(data=>
+                                                <Form.Check key={data} type="radio" label={data} name="type" onChange={(e) => handleUpdate(`inRoomConveniences.roomConveniencesList`, data.toLowerCase(), 'options update',e,item)}/>
+                                            )
+                                        }
+                                    </Stack>
+                                }
+                                {
+                                    index ===19 && amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.isAvailable &&
+                                    <Stack className="mb-2 ps-4" gap={1}>
+                                        {
+                                            [{id:"Smartphone",path:"smartphone"},{id:"Electrical adapters/chargers",path:"electricalAdaptersChargers"},{id:"Computer monitor",path: "computerMonitor"}].map(data=>
+                                                <Form.Check key={data.id} type="checkbox" label={data.id} name={data.path} onChange={(e) => handleUpdate(`inRoomConveniences.roomConveniencesList`, e.target.checked, 'options update',e,item)}/>
+                                            )
+                                        }
+                                    </Stack>
+                                }
+                                {
+                                    index ===20 && amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.isAvailable &&
+                                    <div className="w-80 w-md-35 ps-4 mb-2">
+                                        <Stack direction="horizontal" gap={3} className="mb-3">
+                                            <Stack>
+                                                <p style={{...descStyle,fontSize:12}}>Data speed</p>
+                                                <DropDownCustomize
+                                                    borderChange={true}
+                                                    list={["3G","4G","4G LTE","5G"]}
+                                                    onChange={(selectedValue) => handleUpdate(`inRoomConveniences.roomConveniencesList`, selectedValue, 'options update',"dataSpeed",item)}
+                                                />
+                                            </Stack>
+                                            <Stack>
+                                                <p style={{...descStyle,fontSize:12}}>Data usage</p>
+                                                <DropDownCustomize
+                                                    borderChange={true}
+                                                    list={["Free","Limited"]}
+                                                    onChange={(selectedValue) => handleUpdate(`inRoomConveniences.roomConveniencesList`, selectedValue, 'options update',"dataUsage",item)}
+                                                />
+                                            </Stack>
+                                        </Stack>
+                                        <Form.Check type="checkbox" label="Phone calls" name="phoneCalls" onChange={(e) => handleUpdate(`inRoomConveniences.roomConveniencesList`, e.target.checked, 'options update',e,item)}/>
+                                        {
+                                            amenitiesData?.inRoomConveniences?.roomConveniencesList?.find(option => option.option === item)?.phoneCalls &&
+                                            <div className="my-3 w-80 w-md-50">
+                                                <DropDownCustomize
+                                                    borderChange={true}
+                                                    list={["Limited","Unlimited"]}
+                                                    onChange={(selectedValue) => handleUpdate(`inRoomConveniences.roomConveniencesList`, selectedValue, 'options update',"callType",item)}
+                                                />
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        )
+                        }
+                    </>
+                }
             </Container>
 
             {/* Do you provide housekeeping? */}
@@ -1531,7 +2034,7 @@ const Amenities = (props) => {
             </Container>
 
             <h3 className="mb-3" style={subStyle}>Additional Amenities (optional)</h3>
-            </Container>
+        </Container>
     );
 };
 
