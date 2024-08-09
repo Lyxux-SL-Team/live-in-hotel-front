@@ -1,6 +1,25 @@
+import {
+    AdventureSport,
+    Beach,
+    Business,
+    Casino,
+    City,
+    Family,
+    Golf,
+    HotSprings,
+    Natural,
+    Romantic,
+    Shopping,
+    Ski,
+    Spa2,
+    Winery
+} from "../Icons/index.jsx";
+
 export const timeList = ["06.00 AM", "06.30 AM", "07.00 AM", "07.30 AM", "08.00 AM"];
 export const dayList = ["Monday","Tuesday","Wednesday","Thursdays","Friday","Saturday","Sunday"];
 export const dayShortList = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export const dayPerList = ["Per day","Per night","Per stay","Per week"];
+export const daysList = ["2 days","3 days","4 days","5 days","6 days","7 days","8 days","9 days","10 days"];
 export const monthList = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 export const guestUnitAccessList =[
     {
@@ -88,3 +107,65 @@ export const reciptionFacilitiesList = [
     },
 ];
 export const roomConveniencesList = ["Local maps","Guidebooks or recommendations","Restaurant dining guide","Chef","Meal delivery service available","In-room massage available","Slippers","Child-size slippers","Turndown service","Iron/ironing board","In-room laundry","Laundry detergent","Blackout drapes/curtains","Window screens","Soundproofed rooms","Noise-free rooms not guaranteed","In-room safe","Mobile key entry","Free newspaper","Phone","Smartphone","Electrical adapters/chargers","Computer monitor","Printer"];
+export const houseKeepingList = ["On request","Every 2 days","Every 3 days","Every 4 days","Every 5 days","Every 6 days","Every 7 days"];
+export const additionalAmenitiesList = [
+    {
+        image:AdventureSport,
+        title:"Adventure sport"
+    },
+    {
+        image:Beach,
+        title:"Beach"
+    },
+    {
+        image:Business,
+        title:"Business"
+    },{
+        image:Casino,
+        title:"Casino"
+    },
+    {
+        image:Family,
+        title:"Family"
+    },
+    {
+        image:Golf,
+        title:"Golf"
+    },
+    {
+        image:HotSprings,
+        title:"Hot springs"
+    },
+    {
+        image:Romantic,
+        title:"Romantic"
+    },
+    {
+        image:Shopping,
+        title:"Shopping"
+    },
+    {
+        image:Ski,
+        title:"Ski"
+    },
+    {
+        image:Spa2,
+        title:"Spa"
+    },
+    {
+        image:Winery,
+        title:"Winery"
+    },
+    {
+        image:City,
+        title:"City"
+    },
+    {
+        image:Natural,
+        title:"Natural"
+    },
+
+]
+export const adventureSportList = ["Bicycles","Hiking/biking","Horse riding/rental","Mountain biking","Archery on site","Cave exploring","Ecotours","Helicopter/airplane tours on site","Hunting","Mountain climbing nearby","Ropes course on site","Rock climbing","Scooters or mopeds","Segways","Skydiving","Ziplining"];
+export const adventureBeachList = ["Beach access","Beach shuttle","Beach cabanas","Beach sun loungers","Beach towels","Beach umbrellas","Beach volleyball on site","Beach yoga on site","Massages on beach"];
+export const beachSandTypes = ["White sand","Black sand","Every 3 days","Sand"];
